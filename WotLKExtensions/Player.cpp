@@ -10,9 +10,6 @@ void Player::ApplyPatches()
 
 	if (classLFDRoles)
 		LFDClassRoleExtension();
-
-	if (unlimitedRaceClassCombo)
-		UnimitedRaceClassPairs();
 }
 
 void Player::CharacterCreationRaceCrashfix()
@@ -40,51 +37,4 @@ void Player::LFDClassRoleExtension()
 
 	for (uint8_t i = 0; i < patchedAddresses.size(); i++)
 		Util::OverwriteUInt32AtAddress(patchedAddresses[i], reinterpret_cast<uint32_t>(&classRoleMask));
-}
-
-// you know what, fuck it, a bunch of asm patches in one function
-// since there's not enough space to just patch in values
-// should probably just move that function to dll in the future but cba to do this currently
-static void __declspec(naked) sub_4E0F50Patch()
-{
-	__asm
-	{
-		push ebp;
-		mov ebp, esp;
-		sub esp, 0x400;
-		push 0x4E0F56;
-		ret;
-
-		mov ecx, [ecx];
-		mov[ebp + esi * 4 - 0x410], ecx;
-		push 0x4E0F8F;
-		ret;
-
-		xor eax, eax;
-		mov eax, [ebp + esi * 4 - 0x410];
-		push 0x4E0FA4;
-		ret;
-
-		mov ecx, 0x414DB0;
-		call ecx;
-		mov eax, [ebp + esi * 4 - 0x410];
-		push 0x4E0FC4;
-		ret;
-	}
-}
-
-void Player::UnimitedRaceClassPairs()
-{
-	//
-	Util::SetByteAtAddress(reinterpret_cast<void*>(0x4E0F50), 0xE9);
-	Util::OverwriteUInt32AtAddress(0x4E0F51, reinterpret_cast<uint32_t>(&sub_4E0F50Patch) - 0x4E0F55);
-	//
-	Util::SetByteAtAddress(reinterpret_cast<void*>(0x4E0F89), 0xE9);
-	Util::OverwriteUInt32AtAddress(0x4E0F8A, reinterpret_cast<uint32_t>(&sub_4E0F50Patch) + 0x0E - 0x4E0F8E);
-	//
-	Util::SetByteAtAddress(reinterpret_cast<void*>(0x4E0F9E), 0xE9);
-	Util::OverwriteUInt32AtAddress(0x4E0F9F, reinterpret_cast<uint32_t>(&sub_4E0F50Patch) + 0x1D - 0x4E0FA3);
-	//
-	Util::SetByteAtAddress(reinterpret_cast<void*>(0x4E0FBB), 0xE9);
-	Util::OverwriteUInt32AtAddress(0x4E0FBC, reinterpret_cast<uint32_t>(&sub_4E0F50Patch) + 0x2C - 0x4E0FC0);
 }

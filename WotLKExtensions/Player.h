@@ -19,5 +19,4 @@ private:
 	};
 	static void CharacterCreationRaceCrashfix();
 	static void LFDClassRoleExtension();
-	static void UnimitedRaceClassPairs();
 };
