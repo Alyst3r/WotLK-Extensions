@@ -20,22 +20,28 @@ target_include_directories(detours PUBLIC ${detours_SOURCE_DIR})
 # Dll
 FILE(GLOB WotLKExtensions ${CMAKE_CURRENT_SOURCE_DIR}/*)
 SET(WOTLK_EXTENSIONS_H
+	Functions.h
+	Main.h
+	Misc.h
+	PatchConfig.h
 	SharedDefines.h
 )
 
 SET(WOTLK_EXTENSIONS_CPP
+	Functions.cpp
 	Main.cpp
+	Misc.cpp
 )
 
 add_library(WotLKExtensions SHARED
-    ${WOTLK_EXTENSIONS_H}
-    ${WOTLK_EXTENSIONS_CPP}
+	${WOTLK_EXTENSIONS_H}
+	${WOTLK_EXTENSIONS_CPP}
 )
 set_property(TARGET WotLKExtensions PROPERTY CXX_STANDARD 17)
 target_link_libraries(WotLKExtensions detours)
 
 target_include_directories(WotLKExtensions PUBLIC
-    ${detours_SOURCE_DIR}/src
+	${detours_SOURCE_DIR}/src
 )
 
 set_property(TARGET WotLKExtensions PROPERTY USE_FOLDERS true)
