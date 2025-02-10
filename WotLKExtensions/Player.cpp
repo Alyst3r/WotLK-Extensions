@@ -9,7 +9,7 @@ void Player::ApplyPatches()
 		Util::SetByteAtAddress(reinterpret_cast<void*>(0x611707), 0xEB);
 
 	if (classLFDRoles)
-		LFDClassRoleEx();
+		LFDClassRoleExtension();
 
 	if (unlimitedRaceClassCombo)
 		UnimitedRaceClassPairs();
