@@ -1,5 +1,4 @@
 #include "Main.h"
-#include "Misc.h"
 
 void Main::OnAttach()
 {
@@ -9,6 +8,7 @@ void Main::OnAttach()
 
 	// Apply patches
 	Misc::ApplyPatches();
+	Player::ApplyPatches();
 }
 
 extern "C"

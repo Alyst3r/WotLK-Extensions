@@ -2,7 +2,6 @@
 
 class Misc
 {
-private:
+public:
 	static void ApplyPatches();
-	friend class Main;
 };

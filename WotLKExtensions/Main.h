@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SharedDefines.h"
+#include "Misc.h"
+#include "Player.h"
 
 class Main
 {
