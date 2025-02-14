@@ -2,13 +2,24 @@
 
 void Main::OnAttach()
 {
-	// From AwesomeWotLK, invalid function pointer hack
-	*reinterpret_cast<uint32_t*>(0xD415B8) = 1;
-	*reinterpret_cast<uint32_t*>(0xD415BC) = 0x7FFFFFFF;
-
+	Init();
+	
 	// Apply patches
 	Misc::ApplyPatches();
 	Player::ApplyPatches();
+}
+
+void Main::Init()
+{
+	if (useCustomDBCs)
+		CustomDBCMgr::Load();
+
+	if (outOfBoundLuaFunctions)
+	{
+		// From AwesomeWotLK, invalid function pointer hack
+		*reinterpret_cast<uint32_t*>(0xD415B8) = 1;
+		*reinterpret_cast<uint32_t*>(0xD415BC) = 0x7FFFFFFF;
+	}
 }
 
 extern "C"

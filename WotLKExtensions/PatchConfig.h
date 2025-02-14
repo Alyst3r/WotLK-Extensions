@@ -8,3 +8,7 @@ static bool characterCreationRaceFix = false;
 static bool comboPointFix = false;
 // Allow more than 12 classes in dungeon finder and shizz
 static bool classLFDRoles = false;
+// Allow registering custom Lua functions from outside of wow.exe
+static bool outOfBoundLuaFunctions = false;
+// Enables custom DBC manager
+static bool useCustomDBCs = false;

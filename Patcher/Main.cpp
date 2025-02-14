@@ -39,7 +39,7 @@ void write_pos_n(streampos pos, uint8_t value, size_t n)
 int main(int argc, char** argv)
 {
 	string wow;
-	bool laa = false;
+	bool unlockCustomGluexml = true;
 
 	if (argc < 2)
 	{
@@ -60,8 +60,23 @@ int main(int argc, char** argv)
 	// applies Large Address Aware flag - so called 4GB patch
 	write_pos<uint8_t>(0x126, 0x23);
 
+	// allows custom Glue xml edits
+	if (unlockCustomGluexml)
+	{
+		write_pos<uint8_t>(0x1F41BF, 0xEB);
+		write_pos<uint8_t>(0x415A25, 0xEB);
+		write_pos<uint8_t>(0x415A3F, 0x03);
+		write_pos<uint8_t>(0x415A95, 0x03);
+		write_pos<uint8_t>(0x415B46, 0xEB);
+		write_pos(0x415B5F, { 0xB8, 0x03, 0x00, 0x00, 0x00, 0xEB, 0xED });
+	}
+
 	// rewrites a couple things in the header that were recalculated
-	write_pos(0x168, { 0x05, 0xE4, 0x76 });
+	if (unlockCustomGluexml)
+		write_pos(0x168, { 0x53, 0x91, 0x75 });
+	else
+		write_pos(0x168, { 0x05, 0xE4, 0x76 });
+
 	write_pos(0x1A9, { 0x00, 0x00, 0x00, 0x00, 0x00 });
 	write_pos(0x210, { 0x00, 0xE0 });
 	write_pos(0x238, { 0x00, 0x70 });
