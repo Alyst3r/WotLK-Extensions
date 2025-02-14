@@ -17,4 +17,7 @@ Various runtime patches, as well as functionality extensions, all configurable f
 + No Ammo - disables ammo requirement for ranged weapons; may require server core edits to fix ammo display (if not edited, without ammo in ammo slot weapons will shot invisible arrows/bullets)  
 + More than 21 races crashfix - self-explanatory, allows to have up to 31 playable races in creation screen without crashes upon selecting them  
 + Combo point fix - allows every class to utilise combo points  
-+ More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31
++ More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31  
+
+**Extensions:**  
++ DBC Manager - mainly loader allowing custom dbc data to be loaded to memory for later use  
