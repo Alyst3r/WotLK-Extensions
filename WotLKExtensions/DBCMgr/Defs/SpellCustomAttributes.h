@@ -14,7 +14,7 @@ public:
     SpellCustomAttributes()
     {
         this->numColumns = 2;
-        this->rowSize = 8;
+        this->rowSize = sizeof(SpellCustomAttributesRow);
     }
 
     SpellCustomAttributes* LoadDB()

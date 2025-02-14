@@ -23,7 +23,6 @@ public:
     CustomDBC* LoadDB(const char* filename);
     void UnloadDB();
     void GetMinMaxIndices();
-    void* GetRow(uint32_t rowNum);
     virtual ~CustomDBC() = default;
 private:
     bool isLoaded;
