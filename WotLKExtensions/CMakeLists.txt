@@ -29,6 +29,7 @@ SET(WOTLK_EXTENSIONS_H
 	Util.h
 	DBCMgr/CustomDBC.h
 	DBCMgr/CustomDBCMgr.h
+	DBCMgr/Defs/SpellCustomAttributes.h
 )
 
 SET(WOTLK_EXTENSIONS_CPP
