@@ -19,11 +19,8 @@ void Util::OverwriteBytesAtAddress(void* address, uint8_t byte, size_t numRepeat
 void Util::OverwriteBytesAtAddress(uint32_t address, uint8_t byteArray[], size_t arraySize)
 {
 	void* vAddress = reinterpret_cast<void*>(address);
-	DWORD flOldProtect;
-	VirtualProtect(vAddress, sizeof(byteArray), PAGE_EXECUTE_READWRITE, &flOldProtect);
-	for (size_t i = 0; i < sizeof(byteArray); i++)
+	for (size_t i = 0; i < arraySize; i++)
 		SetByteAtAddress(reinterpret_cast<void*>(address + i), byteArray[i]);
-	VirtualProtect(vAddress, sizeof(byteArray), flOldProtect, &flOldProtect);
 }
 
 void Util::OverwriteUInt32AtAddress(uint32_t address, uint32_t newVal)
