@@ -27,11 +27,12 @@ public:
 
     void SpellCustomAttributes::setupTable()
     {
-        SpellCustomAttributesRow* row = static_cast<SpellCustomAttributesRow*>(this->rows);
+        uintptr_t* ptr = reinterpret_cast<uintptr_t*>(this->rows);
         for (uint32_t i = 0; i < this->numRows; i++)
         {
+            SpellCustomAttributesRow* row = (SpellCustomAttributesRow*)ptr;
             GlobalDBCMap.addRow("SpellCustomAttributes", row->spellID, *row);
-            ++row;
+            ptr += this->numColumns;
         }
     };
 };
