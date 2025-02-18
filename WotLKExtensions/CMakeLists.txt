@@ -22,13 +22,10 @@ FILE(GLOB WotLKExtensions ${CMAKE_CURRENT_SOURCE_DIR}/*)
 SET(WOTLK_EXTENSIONS_H
 	Main.h
 	Misc.h
-	ClientMacros.h
 	PatchConfig.h
 	Player.h
 	SharedDefines.h
 	Util.h
-	DBCMgr/CustomDBC.h
-	DBCMgr/CustomDBCMgr.h
 )
 
 SET(WOTLK_EXTENSIONS_CPP
@@ -36,8 +33,6 @@ SET(WOTLK_EXTENSIONS_CPP
 	Misc.cpp
 	Player.cpp
 	Util.cpp
-	DBCMgr/CustomDBC.cpp
-	DBCMgr/CustomDBCMgr.cpp
 )
 
 add_library(WotLKExtensions SHARED

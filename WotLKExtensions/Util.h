@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ClientMacros.h"
-
 #include <Windows.h>
 #include <functional>
 
