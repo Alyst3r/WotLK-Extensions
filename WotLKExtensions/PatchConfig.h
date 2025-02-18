@@ -10,5 +10,3 @@ static bool comboPointFix = false;
 static bool classLFDRoles = false;
 // Allow registering custom Lua functions from outside of wow.exe
 static bool outOfBoundLuaFunctions = false;
-// Enables custom DBC manager
-static bool useCustomDBCs = false;

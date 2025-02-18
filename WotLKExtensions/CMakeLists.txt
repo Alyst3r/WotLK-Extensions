@@ -20,6 +20,7 @@ target_include_directories(detours PUBLIC ${detours_SOURCE_DIR})
 # Dll
 FILE(GLOB WotLKExtensions ${CMAKE_CURRENT_SOURCE_DIR}/*)
 SET(WOTLK_EXTENSIONS_H
+	Macros.h
 	Main.h
 	Misc.h
 	PatchConfig.h

@@ -11,9 +11,6 @@ void Main::OnAttach()
 
 void Main::Init()
 {
-	if (useCustomDBCs)
-		CustomDBCMgr::Load();
-
 	if (outOfBoundLuaFunctions)
 	{
 		// From AwesomeWotLK, invalid function pointer hack

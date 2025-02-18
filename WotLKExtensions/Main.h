@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SharedDefines.h"
-#include "DBCMgr/CustomDBCMgr.h"
 #include "Misc.h"
 #include "Player.h"
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Macros.h"
+
 #include <Windows.h>
 #include <functional>
 
