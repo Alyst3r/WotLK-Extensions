@@ -18,28 +18,9 @@ target_compile_options(detours PRIVATE /W4 /WX /Zi /MT /Gy /Gm- /Zl /Od)
 target_include_directories(detours PUBLIC ${detours_SOURCE_DIR})
 
 # Dll
-FILE(GLOB WotLKExtensions ${CMAKE_CURRENT_SOURCE_DIR}/*)
-SET(WOTLK_EXTENSIONS_H
-	Macros.h
-	Main.h
-	Misc.h
-	PatchConfig.h
-	Player.h
-	SharedDefines.h
-	Util.h
-)
+file(GLOB_RECURSE WOTLK_EXTENSIONS_SOURCES CONFIGURE_DEPENDS "*.cpp" "*.h")
 
-SET(WOTLK_EXTENSIONS_CPP
-	Main.cpp
-	Misc.cpp
-	Player.cpp
-	Util.cpp
-)
-
-add_library(WotLKExtensions SHARED
-	${WOTLK_EXTENSIONS_H}
-	${WOTLK_EXTENSIONS_CPP}
-)
+add_library(WotLKExtensions SHARED ${WOTLK_EXTENSIONS_SOURCES})
 set_property(TARGET WotLKExtensions PROPERTY CXX_STANDARD 17)
 target_link_libraries(WotLKExtensions detours)
 
