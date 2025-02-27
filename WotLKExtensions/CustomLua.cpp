@@ -71,7 +71,8 @@ int CustomLua::GetSpellNameById(lua_State* L)
 	}
 
 	FrameScript::PushNil(L);
-	return 1;
+	FrameScript::PushNil(L);
+	return 2;
 }
 
 int CustomLua::FindSpellActionBarSlots(lua_State* L)
