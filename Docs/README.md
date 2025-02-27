@@ -2,7 +2,9 @@
 ### GetShapeshiftFormId  
 originally added in 4.0.1, no args, returns ID of currently active shapeshift form  
 ### GetSpellDescription  
-originally added in 4.0.1, spell ID as an argument, returns description of spell in current client language or nil if spell doesn't exist  
+originally added in 4.0.1, spell ID as argument, returns description of spell in current client language or nil if spell doesn't exist  
+### GetSpellNameById  
+spell ID as argument, returns spell name and spell subtext (usually used as rank) if spell exists, nil otherwise
 ### FindSpellActionBarSlots  
 spell ID as an argument, multi-return, returns all action bar slots spell is found in (so up to 144 return values lol) or nil if spell is not placed on any action bar or unknown  
 ### ReplaceActionBarSpell  

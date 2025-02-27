@@ -22,6 +22,7 @@ private:
 
 	static int GetShapeshiftFormID(lua_State* L);
 	static int GetSpellDescription(lua_State* L);
+	static int GetSpellNameById(lua_State* L);
 
 	friend class Main;
 };

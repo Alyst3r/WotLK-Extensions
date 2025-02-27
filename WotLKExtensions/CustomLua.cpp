@@ -55,6 +55,25 @@ int CustomLua::GetSpellDescription(lua_State* L)
 	return 1;
 }
 
+int CustomLua::GetSpellNameById(lua_State* L)
+{
+	if (FrameScript::IsNumber(L, 1))
+	{
+		uint32_t spellId = (uint32_t)FrameScript::GetNumber(L, 1);
+		SpellRow row;
+
+		if (ClientDB::GetLocalizedRow((void*)0xAD49D0, spellId, &row))
+		{
+			FrameScript::PushString(L, row.m_name_lang);
+			FrameScript::PushString(L, row.m_nameSubtext_lang);
+			return 2;
+		}
+	}
+
+	FrameScript::PushNil(L);
+	return 1;
+}
+
 int CustomLua::FindSpellActionBarSlots(lua_State* L)
 {
 	uint32_t spellID = FrameScript::GetNumber(L, 1);
