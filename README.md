@@ -27,6 +27,7 @@ Various new or backported Lua functions - see `Docs` directory for further detai
 What started as a code written in assembly sparked an idea of writing openly available DBC loader that's already in use by Duskhaven, being ported to main TSWoW repository, and now added to this project. For now, only one new DBC file is added but there are some more ideas floating around. See `Docs` directory for more info.  
   
 ### Credits/Acknowledgements  
+In no particular order:  
 [Tester](https://github.com/TesterWoWDev) - huge help with DBC manager, as well as various other things  
 [Robinsch](https://github.com/robinsch) - patcher code, various client patches  
 [Nix](https://github.com/NixAJ)  
