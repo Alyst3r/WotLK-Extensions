@@ -14,8 +14,10 @@ void Main::Init()
 	if (outOfBoundLuaFunctions)
 	{
 		// From AwesomeWotLK, invalid function pointer hack
-		*reinterpret_cast<uint32_t*>(0xD415B8) = 1;
-		*reinterpret_cast<uint32_t*>(0xD415BC) = 0x7FFFFFFF;
+		*(uint32_t*)0xD415B8 = 1;
+		*(uint32_t*)0xD415BC = 0x7FFFFFFF;
+
+		CustomLua::Apply();
 	}
 }
 

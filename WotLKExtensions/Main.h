@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SharedDefines.h"
+#include "CustomLua.h"
 #include "Misc.h"
 #include "Player.h"
 
