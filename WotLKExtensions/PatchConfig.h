@@ -1,5 +1,10 @@
 #pragma once
 
+// Custom DBC Mgr
+static bool useCustomDBCFiles = false;
+// roles dbc
+static bool useLFGRolesDBC = false;
+
 // Patches
 // Makes ranged weapons require no ammo; requires some core changes to fix visuals
 static bool noAmmoPatch = false;

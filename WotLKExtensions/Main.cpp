@@ -7,18 +7,23 @@ void Main::OnAttach()
 	// Apply patches
 	Misc::ApplyPatches();
 	Player::ApplyPatches();
+
+	// Custom dbc loader
+	if (useCustomDBCFiles)
+		CDBCMgr::PatchAddress();
 }
 
 void Main::Init()
 {
-	if (outOfBoundLuaFunctions)
+	if (outOfBoundLuaFunctions || useCustomDBCFiles)
 	{
 		// From AwesomeWotLK, invalid function pointer hack
 		*(uint32_t*)0xD415B8 = 1;
 		*(uint32_t*)0xD415BC = 0x7FFFFFFF;
-
-		CustomLua::Apply();
 	}
+
+	if (outOfBoundLuaFunctions)
+		CustomLua::Apply();
 }
 
 extern "C"

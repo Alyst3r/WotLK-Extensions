@@ -3,6 +3,7 @@
 #include "CustomLua.h"
 #include "Misc.h"
 #include "Player.h"
+#include "CDBCMgr/CDBCMgr.h"
 
 class Main
 {

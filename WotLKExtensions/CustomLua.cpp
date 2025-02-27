@@ -1,4 +1,5 @@
 #include "CustomLua.h"
+#include "CDBCMgr/CDBCDefs/LFGRoles.h"
 
 void CustomLua::Apply()
 {
@@ -203,6 +204,48 @@ int CustomLua::FlashGameWindow(lua_State* L)
 
 	FrameScript::PushNil(L);
 	return 1;
+}
+
+int CustomLua::GetAvailableRoles(lua_State* L)
+{
+	ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), sub_6B1080());
+	uint32_t classId = 0;
+	LFGRolesRow* cdbcRole = 0;
+
+	if (row)
+		classId = row->m_ID;
+
+	cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+
+	FrameScript::PushBoolean(L, cdbcRole->Roles & 2);
+	FrameScript::PushBoolean(L, cdbcRole->Roles & 4);
+	FrameScript::PushBoolean(L, cdbcRole->Roles & 8);
+	return 3;
+}
+
+int CustomLua::SetLFGRole(lua_State* L)
+{
+	ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)0xAD341C, sub_6B1080());
+	LFGRolesRow* cdbcRole = 0;
+	uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
+	uint32_t classId = 0;
+	uintptr_t ptr = *(uintptr_t*)0xBD0A28;
+
+	if (FrameScript::GetParam(L, 2, 0))
+		roles |= 2;
+	if (FrameScript::GetParam(L, 3, 0))
+		roles |= 4;
+	if (FrameScript::GetParam(L, 4, 0))
+		roles |= 8;
+
+	if (row)
+		classId = row->m_ID;
+
+	cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+
+	CVar::sub_766940((void*)ptr, roles & cdbcRole->Roles, 1, 0, 0, 1);
+	FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
+	return 0;
 }
 
 void CustomLua::AddToFunctionMap(char* name, void* ptr)

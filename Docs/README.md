@@ -15,3 +15,8 @@ args: spellID, slotNumber; adds spell (if known) to action bar slot
 no args; reloads currently loaded map for active player and returns string if active player is valid, otherwise returns nil  
 ### FlashGameWindow  
 no args; flashes taskbar icon if game window is inactive until being brought to foreground  
+  
+## Custom DBCs  
+`.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones
+### LFGRoles.cdbc  
+Dehardcodes class roles from Wow.exe, moving the whole table to DBC file. Single record contains 2 columns, ClassID and RoleMask.  

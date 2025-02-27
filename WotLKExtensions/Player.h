@@ -19,4 +19,7 @@ private:
 	};
 	static void CharacterCreationRaceCrashfix();
 	static void LFDClassRoleExtension();
+
+	static uint32_t CheckLFGRoles(uint32_t roles);
+	static uint32_t GetClassRoles(uint32_t classId);
 };
