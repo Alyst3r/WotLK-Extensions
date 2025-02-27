@@ -11,3 +11,5 @@ args: oldSpellID, newSpellID; replaces spell on action bar with another spell if
 args: spellID, slotNumber; adds spell (if known) to action bar slot  
 ### ReloadMap  
 no args; reloads currently loaded map for active player and returns string if active player is valid, otherwise returns nil  
+## FlashGameWindow  
+no args; flashes taskbar icon if game window is inactive until being brought to foreground  

@@ -18,6 +18,8 @@ private:
 
 	static int ReloadMap(lua_State* L);
 
+	static int FlashGameWindow(lua_State* L);
+
 	static int GetShapeshiftFormID(lua_State* L);
 	static int GetSpellDescription(lua_State* L);
 

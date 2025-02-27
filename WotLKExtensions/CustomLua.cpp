@@ -165,6 +165,26 @@ int CustomLua::ReloadMap(lua_State* L)
 	return 1;
 }
 
+int CustomLua::FlashGameWindow(lua_State* L)
+{
+	HWND activeWindow = *(HWND*)0x00D41620;
+
+	if (activeWindow && GetForegroundWindow() != activeWindow) {
+		FLASHWINFO flashInfo;
+
+		flashInfo.cbSize = sizeof(flashInfo);
+		flashInfo.hwnd = activeWindow;
+		flashInfo.dwFlags = FLASHW_TIMERNOFG | FLASHW_TRAY;
+		flashInfo.uCount = -1;
+		flashInfo.dwTimeout = 500;
+
+		FlashWindowEx(&flashInfo);
+	}
+
+	FrameScript::PushNil(L);
+	return 1;
+}
+
 void CustomLua::AddToFunctionMap(char* name, void* ptr)
 {
 	luaFuncts.insert(std::make_pair(name, ptr));
@@ -178,4 +198,5 @@ void CustomLua::RegisterFunctions()
 	AddToFunctionMap("ReplaceActionBarSpell", &ReplaceActionBarSpell);
 	AddToFunctionMap("SetSpellInActionBarSlot", &SetSpellInActionBarSlot);
 	AddToFunctionMap("ReloadMap", &ReloadMap);
+	AddToFunctionMap("FlashGameWindow", &FlashGameWindow);
 }
