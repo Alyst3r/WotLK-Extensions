@@ -18,7 +18,7 @@ Will be periodically updated, obviously (but no promises how ofted, depends on v
 + No Ammo - disables ammo requirement for ranged weapons; may require server core edits to fix ammo display (if not edited, without ammo in ammo slot weapons will shot invisible arrows/bullets); requires core edit to patch out server side `Out of Ammo` error message  
 + More than 21 races crashfix - self-explanatory, allows to have up to 31 playable races in creation screen without crashes upon selecting them  
 + Combo point fix - allows every class to utilise combo points  
-+ More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31  
++ More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31; overriden by `LFGRoles` DBC if option is enabled  
   
 **Custom Lua Functions**
 Various new or backported Lua functions - see `Docs` directory for further details.  
