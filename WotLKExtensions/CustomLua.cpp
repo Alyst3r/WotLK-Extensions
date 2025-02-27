@@ -212,11 +212,20 @@ void CustomLua::AddToFunctionMap(char* name, void* ptr)
 
 void CustomLua::RegisterFunctions()
 {
+	AddToFunctionMap("FlashGameWindow", &FlashGameWindow);
 	AddToFunctionMap("GetShapeshiftFormID", &GetShapeshiftFormID);
 	AddToFunctionMap("GetSpellDescription", &GetSpellDescription);
-	AddToFunctionMap("FindSpellActionBarSlots", &FindSpellActionBarSlots);
-	AddToFunctionMap("ReplaceActionBarSpell", &ReplaceActionBarSpell);
-	AddToFunctionMap("SetSpellInActionBarSlot", &SetSpellInActionBarSlot);
-	AddToFunctionMap("ReloadMap", &ReloadMap);
-	AddToFunctionMap("FlashGameWindow", &FlashGameWindow);
+	AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
+
+	if (customActionBarFunctions)
+	{
+		AddToFunctionMap("FindSpellActionBarSlots", &FindSpellActionBarSlots);
+		AddToFunctionMap("ReplaceActionBarSpell", &ReplaceActionBarSpell);
+		AddToFunctionMap("SetSpellInActionBarSlot", &SetSpellInActionBarSlot);
+	}
+	
+	if (devHelperFunctions)
+	{
+		AddToFunctionMap("ReloadMap", &ReloadMap);
+	}
 }
