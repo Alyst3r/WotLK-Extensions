@@ -12,7 +12,7 @@ Exe header data recalculated using [CFF Explorer VIII](https://ntcore.com/explor
   
 ### WotLKExtensions.dll  
 Various runtime patches, as well as functionality extensions, all configurable from *PatchConfig.h* file. **By default all of the patches are turned off!**  
-Will be periodically updated, obviously (but no promises how ofted, depends on various factors).  
+Will be periodically updated, obviously (but no promises how ofted, depends on various factors). A lot can probably added. Even more could probably be improved.  
   
 **Patches:**  
 + No Ammo - disables ammo requirement for ranged weapons; may require server core edits to fix ammo display (if not edited, without ammo in ammo slot weapons will shot invisible arrows/bullets); requires core edit to patch out server side `Out of Ammo` error message  
