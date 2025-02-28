@@ -36,4 +36,5 @@ In no particular order:
 [DrFrugal (aka 4bhorrent)](https://drfrugal.xyz/)  
 [Titi](https://gitlab.com/T1ti) - some ideas what to add (for example, dehardcoding lfg roles from Wow.exe)  
 [M'Dic](https://github.com/acidmanifesto) - c'mon, who wouldn't  
+*A certain furry* whose empty promises with zero real results ultimately pushed me towards reverse engineering; you may or may not know who you are if you ever read this :P  
 [I'm probably forgetting a bunch of people, I will add you when I remember](https://github.com/Alyst3r/WotLK-Extensions)  

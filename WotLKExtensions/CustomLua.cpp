@@ -82,15 +82,12 @@ int CustomLua::FindSpellActionBarSlots(lua_State* L)
 	uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
 	uint8_t count = 0;
 
-	if (Spell_C::IsSpellKnown(spellID))
+	for (uint8_t i = 0; i < 144; i++)
 	{
-		for (uint8_t i = 0; i < 144; i++)
+		if (actionBarSpellIDs[i] == spellID)
 		{
-			if (actionBarSpellIDs[i] == spellID)
-			{
-				FrameScript::PushNumber(L, i);
-				count++;
-			}
+			FrameScript::PushNumber(L, i);
+			count++;
 		}
 	}
 
@@ -110,23 +107,20 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
 	uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
 	uintptr_t* actionButtons = (uintptr_t*)0xC1DED8;
 
-	if (Spell_C::IsSpellKnown(oldSpellID) && Spell_C::IsSpellKnown(newSpellID))
+	for (uint8_t i = 0; i < 144; i++)
 	{
-		for (uint8_t i = 0; i < 144; i++)
+		if (actionBarSpellIDs[i] == oldSpellID)
 		{
-			if (actionBarSpellIDs[i] == oldSpellID)
-			{
-				actionBarSpellIDs[i] = newSpellID;
-				ClientPacket::MSG_SET_ACTION_BUTTON(i, 1, 0);
+			actionBarSpellIDs[i] = newSpellID;
+			ClientPacket::MSG_SET_ACTION_BUTTON(i, 1, 0);
 
-				for (uint8_t j = i + 72; j < 144; j += 12)
+			for (uint8_t j = i + 72; j < 144; j += 12)
+			{
+				if (!actionButtons[j])
 				{
-					if (!actionButtons[j])
-					{
-						actionBarSpellIDs[i] = newSpellID;
-						actionButtons[j] = 1;
-						ClientPacket::MSG_SET_ACTION_BUTTON(j, 1, 0);
-					}
+					actionBarSpellIDs[i] = newSpellID;
+					actionButtons[j] = 1;
+					ClientPacket::MSG_SET_ACTION_BUTTON(j, 1, 0);
 				}
 			}
 		}
@@ -143,7 +137,7 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
 	uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
 	uintptr_t* actionButtons = (uintptr_t*)0xC1DED8;
 
-	if (slotID < 144 && Spell_C::IsSpellKnown(spellID))
+	if (slotID < 144)
 	{
 		if (!actionButtons[slotID])
 			actionButtons[slotID] = 1;

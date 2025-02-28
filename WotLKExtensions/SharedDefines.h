@@ -128,11 +128,6 @@ namespace SMem
 	CLIENT_FUNCTION(Free, 0x76E5A0, __stdcall, bool, (void*, const char*, uint32_t, uint32_t))
 }
 
-namespace Spell_C
-{
-	CLIENT_FUNCTION(IsSpellKnown, 0x5D3560, __cdecl, int, (uint32_t))
-}
-
 namespace SpellParser
 {
 	CLIENT_FUNCTION(ParseText, 0x57ABC0, __cdecl, void, (void*, void*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t))
