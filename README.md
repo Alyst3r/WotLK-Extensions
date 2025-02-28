@@ -1,7 +1,7 @@
 # WotLK-Extensions  
 Client extension project, independent from TSWoW.  
   
-Cmake files based on TSWoW's [ClientExtensions](https://github.com/tswow/tswow/tree/master/misc/client-extensions)  
+Cmake files based on TSWoW's [ClientExtensions](https://github.com/tswow/tswow/tree/master/misc/client-extensions).  
   
 ### Patcher.exe  
 In essence, it's [WoWFix335](https://github.com/robinsch/WoWFix335) by Robinsch, so most credits to him.  
@@ -13,6 +13,7 @@ Exe header data recalculated using [CFF Explorer VIII](https://ntcore.com/explor
 ### WotLKExtensions.dll  
 Various runtime patches, as well as functionality extensions, all configurable from *PatchConfig.h* file. **By default all of the patches are turned off!**  
 Will be periodically updated, obviously (but no promises how ofted, depends on various factors). A lot can probably added. Even more could probably be improved.  
+**Disclaimer:** Good point brought by Robinsh on Discord: `Use it with caution because some servers definitely scan the ebp for LUA calls and this will trigger it and might ban your account if using it.` This project was created as something to use (and distribute) with your own private server project rather than to use with existing ones (unless distributed by them), so keep that in mind. If you get yourself banned, you've been warned :P.  
   
 **Patches:**  
 + No Ammo - disables ammo requirement for ranged weapons; may require server core edits to fix ammo display (if not edited, without ammo in ammo slot weapons will shot invisible arrows/bullets); requires core edit to patch out server side `Out of Ammo` error message  
