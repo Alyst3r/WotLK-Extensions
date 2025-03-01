@@ -20,6 +20,8 @@ private:
 	static int SetSpellInActionBarSlot(lua_State* L);
 
 	static int ReloadMap(lua_State* L);
+	static int ToggleDisplayNormals(lua_State* L);
+	static int ToggleWireframeMode(lua_State* L);
 
 	static int FlashGameWindow(lua_State* L);
 

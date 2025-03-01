@@ -35,7 +35,7 @@ In no particular order:
 [Nix](https://github.com/NixAJ)  
 [Deamon](https://github.com/Deamon87)  
 [Natrist](https://github.com/natrist) - (see, it is possible to release smth :P)  
-[DrFrugal (aka 4bhorrent)](https://drfrugal.xyz/)  
+[DrFrugal (aka 4bhorrent)](https://drfrugal.xyz/) - what I can mention here, [video](https://www.youtube.com/watch?v=9qsCw3Y0-g4) explaining render flags, saved me some research time  
 [Titi](https://gitlab.com/T1ti) - some ideas what to add (for example, dehardcoding lfg roles from Wow.exe)  
 [M'Dic](https://github.com/acidmanifesto) - c'mon, who wouldn't  
 *A certain furry* whose empty promises with zero real results ultimately pushed me towards reverse engineering; you may or may not know who you are if you ever read this :P  

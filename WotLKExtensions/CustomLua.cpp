@@ -150,20 +150,44 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
 	return 1;
 }
 
+int CustomLua::ToggleDisplayNormals(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774F;
+	bool areNormalsDisplayed = renderFlags & 0x40;
+
+	if (areNormalsDisplayed)
+	{
+		*(uint8_t*)0xCD774F = renderFlags - 0x40;
+		SStr::Printf(buffer, 512, "Normal display turned off.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774F = renderFlags + 0x40;
+		SStr::Printf(buffer, 512, "Normal display turned on.");
+	}
+
+	FrameScript::PushString(L, buffer);
+	return 1;
+}
+
 int CustomLua::ReloadMap(lua_State* L)
 {
 	uint64_t activePlayer = ClntObjMgr::GetActivePlayer();
 
-	if (activePlayer) {
+	if (activePlayer)
+	{
 		MapRow* row = 0;
 		int32_t mapId = *(uint32_t*)0xBD088C;
 		CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, 0x08);
 		CMovement* moveInfo = activeObjectPtr->movementInfo;
 
-		if (mapId > -1) {
+		if (mapId > -1)
+		{
 			row = (MapRow*)ClientDB::GetRow((void*)0xAD4178, mapId);
 
-			if (row) {
+			if (row)
+			{
 				char buffer[512];
 
 				World::UnloadMap();
@@ -177,6 +201,27 @@ int CustomLua::ReloadMap(lua_State* L)
 	}
 
 	FrameScript::PushNil(L);
+	return 1;
+}
+
+int CustomLua::ToggleWireframeMode(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774F;
+	bool isWireframeModeOn = renderFlags & 0x20;
+
+	if (isWireframeModeOn)
+	{
+		*(uint8_t*)0xCD774F = renderFlags - 0x20;
+		SStr::Printf(buffer, 512, "Wireframe mode off.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774F = renderFlags + 0x20;
+		SStr::Printf(buffer, 512, "Wireframe mode on.");
+	}
+
+	FrameScript::PushString(L, buffer);
 	return 1;
 }
 
@@ -264,5 +309,7 @@ void CustomLua::RegisterFunctions()
 	if (devHelperFunctions)
 	{
 		AddToFunctionMap("ReloadMap", &ReloadMap);
+		AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
+		AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
 	}
 }
