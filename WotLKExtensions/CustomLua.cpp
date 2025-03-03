@@ -203,9 +203,9 @@ int CustomLua::ToggleGroundEffects(lua_State* L)
 {
 	char buffer[512];
 	uint8_t renderFlags = *(uint8_t*)0xCD774E;
-	bool areWMOsDisplayed = renderFlags & 0x10;
+	bool areGroundEffectsDisplayed = renderFlags & 0x10;
 
-	if (areWMOsDisplayed)
+	if (areGroundEffectsDisplayed)
 	{
 		*(uint8_t*)0xCD774E = renderFlags - 0x10;
 		SStr::Printf(buffer, 512, "Ground clutter hidden.");
@@ -224,9 +224,9 @@ int CustomLua::ToggleLiquids(lua_State* L)
 {
 	char buffer[512];
 	uint8_t renderFlags = *(uint8_t*)0xCD774F;
-	bool isWireframeModeOn = renderFlags & 0x3;
+	bool areLiquidsShowing = renderFlags & 0x3;
 
-	if (isWireframeModeOn)
+	if (areLiquidsShowing)
 	{
 		*(uint8_t*)0xCD774F = renderFlags - 0x3;
 		SStr::Printf(buffer, 512, "Liquids hidden.");
@@ -245,9 +245,9 @@ int CustomLua::ToggleM2(lua_State* L)
 {
 	char buffer[512];
 	uint8_t renderFlags = *(uint8_t*)0xCD774C;
-	bool areWMOsDisplayed = renderFlags & 0x1;
+	bool areM2Displayed = renderFlags & 0x1;
 
-	if (areWMOsDisplayed)
+	if (areM2Displayed)
 	{
 		*(uint8_t*)0xCD774C = renderFlags - 0x1;
 		SStr::Printf(buffer, 512, "Client-side M2s hidden.");
@@ -266,9 +266,9 @@ int CustomLua::ToggleTerrain(lua_State* L)
 {
 	char buffer[512];
 	uint8_t renderFlags = *(uint8_t*)0xCD774C;
-	bool areWMOsDisplayed = renderFlags & 0x2;
+	bool isTerrainShown = renderFlags & 0x2;
 
-	if (areWMOsDisplayed)
+	if (isTerrainShown)
 	{
 		*(uint8_t*)0xCD774C = renderFlags - 0x2;
 		SStr::Printf(buffer, 512, "Terrain hidden.");
@@ -287,9 +287,9 @@ int CustomLua::ToggleTerrainCulling(lua_State* L)
 {
 	char buffer[512];
 	uint8_t renderFlags = *(uint8_t*)0xCD774C;
-	bool areWMOsDisplayed = renderFlags & 0x32;
+	bool isTerrainCullingOn = renderFlags & 0x32;
 
-	if (areWMOsDisplayed)
+	if (isTerrainCullingOn)
 	{
 		*(uint8_t*)0xCD774C = renderFlags - 0x32;
 		SStr::Printf(buffer, 512, "Terrain culling disabled.");
