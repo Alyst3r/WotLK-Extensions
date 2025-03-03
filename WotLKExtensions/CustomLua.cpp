@@ -126,8 +126,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
 		}
 	}
 
-	FrameScript::PushNil(L);
-	return 1;
+	return 0;
 }
 
 int CustomLua::SetSpellInActionBarSlot(lua_State* L)
@@ -146,29 +145,7 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
 		ClientPacket::MSG_SET_ACTION_BUTTON(slotID, 1, 0);
 	}
 
-	FrameScript::PushNil(L);
-	return 1;
-}
-
-int CustomLua::ToggleDisplayNormals(lua_State* L)
-{
-	char buffer[512];
-	uint8_t renderFlags = *(uint8_t*)0xCD774F;
-	bool areNormalsDisplayed = renderFlags & 0x40;
-
-	if (areNormalsDisplayed)
-	{
-		*(uint8_t*)0xCD774F = renderFlags - 0x40;
-		SStr::Printf(buffer, 512, "Normal display turned off.");
-	}
-	else
-	{
-		*(uint8_t*)0xCD774F = renderFlags + 0x40;
-		SStr::Printf(buffer, 512, "Normal display turned on.");
-	}
-
-	FrameScript::PushString(L, buffer);
-	return 1;
+	return 0;
 }
 
 int CustomLua::ReloadMap(lua_State* L)
@@ -192,16 +169,139 @@ int CustomLua::ReloadMap(lua_State* L)
 
 				World::UnloadMap();
 				World::LoadMap(row->m_Directory, &moveInfo->position, mapId);
-
 				SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_Directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
-				FrameScript::PushString(L, buffer);
-				return 1;
+				CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			}
 		}
 	}
 
-	FrameScript::PushNil(L);
-	return 1;
+	return 0;
+}
+
+int CustomLua::ToggleDisplayNormals(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774F;
+	bool areNormalsDisplayed = renderFlags & 0x40;
+
+	if (areNormalsDisplayed)
+	{
+		*(uint8_t*)0xCD774F = renderFlags - 0x40;
+		SStr::Printf(buffer, 512, "Normal display turned off.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774F = renderFlags + 0x40;
+		SStr::Printf(buffer, 512, "Normal display turned on.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleGroundEffects(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774E;
+	bool areWMOsDisplayed = renderFlags & 0x10;
+
+	if (areWMOsDisplayed)
+	{
+		*(uint8_t*)0xCD774E = renderFlags - 0x10;
+		SStr::Printf(buffer, 512, "Ground clutter hidden.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774E = renderFlags + 0x10;
+		SStr::Printf(buffer, 512, "Ground clutter shown.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleLiquids(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774F;
+	bool isWireframeModeOn = renderFlags & 0x3;
+
+	if (isWireframeModeOn)
+	{
+		*(uint8_t*)0xCD774F = renderFlags - 0x3;
+		SStr::Printf(buffer, 512, "Liquids hidden.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774F = renderFlags + 0x3;
+		SStr::Printf(buffer, 512, "Liquids shown.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleM2(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774C;
+	bool areWMOsDisplayed = renderFlags & 0x1;
+
+	if (areWMOsDisplayed)
+	{
+		*(uint8_t*)0xCD774C = renderFlags - 0x1;
+		SStr::Printf(buffer, 512, "Client-side M2s hidden.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774C = renderFlags + 0x1;
+		SStr::Printf(buffer, 512, "Client-side M2s shown.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleTerrain(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774C;
+	bool areWMOsDisplayed = renderFlags & 0x2;
+
+	if (areWMOsDisplayed)
+	{
+		*(uint8_t*)0xCD774C = renderFlags - 0x2;
+		SStr::Printf(buffer, 512, "Terrain hidden.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774C = renderFlags + 0x2;
+		SStr::Printf(buffer, 512, "Terrain shown.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleTerrainCulling(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774C;
+	bool areWMOsDisplayed = renderFlags & 0x32;
+
+	if (areWMOsDisplayed)
+	{
+		*(uint8_t*)0xCD774C = renderFlags - 0x32;
+		SStr::Printf(buffer, 512, "Terrain culling disabled.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774C = renderFlags + 0x32;
+		SStr::Printf(buffer, 512, "Terrain culling enabled.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
 }
 
 int CustomLua::ToggleWireframeMode(lua_State* L)
@@ -221,8 +321,29 @@ int CustomLua::ToggleWireframeMode(lua_State* L)
 		SStr::Printf(buffer, 512, "Wireframe mode on.");
 	}
 
-	FrameScript::PushString(L, buffer);
-	return 1;
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
+}
+
+int CustomLua::ToggleWMO(lua_State* L)
+{
+	char buffer[512];
+	uint8_t renderFlags = *(uint8_t*)0xCD774D;
+	bool areWMOsDisplayed = renderFlags & 0x1;
+
+	if (areWMOsDisplayed)
+	{
+		*(uint8_t*)0xCD774D = renderFlags - 0x1;
+		SStr::Printf(buffer, 512, "WMOs hidden.");
+	}
+	else
+	{
+		*(uint8_t*)0xCD774D = renderFlags + 0x1;
+		SStr::Printf(buffer, 512, "WMOs shown.");
+	}
+
+	CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return 0;
 }
 
 int CustomLua::FlashGameWindow(lua_State* L)
@@ -241,8 +362,7 @@ int CustomLua::FlashGameWindow(lua_State* L)
 		FlashWindowEx(&flashInfo);
 	}
 
-	FrameScript::PushNil(L);
-	return 1;
+	return 0;
 }
 
 int CustomLua::GetAvailableRoles(lua_State* L)
@@ -310,6 +430,12 @@ void CustomLua::RegisterFunctions()
 	{
 		AddToFunctionMap("ReloadMap", &ReloadMap);
 		AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
+		AddToFunctionMap("ToggleGroundEffects", &ToggleGroundEffects);
+		AddToFunctionMap("ToggleM2", &ToggleM2);
+		AddToFunctionMap("ToggleLiquids", &ToggleLiquids);
+		AddToFunctionMap("ToggleTerrain", &ToggleTerrain);
+		AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
 		AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
+		AddToFunctionMap("ToggleWMO", &ToggleWMO);
 	}
 }

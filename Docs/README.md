@@ -12,13 +12,25 @@ args: oldSpellID, newSpellID; replaces spell on action bar with another spell if
 ### SetSpellInActionBarSlot  
 args: spellID, slotNumber; adds spell (if known) to action bar slot  
 ### ReloadMap  
-no args; reloads currently loaded map for active player and returns string if active player is valid, otherwise returns nil  
+no args, nil return; reloads currently loaded map for active player  
 ### FlashGameWindow  
-no args; flashes taskbar icon if game window is inactive until being brought to foreground  
+no args, nil return; flashes taskbar icon if game window is inactive until being brought to foreground  
 ### ToggleDisplayNormals  
-no args; turns on/off ground normals  
+no args, nil return; turns on/off ground normals  
+### ToggleGroundEffects  
+no args, nil return; turns on/off ground effects like grass or small rocks  
+### ToggleLiquids  
+no args, nil return; turns on/off liquid surfaces and particles  
+### ToggleM2  
+no args, nil return; turns on/off client-side m2 objects  
+### ToggleTerrain  
+no args, nil return; turns on/off terrain  
+### ToggleTerrainCulling  
+no args, nil return; turns on/off terrain culling  
 ### ToggleWireframeMode  
-no args; turns on/off wireframe mode  
+no args, nil return; turns on/off wireframe mode  
+### ToggleWMO  
+no args, nil return; turns on/off WMO  
   
 ## Custom DBCs  
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  

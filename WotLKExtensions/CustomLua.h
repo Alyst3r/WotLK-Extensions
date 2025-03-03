@@ -21,7 +21,13 @@ private:
 
 	static int ReloadMap(lua_State* L);
 	static int ToggleDisplayNormals(lua_State* L);
+	static int ToggleGroundEffects(lua_State* L);
+	static int ToggleLiquids(lua_State* L);
+	static int ToggleM2(lua_State* L);
+	static int ToggleTerrain(lua_State* L);
+	static int ToggleTerrainCulling(lua_State* L);
 	static int ToggleWireframeMode(lua_State* L);
+	static int ToggleWMO(lua_State* L);
 
 	static int FlashGameWindow(lua_State* L);
 
