@@ -36,3 +36,9 @@ no args, nil return; turns on/off WMO
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  
 ### LFGRoles.cdbc  
 Dehardcodes class roles from Wow.exe, moving the whole table to DBC file. Record contains 2 columns, ClassID and RoleMask.  
+  
+## Custom Packets  
+Various new data sent to and received from server.  
+### SMSG_UPDATE_CUSTOM_COMBAT_RATING  
+Allows utilizing unused combat rating IDs 25-31 from DBCs. Data can be retrived using `GetCustomCombatRating(combatRating)` for raw value, and `GetCustomCombatRatingBonus(combatRating)` for percent value (going by Blizzard design, `combatRating` are actually 26-32). Adding new ratings probably requires dbc edits as well. Also, it may be a good idea to use Item mod expansion patch to allow usage of those new ratings in items (and enchants).  
+[Example: server-side imlementation in TrinityCore.](https://github.com/Aleist3r-s-Org/tc-fork/compare/3.3.5...Aleist3r-s-Org:tc-fork:custom-packets-combat-ratings)  

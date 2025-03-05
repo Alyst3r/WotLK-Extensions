@@ -15,14 +15,17 @@ void Main::OnAttach()
 
 void Main::Init()
 {
-	if (outOfBoundLuaFunctions || useCustomDBCFiles)
+	if (customPackets)
+		CustomPacket::Apply();
+
+	if (outOfBoundLuaFunctions || useCustomDBCFiles || customPackets)
 	{
 		// From AwesomeWotLK, invalid function pointer hack
 		*(uint32_t*)0xD415B8 = 1;
 		*(uint32_t*)0xD415BC = 0x7FFFFFFF;
 	}
 
-	if (outOfBoundLuaFunctions)
+	if (outOfBoundLuaFunctions || customPackets)
 		CustomLua::Apply();
 }
 

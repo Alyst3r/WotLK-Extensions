@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CustomLua.h"
+#include "CustomPacket.h"
 #include "Misc.h"
 #include "Player.h"
 #include "CDBCMgr/CDBCMgr.h"

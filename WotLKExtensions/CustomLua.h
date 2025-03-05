@@ -35,5 +35,8 @@ private:
 	static int GetSpellDescription(lua_State* L);
 	static int GetSpellNameById(lua_State* L);
 
+	static int GetCustomCombatRating(lua_State* L);
+	static int GetCustomCombatRatingBonus(lua_State* L);
+
 	friend class Main;
 };

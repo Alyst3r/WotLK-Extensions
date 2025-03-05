@@ -16,6 +16,12 @@ static bool comboPointFix = false;
 static bool classLFDRoles = false;
 // Allow registering custom Lua functions from outside of wow.exe
 static bool outOfBoundLuaFunctions = false;
+// Use custom packets
+static bool customPackets = false;
+// expands ITEM_MOD table, allowing to add and display more custom tooltip mods
+// see Misc.h if you set it to true
+// unlocks certain custom lua functions
+static bool extendedItemMods = false;
 
 // Lua functions
 // Action bar slot functions

@@ -1,4 +1,5 @@
 #include "CustomLua.h"
+#include "Player.h"
 #include "CDBCMgr/CDBCDefs/LFGRoles.h"
 
 void CustomLua::Apply()
@@ -365,6 +366,58 @@ int CustomLua::FlashGameWindow(lua_State* L)
 	return 0;
 }
 
+int CustomLua::GetCustomCombatRating(lua_State* L)
+{
+	uint8_t cr = 0;
+	float value = 0;
+
+	if (!FrameScript::IsNumber(L, 1))
+		FrameScript::DisplayError(L, "Usage: GetCustomCombatRating(ratingIndex)");
+
+	cr = FrameScript::GetNumber(L, 1) - 1;
+
+	if (cr < 25 || cr >= 32)
+		FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
+
+	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+
+	if (activeObjectPtr)
+		value = CustomFields::GetCustomCombatRating(cr - 25);
+
+	FrameScript::PushNumber(L, value);
+	return 1;
+}
+
+int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
+{
+	uint32_t cr = 0;
+	float value = 0.f;
+	float gtCombatRating = 0.f;
+	float gtOctClasCombatRatingScalar = 0.f;
+
+	if (!FrameScript::IsNumber(L, 1))
+		FrameScript::DisplayError(L, "Usage: GetCustomCombatRating(ratingIndex)");
+
+	cr = FrameScript::GetNumber(L, 1) - 1;
+
+	if (cr < 25 || cr >= 32)
+		FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
+
+	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+
+	if (activeObjectPtr)
+	{
+		gtCombatRating = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->level, cr);
+		gtOctClasCombatRatingScalar = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0[1], cr);
+
+		if (gtCombatRating && gtOctClasCombatRatingScalar)
+			value = gtOctClasCombatRatingScalar * CustomFields::GetCustomCombatRating(cr - 25) / gtCombatRating;
+	}
+
+	FrameScript::PushNumber(L, value);
+	return 1;
+}
+
 int CustomLua::GetAvailableRoles(lua_State* L)
 {
 	ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), sub_6B1080());
@@ -414,10 +467,13 @@ void CustomLua::AddToFunctionMap(char* name, void* ptr)
 
 void CustomLua::RegisterFunctions()
 {
-	AddToFunctionMap("FlashGameWindow", &FlashGameWindow);
-	AddToFunctionMap("GetShapeshiftFormID", &GetShapeshiftFormID);
-	AddToFunctionMap("GetSpellDescription", &GetSpellDescription);
-	AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
+	if (outOfBoundLuaFunctions)
+	{
+		AddToFunctionMap("FlashGameWindow", &FlashGameWindow);
+		AddToFunctionMap("GetShapeshiftFormID", &GetShapeshiftFormID);
+		AddToFunctionMap("GetSpellDescription", &GetSpellDescription);
+		AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
+	}
 
 	if (customActionBarFunctions)
 	{
@@ -437,5 +493,11 @@ void CustomLua::RegisterFunctions()
 		AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
 		AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
 		AddToFunctionMap("ToggleWMO", &ToggleWMO);
+	}
+
+	if (customPackets)
+	{
+		AddToFunctionMap("GetCustomCombatRating", &GetCustomCombatRating);
+		AddToFunctionMap("GetCustomCombatRatingBonus", &GetCustomCombatRatingBonus);
 	}
 }

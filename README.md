@@ -21,12 +21,16 @@ Will be periodically updated, obviously (but no promises how ofted, depends on v
 + More than 21 races crashfix - self-explanatory, allows to have up to 31 playable races in creation screen without crashes upon selecting them  
 + Combo point fix - allows every class to utilise combo points  
 + More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31; overriden by `LFGRoles` DBC if option is enabled  
++ Item mod expansion - normally newly added item mods are not properly displayed by the client, unless you repurpose existing ones; this patch allows adding custom string to the table that wil be read from GlobalStrings.lua (where it also needs to be implemented)  
   
-**Custom Lua Functions**
+**Custom Lua Functions**  
 Various new or backported Lua functions - see `Docs` directory for further details.  
   
 **Custom DBC Manager**  
 What started as a code written in assembly sparked an idea of writing openly available DBC loader that's already in use by Duskhaven, being ported to main TSWoW repository, and now added to this project. For now, only one new DBC file is added but there are some more ideas floating around. See `Docs` directory for more info.  
+
+**Custom Packets**  
+Dll can handle new data received from and sent to server. See `Docs` for more info.  
   
 ### Credits/Acknowledgements  
 In no particular order:  
@@ -39,4 +43,5 @@ In no particular order:
 [Titi](https://gitlab.com/T1ti) - some ideas what to add (for example, dehardcoding lfg roles from Wow.exe)  
 [M'Dic](https://github.com/acidmanifesto) - c'mon, who wouldn't  
 *A certain furry* whose empty promises with zero real results ultimately pushed me towards reverse engineering; you may or may not know who you are if you ever read this :P  
+Guys in WoW Modding Community Discord, reverse engineering channel: Natrist (again ;]), balake, Ike for help while I was trying to figure out custom packets  
 [I'm probably forgetting a bunch of people, I will add you when I remember](https://github.com/Alyst3r/WotLK-Extensions)  

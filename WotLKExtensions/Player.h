@@ -2,6 +2,14 @@
 
 #include "SharedDefines.h"
 
+namespace CustomFields
+{
+	inline int32_t combatRating[7] = { 0 };
+
+	inline int32_t GetCustomCombatRating(int8_t index) { return combatRating[index]; }
+	inline void SetCustomCombatRating(int8_t index, int32_t newValue) { combatRating[index] = newValue; }
+}
+
 class Player
 {
 public:
