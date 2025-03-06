@@ -79,7 +79,7 @@ void Misc::ApplyPatches()
 	Util::OverwriteBytesAtAddress((void*)0x76C4A8, 0x90, 0x05);
 }
 
-void Misc::PackTimeDataToDword(uint32_t* packedTime, uint32_t minute, uint32_t hour, uint32_t weekDay, uint32_t monthDay, uint32_t month, uint32_t year, uint32_t flags)
+void Misc::PackTimeDataToDword(uint32_t* packedTime, int32_t minute, int32_t hour, int32_t weekDay, int32_t monthDay, int32_t month, int32_t year, int32_t flags)
 {
 	uint32_t temp = 0;
 	temp += minute & 63;
@@ -107,7 +107,7 @@ void Misc::PackWoWTimeToDword(uint32_t* dword, WoWTime* time)
 	*dword = temp;
 }
 
-void Misc::UnpackWoWTime(uint32_t packedTime, uint32_t* minute, uint32_t* hour, uint32_t* weekDay, uint32_t* monthDay, uint32_t* month, uint32_t* year, uint32_t* flags)
+void Misc::UnpackWoWTime(uint32_t packedTime, int32_t* minute, int32_t* hour, int32_t* weekDay, int32_t* monthDay, int32_t* month, int32_t* year, int32_t* flags)
 {
 	if (minute)
 	{
