@@ -26,5 +26,5 @@ static bool extendedItemMods = false;
 // Lua functions
 // Action bar slot functions
 static bool customActionBarFunctions = false;
-// Various dev functions (for now ReloadMap only)
+// Various dev functions
 static bool devHelperFunctions = false;
