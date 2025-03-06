@@ -104,6 +104,18 @@ struct SpellRow
 	uint32_t padding0x230[30];
 };
 
+// Aleist3r: afaik it's not a full structure but I don't need the rest defined
+struct WoWTime
+{
+	int32_t minute;
+	int32_t hour;
+	int32_t weekDay;
+	int32_t monthDay;
+	int32_t month;
+	int32_t year;
+	int32_t flags;
+};
+
 // Client functions
 namespace CDataStore_C
 {

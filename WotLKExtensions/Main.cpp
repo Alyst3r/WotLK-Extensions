@@ -15,6 +15,8 @@ void Main::OnAttach()
 
 void Main::Init()
 {
+	Misc::SetYearOffsetMultiplier();
+
 	if (customPackets)
 		CustomPacket::Apply();
 
