@@ -11,7 +11,7 @@ Most of patch content should probably be credited to FrostAtom, [AwesomeWotlk](h
 Exe header data recalculated using [CFF Explorer VIII](https://ntcore.com/explorer-suite/).  
   
 ### WotLKExtensions.dll  
-Various runtime patches, as well as functionality extensions, all configurable from *PatchConfig.h* file. **By default all of the patches are turned off!**  
+Various runtime patches, as well as functionality extensions, all but one configurable from *PatchConfig.h* file. **By default all of the patches are turned off!**  
 Will be periodically updated, obviously (but no promises how ofted, depends on various factors). A lot can probably added. Even more could probably be improved.  
   
 **Disclaimer:** Good point brought by Robinsh on Discord: `Use it with caution because some servers definitely scan the ebp for LUA calls and this will trigger it and might ban your account if using it.` This project was created as something to use (and distribute) with your own private server project rather than to use with existing ones (unless distributed by them), so keep that in mind. If you get yourself banned, you've been warned :P.  
@@ -22,6 +22,7 @@ Will be periodically updated, obviously (but no promises how ofted, depends on v
 + Combo point fix - allows every class to utilise combo points  
 + More than 12 classes in LFD - original role table stores only 12 (technically 13 if you count ID == 0) class bytes representing LFD roles, this patch expands it to 31; overriden by `LFGRoles` DBC if option is enabled  
 + Item mod expansion - normally newly added item mods are not properly displayed by the client, unless you repurpose existing ones; this patch allows adding custom string to the table that wil be read from GlobalStrings.lua (where it also needs to be implemented)  
++ WoWTime patch - mandatory patch, fixing issues with incorrect calendar and date (or even client crashes) as soon as 1.1.2031 hits
   
 **Custom Lua Functions**  
 Various new or backported Lua functions - see `Docs` directory for further details.  
