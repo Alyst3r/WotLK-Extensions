@@ -460,6 +460,26 @@ int CustomLua::SetLFGRole(lua_State* L)
 	return 0;
 }
 
+int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
+{
+	float ox = FrameScript::GetNumber(L, 1);
+	float oy = FrameScript::GetNumber(L, 2);
+	float oz = FrameScript::GetNumber(L, 3);
+	void* worldFrame = *(void**)0x00B7436C;
+	C3Vector pos3d = { ox, oy, oz };
+	C3Vector pos2d = {};
+	uint32_t flags = 0;
+	int result = World::Pos3Dto2D(worldFrame, nullptr, &pos3d, &pos2d, &flags);
+	float x;
+	float y;
+
+	Util::PercToScreenPos(pos2d.x, pos2d.y, &x, &y);
+	FrameScript::PushNumber(L, x);
+	FrameScript::PushNumber(L, y);
+	FrameScript::PushNumber(L, pos2d.z);
+	return 3;
+}
+
 void CustomLua::AddToFunctionMap(char* name, void* ptr)
 {
 	luaFuncts.insert(std::make_pair(name, ptr));

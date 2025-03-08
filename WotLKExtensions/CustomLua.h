@@ -38,5 +38,7 @@ private:
 	static int GetCustomCombatRating(lua_State* L);
 	static int GetCustomCombatRatingBonus(lua_State* L);
 
+	static int ConvertCoordsToScreenSpace(lua_State* L);
+
 	friend class Main;
 };

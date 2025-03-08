@@ -31,6 +31,8 @@ no args, nil return; turns on/off terrain culling
 no args, nil return; turns on/off wireframe mode  
 ### ToggleWMO  
 no args, nil return; turns on/off WMO  
+### ConvertCoordsToScreenSpace  
+args: x, y, z, returns x, y, (z); converts given world coordinates to current screen position; credits to Tester for original implementation in Duskhaven branch of TSWoW  
   
 ## Custom DBCs  
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  

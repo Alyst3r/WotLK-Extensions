@@ -31,3 +31,11 @@ void Util::OverwriteUInt32AtAddress(uint32_t address, uint32_t newVal)
 	*(uint32_t*)address = newVal;
 	VirtualProtect(vAddress, sizeof(uint32_t), flOldProtect, &flOldProtect);
 }
+
+void Util::PercToScreenPos(float x, float y, float* resX, float* resY)
+{
+	float g_UITexCoordAlphaMultiplier1 = *(float*)0x00AC0CB4;
+	float g_UITexCoordAlphaMultiplier3 = *(float*)0x00AC0CBC;
+	*resX = (x * (g_UITexCoordAlphaMultiplier3 * 1024.f)) / g_UITexCoordAlphaMultiplier1;
+	*resY = (y * (g_UITexCoordAlphaMultiplier3 * 1024.f)) / g_UITexCoordAlphaMultiplier1;
+}

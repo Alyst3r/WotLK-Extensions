@@ -216,6 +216,7 @@ namespace World
 {
 	CLIENT_FUNCTION(LoadMap, 0x781430, __cdecl, void, (char*, C3Vector*, uint32_t))
 	CLIENT_FUNCTION(UnloadMap, 0x783180, __cdecl, void, ())
+	CLIENT_FUNCTION(Pos3Dto2D, 0x4F6D20, __fastcall, int, (void* This, void* edx, C3Vector* pos3d, C3Vector* pos2d, uint32_t* flags))
 }
 
 CLIENT_FUNCTION(sub_6B1080, 0x6B1080, __cdecl, uint8_t, ())
