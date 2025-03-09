@@ -493,6 +493,7 @@ void CustomLua::RegisterFunctions()
 		AddToFunctionMap("GetShapeshiftFormID", &GetShapeshiftFormID);
 		AddToFunctionMap("GetSpellDescription", &GetSpellDescription);
 		AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
+		AddToFunctionMap("ConvertCoordsToScreenSpace", &ConvertCoordsToScreenSpace);
 	}
 
 	if (customActionBarFunctions)
