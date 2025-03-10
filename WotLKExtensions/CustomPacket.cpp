@@ -52,7 +52,7 @@ void __fastcall CustomPacket::SetMessageHandlerEx(void* _this, uint32_t unused, 
 		CNetClient::SetMessageHandler(_this, opcode, handler, param);
 	else
 	{
-		uint32_t num = NUM_CUSTOM_MSG_TYPES - opcode - 1;
+		uint32_t num = opcode - SMSG_UPDATE_CUSTOM_COMBAT_RATING;
 		
 		customData.handler[num] = handler;
 		customData.handlerParam[num] = param;
