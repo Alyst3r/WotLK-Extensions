@@ -36,7 +36,7 @@ void __fastcall CustomPacket::ProcessMessageEx(void* _this, uint32_t unused, uin
 	else
 	{
 		++*(uint32_t*)0xC5D638;
-		uint32_t num = NUM_CUSTOM_MSG_TYPES - opcode - 1;
+		uint32_t num = opcode - SMSG_UPDATE_CUSTOM_COMBAT_RATING;
 		if (opcode < NUM_CUSTOM_MSG_TYPES && customData.handler[num])
 			// I've got cancer writing this, function typedefs are ugly as sin
 			((void(*)(void*, uint32_t, uint32_t, CDataStore*))customData.handler[num])(customData.handlerParam[num], opcode, a2, a3);
