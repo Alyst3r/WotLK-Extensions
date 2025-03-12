@@ -480,6 +480,26 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
 	return 3;
 }
 
+int CustomLua::PortGraveyard(lua_State* L)
+{
+	CGPlayer* activeObjectPtr = (CGPlayer*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+
+	if (activeObjectPtr && CGPlayer_C::IsDeadOrGhost(activeObjectPtr))
+	{
+		CDataStore pkt;
+
+		CDataStore_C::GenPacket(&pkt);
+		CDataStore_C::PutInt32(&pkt, CMSG_TELEPORT_GRAVEYARD_REQUEST);
+
+		pkt.m_read = 0;
+
+		ClientServices::SendPacket(&pkt);
+		CDataStore_C::Release(&pkt);
+	}
+
+	return 0;
+}
+
 void CustomLua::AddToFunctionMap(char* name, void* ptr)
 {
 	luaFuncts.insert(std::make_pair(name, ptr));
@@ -520,5 +540,6 @@ void CustomLua::RegisterFunctions()
 	{
 		AddToFunctionMap("GetCustomCombatRating", &GetCustomCombatRating);
 		AddToFunctionMap("GetCustomCombatRatingBonus", &GetCustomCombatRatingBonus);
+		AddToFunctionMap("PortGraveyard", &PortGraveyard);
 	}
 }

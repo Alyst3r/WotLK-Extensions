@@ -13,6 +13,7 @@ static std::unordered_map<char*, void*> luaFuncts;
 enum CustomOpcodes
 {
 	SMSG_UPDATE_CUSTOM_COMBAT_RATING			= 1311,
+	CMSG_TELEPORT_GRAVEYARD_REQUEST				= 1312,
 	NUM_CUSTOM_MSG_TYPES
 };
 
@@ -39,8 +40,11 @@ struct CDataStore_vTable
 struct CDataStore
 {
 	CDataStore_vTable* vTable;
-	uint32_t padding0x04[4];
-	uint32_t m_read;
+	int32_t* m_buffer;
+	int32_t m_base;
+	int32_t m_alloc;
+	int32_t m_size;
+	int32_t m_read;
 };
 
 struct CMovement
@@ -72,6 +76,12 @@ struct CGUnit
 	uint32_t padding0xD4;
 	CMovement* movementInfo;
 	uint32_t padding0x34[971];
+};
+
+struct CGPlayer
+{
+	CGUnit unitBata;
+	uint32_t padding0x1008[1025];
 };
 
 struct ChrClassesRow
@@ -119,14 +129,22 @@ struct WoWTime
 // Client functions
 namespace CDataStore_C
 {
+	CLIENT_FUNCTION(GenPacket, 0x401050, __thiscall, void, (CDataStore*))
 	CLIENT_FUNCTION(GetInt8, 0x47B340, __thiscall, void, (CDataStore*, int8_t*))
 	CLIENT_FUNCTION(GetInt16, 0x47B380, __thiscall, void, (CDataStore*, int16_t*))
 	CLIENT_FUNCTION(GetInt32, 0x47B3C0, __thiscall, void, (CDataStore*, int32_t*))
+	CLIENT_FUNCTION(PutInt32, 0x47B0A0, __thiscall, void, (CDataStore*, int32_t))
+	CLIENT_FUNCTION(Release, 0x403880, __thiscall, void, (CDataStore*))
 }
 
 namespace CGChat
 {
 	CLIENT_FUNCTION(AddChatMessage, 0x509DD0, __cdecl, bool, (char*, uint32_t, uint32_t, uint32_t, uint32_t*, uint32_t, char*, uint64_t, uint32_t, uint64_t, uint32_t, uint32_t, uint32_t*))
+}
+
+namespace CGPlayer_C
+{
+	CLIENT_FUNCTION(IsDeadOrGhost, 0x6DAC10, __thiscall, bool, (CGPlayer*))
 }
 
 namespace CGUnit_C
@@ -149,6 +167,7 @@ namespace ClientPacket
 namespace ClientServices
 {
 	CLIENT_FUNCTION(InitializePlayer, 0x6E83B0, __cdecl, void, ())
+	CLIENT_FUNCTION(SendPacket, 0x6B0B50, __cdecl, void, (CDataStore*))
 }
 
 namespace ClntObjMgr

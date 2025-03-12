@@ -40,5 +40,7 @@ private:
 
 	static int ConvertCoordsToScreenSpace(lua_State* L);
 
+	static int PortGraveyard(lua_State* L);
+
 	friend class Main;
 };
