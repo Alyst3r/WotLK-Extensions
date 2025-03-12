@@ -484,7 +484,7 @@ int CustomLua::PortGraveyard(lua_State* L)
 {
 	CGPlayer* activeObjectPtr = (CGPlayer*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
 
-	if (activeObjectPtr && CGPlayer_C::IsDeadOrGhost(activeObjectPtr))
+	if (activeObjectPtr && (activeObjectPtr->playerData->playerFlags & PLAYER_FLAGS_GHOST))
 	{
 		CDataStore pkt;
 

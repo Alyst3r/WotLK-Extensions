@@ -22,6 +22,11 @@ enum FrameXMLEvent : uint32_t
 	EVENT_LFG_ROLE_UPDATE                       = 506,
 };
 
+enum PlayerFlags
+{
+	PLAYER_FLAGS_GHOST							= 0x10,
+};
+
 // structures
 struct C3Vector
 {
@@ -78,10 +83,18 @@ struct CGUnit
 	uint32_t padding0x34[971];
 };
 
+struct PlayerFields
+{
+	uint64_t playerDuelArbiter;
+	uint32_t playerFlags;
+	uint32_t padding0x0C[1175];
+};
+
 struct CGPlayer
 {
-	CGUnit unitBata;
-	uint32_t padding0x1008[1025];
+	CGUnit unitData;
+	PlayerFields* playerData;
+	uint32_t padding0x1008[1024];
 };
 
 struct ChrClassesRow
