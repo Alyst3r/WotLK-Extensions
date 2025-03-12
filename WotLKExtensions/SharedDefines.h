@@ -27,6 +27,18 @@ enum PlayerFlags
 	PLAYER_FLAGS_GHOST							= 0x10,
 };
 
+enum TypeMask
+{
+	TYPEMASK_OBJECT								= 0x0001,
+	TYPEMASK_ITEM								= 0x0002,
+	TYPEMASK_CONTAINER							= 0x0004,
+	TYPEMASK_UNIT								= 0x0008,
+	TYPEMASK_PLAYER								= 0x0010,
+	TYPEMASK_GAMEOBJECT							= 0x0020,
+	TYPEMASK_DYNAMICOBJECT						= 0x0040,
+	TYPEMASK_CORPSE								= 0x0080,
+};
+
 // structures
 struct C3Vector
 {
@@ -65,10 +77,18 @@ struct CMovement
 	uint32_t padding0x4C[63];
 };
 
+struct UnitBytes0
+{
+	uint8_t unitRace;
+	uint8_t unitClass;
+	uint8_t unitGender;
+	uint8_t unitPowerType;
+};
+
 struct UnitFields
 {
 	uint32_t padding0x00[17];
-	uint8_t bytes0[4];
+	UnitBytes0 bytes0;
 	uint32_t padding0x48[30];
 	uint32_t level;
 	uint32_t padding0xC4[93];

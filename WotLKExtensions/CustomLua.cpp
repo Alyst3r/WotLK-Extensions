@@ -28,7 +28,7 @@ int CustomLua::GetShapeshiftFormID(lua_State* L)
 
 	if (activePlayer)
 	{
-		CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, 0x08);
+		CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT);
 		FrameScript::PushNumber(L, CGUnit_C::GetShapeshiftFormId(activeObjectPtr));
 		return 1;
 	}
@@ -157,7 +157,7 @@ int CustomLua::ReloadMap(lua_State* L)
 	{
 		MapRow* row = 0;
 		int32_t mapId = *(uint32_t*)0xBD088C;
-		CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, 0x08);
+		CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT);
 		CMovement* moveInfo = activeObjectPtr->movementInfo;
 
 		if (mapId > -1)
@@ -379,7 +379,7 @@ int CustomLua::GetCustomCombatRating(lua_State* L)
 	if (cr < 25 || cr >= 32)
 		FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
 
 	if (activeObjectPtr)
 		value = CustomFields::GetCustomCombatRating(cr - 25);
@@ -403,12 +403,12 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 	if (cr < 25 || cr >= 32)
 		FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+	CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
 
 	if (activeObjectPtr)
 	{
 		gtCombatRating = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->level, cr);
-		gtOctClasCombatRatingScalar = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0[1], cr);
+		gtOctClasCombatRatingScalar = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0.unitClass, cr);
 
 		if (gtCombatRating && gtOctClasCombatRatingScalar)
 			value = gtOctClasCombatRatingScalar * CustomFields::GetCustomCombatRating(cr - 25) / gtCombatRating;
@@ -482,7 +482,7 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
 
 int CustomLua::PortGraveyard(lua_State* L)
 {
-	CGPlayer* activeObjectPtr = (CGPlayer*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), 0x10);
+	CGPlayer* activeObjectPtr = (CGPlayer*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
 
 	if (activeObjectPtr && (activeObjectPtr->playerData->playerFlags & PLAYER_FLAGS_GHOST))
 	{
