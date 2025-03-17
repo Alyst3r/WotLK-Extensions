@@ -10,7 +10,7 @@ struct LFGRolesRow
 
 class LFGRoles : public CDBC {
 public:
-	const char* fileName = "DBFilesClient\\LFGRoles.cdbc";
+	const char* fileName = "LFGRoles";
 
 	LFGRoles(): CDBC()
 	{
@@ -20,9 +20,10 @@ public:
 
 	LFGRoles* LoadDB()
 	{
-		GlobalCDBCMap.addCDBC("LFGRoles");
+		GlobalCDBCMap.addCDBC(this->fileName);
 		CDBC::LoadDB(this->fileName);
 		LFGRoles::setupTable();
+		GlobalCDBCMap.setIndexRange("LFGRoles", this->minIndex, this->maxIndex);
 		return this;
 	};
 
@@ -31,7 +32,7 @@ public:
 
 		for (uint32_t i = 0; i < this->numRows; i++)
 		{
-			GlobalCDBCMap.addRow("LFGRoles", row->ClassID, *row);
+			GlobalCDBCMap.addRow(this->fileName, row->ClassID, *row);
 			++row;
 		}
 	};

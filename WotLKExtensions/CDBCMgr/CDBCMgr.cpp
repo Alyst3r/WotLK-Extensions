@@ -11,6 +11,7 @@ void CDBCMgr::Load()
 void CDBCMgr::addCDBC(std::string cdbcName)
 {
 	allCDBCs[cdbcName] = CDBC();
+	cdbcIndexRanges[cdbcName] = { 0, 0 };
 }
 
 void __declspec(naked) RegisterDBCEx()
