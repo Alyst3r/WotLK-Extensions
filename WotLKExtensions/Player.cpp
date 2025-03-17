@@ -56,19 +56,21 @@ void Player::LFDClassRoleExtension()
 
 uint32_t Player::CheckLFGRoles(uint32_t roles)
 {
+	LFGRoles roleClass;
 	uint32_t classId = sub_6B1080();
 
 	if (classId > *(uint32_t*)0xAD3410 || classId < *(uint32_t*)0xAD3414) // ChrClasses.dbc max/min indices
 		classId = 0;
 
-	LFGRolesRow* cdbcRoles = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+	LFGRolesRow* cdbcRoles = (LFGRolesRow*)roleClass.GetRow("LFGRoles", classId);
 
 	return roles & cdbcRoles->Roles;
 }
 
 uint32_t Player::GetClassRoles(uint32_t classId)
 {
-	LFGRolesRow* cdbcRoles = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+	LFGRoles roleClass;
+	LFGRolesRow* cdbcRoles = (LFGRolesRow*)roleClass.GetRow("LFGRoles", classId);
 
 	return cdbcRoles->Roles;
 }

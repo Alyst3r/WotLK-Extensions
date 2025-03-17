@@ -1,30 +1,35 @@
 #pragma once
 #include "../SharedDefines.h"
-#include <string>
+
+struct CustomDBC
+{
+	void* rows;
+	uint32_t numRows;
+	int32_t minIndex;
+	int32_t maxIndex;
+	void* stringTable;
+};
+
+static std::unordered_map<std::string, CustomDBC> allCDBCs;
 
 class CDBC
 {
 public:
 	CDBC()
 	{
-		isLoaded = false;
-		numRows = 0;
-		minIndex = 0;
-		maxIndex = 0;
-		rows = 0;
+		numColumns = 0;
+		rowSize = 0;
 	}
-	void* stringTable;
+
+	void LoadDB(const char* filename);
+	void UnloadDB(const char* filename);
+	int32_t GetMinIndex(const char* filename);
+	int32_t GetMaxIndex(const char* filename);
+	uint32_t GetNumRows(const char* filename);
+	virtual ~CDBC() = default;
+
+	virtual void* GetRow(const char* filename, int32_t index) { return nullptr; }
+protected:
 	uint32_t numColumns;
 	uint32_t rowSize;
-	void* rows;
-	uint32_t numRows;
-
-	CDBC* LoadDB(const char* filename);
-	void UnloadDB();
-	void GetMinMaxIndices();
-	virtual ~CDBC() = default;
-private:
-	bool isLoaded;
-	uint32_t minIndex;
-	uint32_t maxIndex;
 };

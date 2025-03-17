@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "Logger.h"
 
 void Main::OnAttach()
 {

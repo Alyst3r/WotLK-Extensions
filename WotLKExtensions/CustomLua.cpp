@@ -1,6 +1,7 @@
 #include "CustomLua.h"
 #include "Player.h"
 #include "CDBCMgr/CDBCDefs/LFGRoles.h"
+#include "Logger.h"
 
 void CustomLua::Apply()
 {
@@ -420,14 +421,14 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 
 int CustomLua::GetAvailableRoles(lua_State* L)
 {
+	LFGRoles roleClass;
 	ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), sub_6B1080());
 	uint32_t classId = 0;
-	LFGRolesRow* cdbcRole = 0;
 
 	if (row)
 		classId = row->m_ID;
 
-	cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+	LFGRolesRow* cdbcRole = (LFGRolesRow*)roleClass.GetRow("LFGRoles", classId);
 
 	FrameScript::PushBoolean(L, cdbcRole->Roles & 2);
 	FrameScript::PushBoolean(L, cdbcRole->Roles & 4);
@@ -437,8 +438,8 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 
 int CustomLua::SetLFGRole(lua_State* L)
 {
+	LFGRoles roleClass;
 	ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)0xAD341C, sub_6B1080());
-	LFGRolesRow* cdbcRole = 0;
 	uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
 	uint32_t classId = 0;
 	uintptr_t ptr = *(uintptr_t*)0xBD0A28;
@@ -453,7 +454,7 @@ int CustomLua::SetLFGRole(lua_State* L)
 	if (row)
 		classId = row->m_ID;
 
-	cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+	LFGRolesRow* cdbcRole = (LFGRolesRow*)roleClass.GetRow("LFGRoles", classId);
 
 	CVar::sub_766940((void*)ptr, roles & cdbcRole->Roles, 1, 0, 0, 1);
 	FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);

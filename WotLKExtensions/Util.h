@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include <functional>
+#include <string>
 
 class Util
 {
