@@ -4,6 +4,7 @@
 #include "CustomPacket.h"
 #include "Misc.h"
 #include "Player.h"
+#include "World.h"
 #include "CDBCMgr/CDBCMgr.h"
 
 class Main

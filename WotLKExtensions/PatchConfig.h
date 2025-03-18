@@ -4,6 +4,8 @@
 static bool useCustomDBCFiles = false;
 // roles dbc
 static bool useLFGRolesDBC = false;
+// zone lights
+static bool useZoneLightDBCs = false;
 
 // Patches
 // Makes ranged weapons require no ammo; requires some core changes to fix visuals

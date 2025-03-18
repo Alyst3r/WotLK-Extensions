@@ -7,6 +7,7 @@ void Main::OnAttach()
 	// Apply patches
 	Misc::ApplyPatches();
 	Player::ApplyPatches();
+	WorldDataExtensions::ApplyPatches();
 
 	// Custom dbc loader
 	if (useCustomDBCFiles)

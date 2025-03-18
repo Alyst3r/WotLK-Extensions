@@ -38,6 +38,10 @@ args: x, y, z, returns x, y, (z); converts given world coordinates to current sc
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  
 ### LFGRoles.cdbc  
 Dehardcodes class roles from Wow.exe, moving the whole table to DBC file. Record contains 2 columns, ClassID and RoleMask.  
+### ZoneLight.cdbc and ZoneLightPoint.cdbc  
+Dehardcodes zone light polygons used in Northrend from Wow.exe, also allows usage on any map (originally client allowed usage on maps 530 and above).  
+ZoneLight: 4 columns, ID, Name (used only in dbc, so basically just a comment), MapID and LightID.  
+ZoneLightPoint: 5 columns, ID, ZoneLightID (from ZoneLight.cdbc), PositionX (float), PositionY (float), PointOrder. Unlike Blizzard's original dbcs from Cata and above PositionX and PositionY are client coordinates and not server coordinates.  
   
 ## Custom Packets  
 Various new data sent to and received from server. Keep in mind, sending invalid opcode from client to server usually results with disconnect.  

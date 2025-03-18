@@ -8,7 +8,8 @@ struct LFGRolesRow
 	uint32_t Roles;
 };
 
-class LFGRoles : public CDBC {
+class LFGRoles : public CDBC
+{
 public:
 	const char* fileName = "LFGRoles";
 
@@ -23,12 +24,13 @@ public:
 		GlobalCDBCMap.addCDBC(this->fileName);
 		CDBC::LoadDB(this->fileName);
 		LFGRoles::setupTable();
-		GlobalCDBCMap.setIndexRange("LFGRoles", this->minIndex, this->maxIndex);
+		GlobalCDBCMap.setIndexRange(this->fileName, this->minIndex, this->maxIndex);
 		return this;
 	};
 
-	void LFGRoles::setupTable() {
-		LFGRolesRow* row = static_cast<LFGRolesRow*>(this->rows);
+	void LFGRoles::setupTable()
+	{
+		LFGRolesRow* row = (LFGRolesRow*)this->rows;
 
 		for (uint32_t i = 0; i < this->numRows; i++)
 		{

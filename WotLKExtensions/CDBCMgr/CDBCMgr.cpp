@@ -1,11 +1,20 @@
 #include "CDBCMgr.h"
 #include "CDBCDefs/LFGRoles.h"
+#include "CDBCDefs/ZoneLight.h"
+#include "CDBCDefs/ZoneLightPoint.h"
 
 CDBCMgr GlobalCDBCMap;
 
 void CDBCMgr::Load()
 {
-	LFGRoles().LoadDB();
+	if (useLFGRolesDBC)
+		LFGRoles().LoadDB();
+
+	if (useZoneLightDBCs)
+	{
+		ZoneLight().LoadDB();
+		ZoneLightPoint().LoadDB();
+	}
 }
 
 void CDBCMgr::addCDBC(std::string cdbcName)

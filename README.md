@@ -28,7 +28,7 @@ Will be periodically updated, obviously (but no promises how ofted, depends on v
 Various new or backported Lua functions - see `Docs` directory for further details.  
   
 **Custom DBC Manager**  
-What started as a code written in assembly sparked an idea of writing openly available DBC loader that's already in use by Duskhaven, being ported to main TSWoW repository, and now added to this project. For now, only one new DBC file is added but there are some more ideas floating around. See `Docs` directory for more info.  
+What started as a code written in assembly sparked an idea of writing openly available DBC loader that's already in use by Duskhaven, being ported to main TSWoW repository, and now added to this project. See `Docs` directory for more info.  
 
 **Custom Packets**  
 Dll can handle new data received from and sent to server. See `Docs` for more info.  

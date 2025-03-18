@@ -40,6 +40,12 @@ enum TypeMask
 };
 
 // structures
+struct C2Vector
+{
+	float x;
+	float y;
+};
+
 struct C3Vector
 {
 	float x;
@@ -159,6 +165,18 @@ struct WoWTime
 	int32_t flags;
 };
 
+struct ZoneLightData
+{
+	int32_t mapID;
+	int32_t lightID;
+	void* pointData;
+	int32_t pointNum;
+	float minX;
+	float minY;
+	float maxX;
+	float maxY;
+};
+
 // Client functions
 namespace CDataStore_C
 {
@@ -220,6 +238,12 @@ namespace CVar
 	CLIENT_FUNCTION(sub_766940, 0x766940, __thiscall, void, (void*, int, char, char, char, char))
 }
 
+namespace DNInfo
+{
+	CLIENT_FUNCTION(AddZoneLight, 0x7ED150, __thiscall, void, (void*, int32_t, float))
+	CLIENT_FUNCTION(GetDNInfoPtr, 0x7ECEF0, __stdcall, void*, ())
+}
+
 namespace FrameScript
 {
 	CLIENT_FUNCTION(DisplayError, 0x84F280, __cdecl, void, (lua_State* L, char*, ...))
@@ -233,6 +257,11 @@ namespace FrameScript
 	CLIENT_FUNCTION(PushString, 0x84E350, __cdecl, int, (lua_State*, char const*))
 	CLIENT_FUNCTION(RegisterFunction, 0x817F90, __cdecl, int, (char*, void*))
 	CLIENT_FUNCTION(SignalEvent, 0x81B530, __cdecl, int, (uint32_t, char*, ...))
+}
+
+namespace NTempest
+{
+	CLIENT_FUNCTION(DistanceSquaredFromEdge, 0x7F9C90, __cdecl, bool, (int32_t, void*, C2Vector*, float*))
 }
 
 namespace SErr
