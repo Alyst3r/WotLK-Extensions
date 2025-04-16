@@ -44,6 +44,11 @@ void Misc::ApplyPatches()
 
 	// this one is non-optional, it's WoWTime fix I guess
 	// and don't let me get started how retarded original idea behind packing like this is
+	ApplyWoWTimePatches();
+}
+
+void Misc::ApplyWoWTimePatches()
+{
 	// This patches original function to call custom function from dll, otherwise I would need to patch a lot of pointers
 	uint8_t byteArray[] = { 0x8B, 0x55, 0x08, 0x50, 0x52, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x83, 0xC4, 0x08, 0x5D, 0xC3 };
 	Util::OverwriteBytesAtAddress(0x76CA56, byteArray, sizeof(byteArray));
