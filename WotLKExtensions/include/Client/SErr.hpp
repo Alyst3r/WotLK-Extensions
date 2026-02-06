@@ -5,9 +5,9 @@
 class SErr
 {
 public:
-	static void PrepareAppFatal(uint32_t code, const char* error, ...);
+    static void PrepareAppFatal(uint32_t code, const char* error, ...);
 
 private:
-	SErr() = delete;
-	~SErr() = delete;
+    SErr() = delete;
+    ~SErr() = delete;
 };

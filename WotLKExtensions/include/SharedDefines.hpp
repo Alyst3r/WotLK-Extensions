@@ -7,6 +7,8 @@ static uint32_t dummy = 0;
 
 static std::unordered_map<char*, void*> luaFuncts;
 
+typedef uint64_t WoWGUID;
+
 // enums
 enum CustomOpcodes
 {
@@ -93,7 +95,7 @@ struct CGUnit
 
 struct PlayerFields
 {
-    uint64_t playerDuelArbiter;
+    WoWGUID playerDuelArbiter;
     uint32_t playerFlags;
     uint32_t padding0x0C[1175];
 };
@@ -175,13 +177,6 @@ namespace CGUnit_C
     CLIENT_FUNCTION(GetShapeshiftFormId, 0x71AF70, __thiscall, uint32_t, (CGUnit*))
 }
 
-namespace ClientDB
-{
-    CLIENT_FUNCTION(GetLocalizedRow, 0x4CFD20, __thiscall, int, (void*, uint32_t, void*))
-    CLIENT_FUNCTION(GetRow, 0x65C290, __thiscall, void*, (void*, uint32_t))
-    CLIENT_FUNCTION(GetGameTableValue, 0x7F6990, __cdecl, double, (uint32_t, uint32_t, uint32_t)) // this technically is not a part of ClientDB iirc but who cares
-}
-
 namespace ClientPacket
 {
     CLIENT_FUNCTION(MSG_SET_ACTION_BUTTON, 0x5AA390, __cdecl, void, (uint32_t, bool, bool))
@@ -189,8 +184,8 @@ namespace ClientPacket
 
 namespace ClntObjMgr
 {
-    CLIENT_FUNCTION(GetActivePlayer, 0x4D3790, __cdecl, uint64_t, ())
-    CLIENT_FUNCTION(ObjectPtr, 0x4D4DB0, __cdecl, void*, (uint64_t, uint32_t))
+    CLIENT_FUNCTION(GetActivePlayer, 0x4D3790, __cdecl, WoWGUID, ())
+    CLIENT_FUNCTION(ObjectPtr, 0x4D4DB0, __cdecl, void*, (WoWGUID, uint32_t))
 }
 
 namespace CVar

@@ -2,8 +2,11 @@
 #include <Client/CDataStore.hpp>
 #include <Client/ClientServices.hpp>
 #include <Client/CustomLua.hpp>
+#include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
 #include <Client/SStr.hpp>
+#include <Data/DBCAddresses.hpp>
+#include <Data/MiscAddresses.hpp>
 #include <GameObjects/Player.hpp>
 
 void CustomLua::Apply()
@@ -15,12 +18,12 @@ void CustomLua::Apply()
 
 int CustomLua::LoadScriptFunctionsCustom()
 {
-    for (auto it = luaFuncts.begin(); it != luaFuncts.end(); it++)
+    for (auto& it : luaFuncts)
     {
-        char* funcName = it->first;
-        void* funcPtr = it->second;
-    
-        FrameScript::RegisterFunction(funcName, funcPtr);
+        const char* name = it.first;
+        void* ptr = it.second;
+
+        FrameScript::RegisterFunction(name, ptr);
     }
 
     return FrameScript::LoadFunctions();
@@ -28,16 +31,18 @@ int CustomLua::LoadScriptFunctionsCustom()
 
 int CustomLua::GetShapeshiftFormID(lua_State* L)
 {
-    uint64_t activePlayer = ClntObjMgr::GetActivePlayer();
+    WoWGUID activePlayer = ClntObjMgr::GetActivePlayer();
 
     if (activePlayer)
     {
-        CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT);
+        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
         FrameScript::PushNumber(L, CGUnit_C::GetShapeshiftFormId(activeObjectPtr));
+
         return 1;
     }
 
     FrameScript::PushNumber(L, 0);
+
     return 1;
 }
 
@@ -45,19 +50,21 @@ int CustomLua::GetSpellDescription(lua_State* L)
 {
     if (FrameScript::IsNumber(L, 1))
     {
-        uint32_t spellId = (uint32_t)FrameScript::GetNumber(L, 1);
-        SpellRow row;
-        char desc[1024];
+        uint32_t spellId = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
+        SpellRow* row = nullptr;
+        char desc[1024] = { 0 };
 
-        if (ClientDB::GetLocalizedRow((void*)0xAD49D0, spellId, &row))
+        if (DBClient::GetLocalizedRow(g_spellDB, spellId, &row))
         {
             SpellParser::ParseText(&row, &desc, 1024, 0, 0, 0, 0, 1, 0);
             FrameScript::PushString(L, desc);
+
             return 1;
         }
     }
 
     FrameScript::PushNil(L);
+
     return 1;
 }
 
@@ -65,33 +72,35 @@ int CustomLua::GetSpellNameById(lua_State* L)
 {
     if (FrameScript::IsNumber(L, 1))
     {
-        uint32_t spellId = (uint32_t)FrameScript::GetNumber(L, 1);
-        SpellRow row;
+        uint32_t spellId = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
+        SpellRow row{};
 
-        if (ClientDB::GetLocalizedRow((void*)0xAD49D0, spellId, &row))
+        if (DBClient::GetLocalizedRow(g_spellDB, spellId, &row))
         {
             FrameScript::PushString(L, row.m_name_lang);
             FrameScript::PushString(L, row.m_nameSubtext_lang);
+
             return 2;
         }
     }
 
     FrameScript::PushNil(L);
     FrameScript::PushNil(L);
+
     return 2;
 }
 
 int CustomLua::FindSpellActionBarSlots(lua_State* L)
 {
-    uint32_t spellID = FrameScript::GetNumber(L, 1);
-    uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
+    uint32_t spellID = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
     uint8_t count = 0;
 
     for (uint8_t i = 0; i < 144; i++)
     {
-        if (actionBarSpellIDs[i] == spellID)
+        if (g_actionBarSpellIDArray[i] == spellID)
         {
             FrameScript::PushNumber(L, i);
+
             count++;
         }
     }
@@ -99,6 +108,7 @@ int CustomLua::FindSpellActionBarSlots(lua_State* L)
     if (!count)
     {
         FrameScript::PushNil(L);
+
         return 1;
     }
     else
@@ -109,22 +119,20 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
 {
     uint32_t oldSpellID = FrameScript::GetNumber(L, 1);
     uint32_t newSpellID = FrameScript::GetNumber(L, 2);
-    uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
-    uintptr_t* actionButtons = (uintptr_t*)0xC1DED8;
 
     for (uint8_t i = 0; i < 144; i++)
     {
-        if (actionBarSpellIDs[i] == oldSpellID)
+        if (g_actionBarSpellIDArray[i] == oldSpellID)
         {
-            actionBarSpellIDs[i] = newSpellID;
+            g_actionBarSpellIDArray[i] = newSpellID;
             ClientPacket::MSG_SET_ACTION_BUTTON(i, 1, 0);
 
             for (uint8_t j = i + 72; j < 144; j += 12)
             {
-                if (!actionButtons[j])
+                if (!g_actionButtonsArray[j])
                 {
-                    actionBarSpellIDs[i] = newSpellID;
-                    actionButtons[j] = 1;
+                    g_actionBarSpellIDArray[i] = newSpellID;
+                    g_actionButtonsArray[j] = 1;
                     ClientPacket::MSG_SET_ACTION_BUTTON(j, 1, 0);
                 }
             }
@@ -136,17 +144,15 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
 
 int CustomLua::SetSpellInActionBarSlot(lua_State* L)
 {
-    uint32_t spellID = FrameScript::GetNumber(L, 1);
-    uint8_t slotID = FrameScript::GetNumber(L, 2);
-    uintptr_t* actionBarSpellIDs = (uintptr_t*)0xC1E358;
-    uintptr_t* actionButtons = (uintptr_t*)0xC1DED8;
+    uint32_t spellID = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
+    uint8_t slotID = static_cast<uint8_t>(FrameScript::GetNumber(L, 2));
 
     if (slotID < 144)
     {
-        if (!actionButtons[slotID])
-            actionButtons[slotID] = 1;
+        if (!g_actionButtonsArray[slotID])
+            g_actionButtonsArray[slotID] = 1;
 
-        actionBarSpellIDs[slotID] = spellID;
+        g_actionBarSpellIDArray[slotID] = spellID;
         ClientPacket::MSG_SET_ACTION_BUTTON(slotID, 1, 0);
     }
 
@@ -160,13 +166,13 @@ int CustomLua::ReloadMap(lua_State* L)
     if (activePlayer)
     {
         MapRow* row = 0;
-        int32_t mapId = *(uint32_t*)0xBD088C;
-        CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT);
+        int32_t mapId = *g_currentMapID;
+        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
         CMovement* moveInfo = activeObjectPtr->movementInfo;
 
         if (mapId > -1)
         {
-            row = (MapRow*)ClientDB::GetRow((void*)0xAD4178, mapId);
+            row = reinterpret_cast<MapRow*>(DBClient::GetRow(&g_mapDB->m_vtable2, mapId));
 
             if (row)
             {
@@ -186,174 +192,190 @@ int CustomLua::ReloadMap(lua_State* L)
 int CustomLua::ToggleDisplayNormals(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774F;
-    bool areNormalsDisplayed = renderFlags & 0x40;
+    bool areNormalsDisplayed = renderFlags4 & 0x40;
 
     if (areNormalsDisplayed)
     {
-        *(uint8_t*)0xCD774F = renderFlags - 0x40;
+        renderFlags4 &= ~0x40;
+
         SStr::Printf(buffer, 512, "Normal display turned off.");
     }
     else
     {
-        *(uint8_t*)0xCD774F = renderFlags + 0x40;
+        renderFlags4 |= 0x40;
+
         SStr::Printf(buffer, 512, "Normal display turned on.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleGroundEffects(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774E;
-    bool areGroundEffectsDisplayed = renderFlags & 0x10;
+    bool areGroundEffectsDisplayed = renderFlags3 & 0x10;
 
     if (areGroundEffectsDisplayed)
     {
-        *(uint8_t*)0xCD774E = renderFlags - 0x10;
+        renderFlags3 &= ~0x10;
+
         SStr::Printf(buffer, 512, "Ground clutter hidden.");
     }
     else
     {
-        *(uint8_t*)0xCD774E = renderFlags + 0x10;
+        renderFlags3 |= 0x10;
+
         SStr::Printf(buffer, 512, "Ground clutter shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleLiquids(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774F;
-    bool areLiquidsShowing = renderFlags & 0x3;
+    bool areLiquidsShowing = renderFlags4 & 0x03;
 
     if (areLiquidsShowing)
     {
-        *(uint8_t*)0xCD774F = renderFlags - 0x3;
+        renderFlags4 &= ~0x03;
+
         SStr::Printf(buffer, 512, "Liquids hidden.");
     }
     else
     {
-        *(uint8_t*)0xCD774F = renderFlags + 0x3;
+        renderFlags4 |= 0x03;
+
         SStr::Printf(buffer, 512, "Liquids shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleM2(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774C;
-    bool areM2Displayed = renderFlags & 0x1;
+    bool areM2Displayed = renderFlags1 & 0x01;
 
     if (areM2Displayed)
     {
-        *(uint8_t*)0xCD774C = renderFlags - 0x1;
+        renderFlags1 &= ~0x01;
+
         SStr::Printf(buffer, 512, "Client-side M2s hidden.");
     }
     else
     {
-        *(uint8_t*)0xCD774C = renderFlags + 0x1;
+        renderFlags1 |= 0x01;
+
         SStr::Printf(buffer, 512, "Client-side M2s shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleTerrain(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774C;
-    bool isTerrainShown = renderFlags & 0x2;
+    bool isTerrainShown = renderFlags1 & 0x02;
 
     if (isTerrainShown)
     {
-        *(uint8_t*)0xCD774C = renderFlags - 0x2;
+        renderFlags1 &= ~0x02;
+
         SStr::Printf(buffer, 512, "Terrain hidden.");
     }
     else
     {
-        *(uint8_t*)0xCD774C = renderFlags + 0x2;
+        renderFlags1 |= 0x02;
+
         SStr::Printf(buffer, 512, "Terrain shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleTerrainCulling(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774C;
-    bool isTerrainCullingOn = renderFlags & 0x32;
+    bool isTerrainCullingOn = renderFlags1 & 0x32;
 
     if (isTerrainCullingOn)
     {
-        *(uint8_t*)0xCD774C = renderFlags - 0x32;
+        renderFlags1 &= ~0x32;
+
         SStr::Printf(buffer, 512, "Terrain culling disabled.");
     }
     else
     {
-        *(uint8_t*)0xCD774C = renderFlags + 0x32;
+        renderFlags1 |= 0x32;
+
         SStr::Printf(buffer, 512, "Terrain culling enabled.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleWireframeMode(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774F;
-    bool isWireframeModeOn = renderFlags & 0x20;
+    bool isWireframeModeOn = renderFlags4 & 0x20;
 
     if (isWireframeModeOn)
     {
-        *(uint8_t*)0xCD774F = renderFlags - 0x20;
+        renderFlags4 &= ~0x20;
+
         SStr::Printf(buffer, 512, "Wireframe mode off.");
     }
     else
     {
-        *(uint8_t*)0xCD774F = renderFlags + 0x20;
+        renderFlags4 |= 0x20;
+
         SStr::Printf(buffer, 512, "Wireframe mode on.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::ToggleWMO(lua_State* L)
 {
     char buffer[512];
-    uint8_t renderFlags = *(uint8_t*)0xCD774D;
-    bool areWMOsDisplayed = renderFlags & 0x1;
+    bool areWMOsDisplayed = renderFlags2 & 0x01;
 
     if (areWMOsDisplayed)
     {
-        *(uint8_t*)0xCD774D = renderFlags - 0x1;
+        renderFlags2 &= ~0x01;
+
         SStr::Printf(buffer, 512, "WMOs hidden.");
     }
     else
     {
-        *(uint8_t*)0xCD774D = renderFlags + 0x1;
+        renderFlags2 |= 0x01;
+
         SStr::Printf(buffer, 512, "WMOs shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
     return 0;
 }
 
 int CustomLua::FlashGameWindow(lua_State* L)
 {
-    HWND activeWindow = *(HWND*)0x00D41620;
+    HWND activeWindow = *g_window;
 
     if (activeWindow && GetForegroundWindow() != activeWindow) {
         FLASHWINFO flashInfo{};
@@ -383,12 +405,13 @@ int CustomLua::GetCustomCombatRating(lua_State* L)
     if (cr < 25 || cr >= 32)
         FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-    CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
+    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
         value = CustomFields::GetCustomCombatRating(cr - 25);
 
     FrameScript::PushNumber(L, value);
+
     return 1;
 }
 
@@ -407,12 +430,12 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
     if (cr < 25 || cr >= 32)
         FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-    CGUnit* activeObjectPtr = (CGUnit*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
+    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
     {
-        gtCombatRating = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->level, cr);
-        gtOctClasCombatRatingScalar = ClientDB::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0.unitClass, cr);
+        gtCombatRating = DBClient::GetGameTableValue(1, activeObjectPtr->unitFields->level, cr);
+        gtOctClasCombatRatingScalar = DBClient::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0.unitClass, cr);
 
         if (gtCombatRating && gtOctClasCombatRatingScalar)
             value = gtOctClasCombatRatingScalar * CustomFields::GetCustomCombatRating(cr - 25) / gtCombatRating;
@@ -424,7 +447,7 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 
 int CustomLua::GetAvailableRoles(lua_State* L)
 {
-    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), ClientServices::GetCharacterClass());
+    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_ChrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
     LFGRolesRow* cdbcRole = 0;
 
@@ -436,16 +459,17 @@ int CustomLua::GetAvailableRoles(lua_State* L)
     FrameScript::PushBoolean(L, cdbcRole->Roles & 2);
     FrameScript::PushBoolean(L, cdbcRole->Roles & 4);
     FrameScript::PushBoolean(L, cdbcRole->Roles & 8);
+
     return 3;
 }
 
 int CustomLua::SetLFGRole(lua_State* L)
 {
-    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)0xAD341C, ClientServices::GetCharacterClass());
+    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_ChrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     LFGRolesRow* cdbcRole = 0;
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
-    uintptr_t ptr = *(uintptr_t*)0xBD0A28;
+    void* ptr = *reinterpret_cast<void**>(0xBD0A28);
 
     if (FrameScript::GetParam(L, 2, 0))
         roles |= 2;
@@ -459,17 +483,18 @@ int CustomLua::SetLFGRole(lua_State* L)
 
     cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    CVar::sub_766940((void*)ptr, roles & cdbcRole->Roles, 1, 0, 0, 1);
+    CVar::sub_766940(ptr, roles & cdbcRole->Roles, 1, 0, 0, 1);
     FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
+
     return 0;
 }
 
 int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
 {
-    float ox = FrameScript::GetNumber(L, 1);
-    float oy = FrameScript::GetNumber(L, 2);
-    float oz = FrameScript::GetNumber(L, 3);
-    void* worldFrame = *(void**)0x00B7436C;
+    float ox = static_cast<float>(FrameScript::GetNumber(L, 1));
+    float oy = static_cast<float>(FrameScript::GetNumber(L, 2));
+    float oz = static_cast<float>(FrameScript::GetNumber(L, 3));
+    void* worldFrame = *reinterpret_cast<void**>(0xB7436C);
     C3Vector pos3d = { ox, oy, oz };
     C3Vector pos2d = {};
     uint32_t flags = 0;
@@ -481,12 +506,13 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     FrameScript::PushNumber(L, x);
     FrameScript::PushNumber(L, y);
     FrameScript::PushNumber(L, pos2d.z);
+
     return 3;
 }
 
 int CustomLua::PortGraveyard(lua_State* L)
 {
-    CGPlayer* activeObjectPtr = (CGPlayer*)ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER);
+    CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr && (activeObjectPtr->playerData->playerFlags & PLAYER_FLAGS_GHOST))
     {
