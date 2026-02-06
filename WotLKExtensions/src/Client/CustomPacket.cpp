@@ -1,5 +1,7 @@
+#include <Client/ClientServices.hpp>
+#include <Client/CNetClient.hpp>
+#include <Client/CustomPacket.hpp>
 #include <GameObjects/Player.hpp>
-#include <System/CustomPacket.hpp>
 
 void CustomPacket::Apply()
 {
@@ -26,9 +28,9 @@ void CustomPacket::InitializePlayerEx()
 void __fastcall CustomPacket::ProcessMessageEx(void* _this, uint32_t unused, uint32_t a2, CDataStore* a3, uint32_t a4)
 {
     int16_t opcode = 0;
-    CDataStore_C::GetInt16(a3, &opcode);
+    CDataStore::GetInt16(a3, &opcode);
 
-    if (opcode < SMSG_UPDATE_CUSTOM_COMBAT_RATING)
+    if (opcode < NUM_ORIGINAL_MSG_TYPES)
     {
         a3->m_read -= 2;
         CNetClient::ProcessMessage(_this, a2, a3, a4);
@@ -36,23 +38,22 @@ void __fastcall CustomPacket::ProcessMessageEx(void* _this, uint32_t unused, uin
     else
     {
         ++*(uint32_t*)0xC5D638;
-        uint32_t num = opcode - SMSG_UPDATE_CUSTOM_COMBAT_RATING;
+        uint32_t num = opcode - NUM_ORIGINAL_MSG_TYPES;
         if (opcode < NUM_CUSTOM_MSG_TYPES && customData.handler[num])
             // I've got cancer writing this, function typedefs are ugly as sin
             ((void(*)(void*, uint32_t, uint32_t, CDataStore*))customData.handler[num])(customData.handlerParam[num], opcode, a2, a3);
         else
-            // Yes I know this throws C4229, I'll let you guess why
-            ((void(__thiscall*)(CDataStore*))a3->vTable->IsRead)(a3);
+            CDataStore::IsRead(a3);
     }
 }
 
 void __fastcall CustomPacket::SetMessageHandlerEx(void* _this, uint32_t unused, uint32_t opcode, void* handler, void* param)
 {
-    if (opcode < SMSG_UPDATE_CUSTOM_COMBAT_RATING)
+    if (opcode < NUM_ORIGINAL_MSG_TYPES)
         CNetClient::SetMessageHandler(_this, opcode, handler, param);
     else
     {
-        uint32_t num = opcode - SMSG_UPDATE_CUSTOM_COMBAT_RATING;
+        uint32_t num = opcode - NUM_ORIGINAL_MSG_TYPES;
         
         customData.handler[num] = handler;
         customData.handlerParam[num] = param;
@@ -63,8 +64,8 @@ void CustomPacket::Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, u
 {
     int8_t ratingID = 0;
     int32_t ratingAmount = 0;
-    CDataStore_C::GetInt8(a3, &ratingID);
-    CDataStore_C::GetInt32(a3, &ratingAmount);
+    CDataStore::GetInt8(a3, &ratingID);
+    CDataStore::GetInt32(a3, &ratingAmount);
 
     if (ratingID > -1 && ratingID < 7)
     {

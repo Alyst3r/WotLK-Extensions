@@ -2,6 +2,7 @@
 
 #include <SharedDefines.hpp>
 
+struct lua_State;
 class Main;
 
 class CustomLua {

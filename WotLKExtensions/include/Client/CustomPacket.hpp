@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Client/CDataStore.hpp>
 #include <SharedDefines.hpp>
 
 static CustomNetClient customData = { 0 };

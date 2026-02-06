@@ -7,6 +7,9 @@ public:
 
     static void SetYearOffsetMultiplier();
 private:
+    Misc() = delete;
+    ~Misc() = delete;
+
     // defaults: 49 and 37 - both need to be increased by number of mods you add
     // itemModTableVal is capped on 127 until I rewrite some parts of the code - if I do that is
     // so and so itemModTable is capped to 139 I think :P

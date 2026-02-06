@@ -1,4 +1,5 @@
-#include <System/Misc.hpp>
+#include <Client/Misc.hpp>
+#include <Client/SStr.hpp>
 
 #include <ctime>
 
@@ -12,8 +13,9 @@ void Misc::ApplyPatches()
 #if ITEMMODEXT_PATCH
     // Code needs to be un-commented when you decide to add some custom mods
     // ofc can replace "ITEM_MOD_TEST" with your own
-    //const char* customItemModStrings[1] = {
-    //	"ITEM_MOD_TEST"
+    //const char* customItemModStrings[1] =
+    //{
+    //    "ITEM_MOD_TEST"
     //};
 
     memcpy(&itemModTable, (const void*)0xAD6640, 0xC4);
@@ -34,10 +36,10 @@ void Misc::ApplyPatches()
     Util::OverwriteUInt32AtAddress(0x62BE60, (uint32_t)&itemModTableVal);
 
     //for (uint32_t i = 0; i < sizeof(customItemModStrings) / 4; i++)
-    //	itemModTable[i + 49] = (uint32_t)customItemModStrings[i];
-    //
+    //    itemModTable[i + 49] = (uint32_t)customItemModStrings[i];
+
     //for (uint32_t j = 37; j < sizeof(itemModTableVal) / 4; j++)
-    //	itemModTableVal[j] = j + 12;
+    //    itemModTableVal[j] = j + 12;
 #endif
 
     // this one is non-optional, it's WoWTime fix I guess

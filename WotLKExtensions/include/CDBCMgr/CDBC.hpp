@@ -1,5 +1,6 @@
 #pragma once
 #include <SharedDefines.hpp>
+
 #include <string>
 
 class CDBC

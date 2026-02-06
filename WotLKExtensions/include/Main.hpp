@@ -1,10 +1,10 @@
 #pragma once
 
 #include <CDBCMgr/CDBCMgr.hpp>
+#include <Client/CustomLua.hpp>
+#include <Client/CustomPacket.hpp>
+#include <Client/Misc.hpp>
 #include <GameObjects/Player.hpp>
-#include <System/CustomLua.hpp>
-#include <System/CustomPacket.hpp>
-#include <System/Misc.hpp>
 #include <WorldData/World.hpp>
 
 class Main

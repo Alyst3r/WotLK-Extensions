@@ -1,6 +1,11 @@
 #include <CDBCMgr/CDBC.hpp>
+#include <Client/SErr.hpp>
+#include <Client/SFile.hpp>
+#include <Client/SMem.hpp>
+#include <Client/SStr.hpp>
 
-CDBC* CDBC::LoadDB(const char* name) {
+CDBC* CDBC::LoadDB(const char* name)
+{
     uint32_t Buffer = 0;
     void* FileBlock = 0;
     int v26;
@@ -55,20 +60,22 @@ CDBC* CDBC::LoadDB(const char* name) {
     if (!SFile::ReadFile(FileBlock, this->stringTable, len, 0, 0, 0))
         SErr::PrepareAppFatal(0x85100086, "%s: Cannot read string table", filePath);
 
-    GetMinMaxIndices();
     this->isLoaded = true;
+
+    GetMinMaxIndices();
     SFile::CloseFile(FileBlock);
+
     return this;
 }
 
-void CDBC::UnloadDB() {
+void CDBC::UnloadDB()
+{
     if (this->rows)
         SMem::Free(this->rows, "delete[]", -1, 0);
 
     if (this->stringTable)
         SMem::Free(this->stringTable, "delete[]", -1, 0);
 
-    //TODO: expose the CDBC() constructor to wipe here?
     this->rows = 0;
     this->stringTable = 0;
     this->numRows = 0;
@@ -77,9 +84,11 @@ void CDBC::UnloadDB() {
     this->isLoaded = false;
 };
 
-void CDBC::GetMinMaxIndices() {
+void CDBC::GetMinMaxIndices()
+{
     uintptr_t* firstRow = (uintptr_t*)this->rows;
     uintptr_t* lastRow = firstRow + ((numRows - 1) * this->numColumns);
+
     this->minIndex = *firstRow;  // First row is the minimum
     this->maxIndex = *lastRow;   // Last row is the maximum
 }

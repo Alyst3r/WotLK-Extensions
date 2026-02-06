@@ -1,6 +1,10 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
+#include <Client/CDataStore.hpp>
+#include <Client/ClientServices.hpp>
+#include <Client/CustomLua.hpp>
+#include <Client/FrameScript.hpp>
+#include <Client/SStr.hpp>
 #include <GameObjects/Player.hpp>
-#include <System/CustomLua.hpp>
 
 void CustomLua::Apply()
 {
@@ -352,7 +356,7 @@ int CustomLua::FlashGameWindow(lua_State* L)
     HWND activeWindow = *(HWND*)0x00D41620;
 
     if (activeWindow && GetForegroundWindow() != activeWindow) {
-        FLASHWINFO flashInfo;
+        FLASHWINFO flashInfo{};
 
         flashInfo.cbSize = sizeof(flashInfo);
         flashInfo.hwnd = activeWindow;
@@ -420,7 +424,7 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 
 int CustomLua::GetAvailableRoles(lua_State* L)
 {
-    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), sub_6B1080());
+    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)(0xAD341C), ClientServices::GetCharacterClass());
     uint32_t classId = 0;
     LFGRolesRow* cdbcRole = 0;
 
@@ -437,7 +441,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 
 int CustomLua::SetLFGRole(lua_State* L)
 {
-    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)0xAD341C, sub_6B1080());
+    ChrClassesRow* row = (ChrClassesRow*)ClientDB::GetRow((void*)0xAD341C, ClientServices::GetCharacterClass());
     LFGRolesRow* cdbcRole = 0;
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
@@ -488,13 +492,13 @@ int CustomLua::PortGraveyard(lua_State* L)
     {
         CDataStore pkt;
 
-        CDataStore_C::GenPacket(&pkt);
-        CDataStore_C::PutInt32(&pkt, CMSG_TELEPORT_GRAVEYARD_REQUEST);
+        CDataStore::GenPacket(&pkt);
+        CDataStore::PutInt32(&pkt, CMSG_TELEPORT_GRAVEYARD_REQUEST);
 
         pkt.m_read = 0;
 
         ClientServices::SendPacket(&pkt);
-        CDataStore_C::Release(&pkt);
+        CDataStore::Release(&pkt);
     }
 
     return 0;

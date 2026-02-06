@@ -1,6 +1,7 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
+#include <Client/ClientServices.hpp>
+#include <Client/CustomLua.hpp>
 #include <GameObjects/Player.hpp>
-#include <System/CustomLua.hpp>
 
 void Player::ApplyPatches()
 {
@@ -38,7 +39,7 @@ void Player::CharacterCreationRaceCrashfix()
 
 void Player::LFDClassRoleExtension()
 {
-#if CLASSLFDROLES_PATCH && !LFGROLES_DBC
+#if CLASSLFDROLES_PATCH && (!CUSTOM_DBC || !LFGROLES_DBC)
     std::vector<uint32_t> patchedAddresses = { 0x552948, 0x553B7D, 0x553B94, 0x553DE7, 0x554922 };
 
     for (uint8_t i = 0; i < patchedAddresses.size(); i++)
@@ -56,7 +57,7 @@ void Player::LFDClassRoleExtension()
 
 uint32_t Player::CheckLFGRoles(uint32_t roles)
 {
-    uint32_t classId = sub_6B1080();
+    uint32_t classId = ClientServices::GetCharacterClass();
 
     if (classId > *(uint32_t*)0xAD3410 || classId < *(uint32_t*)0xAD3414) // ChrClasses.dbc max/min indices
         classId = 0;

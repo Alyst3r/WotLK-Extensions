@@ -27,7 +27,7 @@ Logger::Logger()
     localtime_s(&tm, &t);
 
     std::ostringstream oss;
-    oss << "Logs/" << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S") << build << ".txt";
+    oss << "DLL_Logs/" << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S") << build << ".txt";
 
     m_file.open(oss.str(), std::ios::out);
 }
