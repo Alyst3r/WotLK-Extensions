@@ -2,11 +2,7 @@
 #include <CDBCMgr/CDBC.hpp>
 #include <CDBCMgr/CDBCMgr.hpp>
 
-struct LFGRolesRow
-{
-    uint32_t ClassID;
-    uint32_t Roles;
-};
+#include <SharedDefines.hpp>
 
 class LFGRoles : public CDBC
 {
@@ -34,7 +30,7 @@ public:
 
         for (uint32_t i = 0; i < this->numRows; i++)
         {
-            GlobalCDBCMap.addRow(this->fileName, row->ClassID, *row);
+            GlobalCDBCMap.addRow(this->fileName, row->m_classID, *row);
             ++row;
         }
     };

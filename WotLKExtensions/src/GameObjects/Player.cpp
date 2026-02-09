@@ -64,12 +64,12 @@ uint32_t Player::CheckLFGRoles(uint32_t roles)
 
     LFGRolesRow* cdbcRoles = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    return roles & cdbcRoles->Roles;
+    return roles & cdbcRoles->m_roles;
 }
 
 uint32_t Player::GetClassRoles(uint32_t classId)
 {
     LFGRolesRow* cdbcRoles = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    return cdbcRoles->Roles;
+    return cdbcRoles->m_roles;
 }

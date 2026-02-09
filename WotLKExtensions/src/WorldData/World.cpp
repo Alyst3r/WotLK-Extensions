@@ -36,8 +36,8 @@ void WorldDataExtensions::FillZoneLightData()
         if (!row)
             continue;
 
-        data.mapID = row->mapID;
-        data.lightID = row->lightID;
+        data.mapID = row->m_mapID;
+        data.lightID = row->m_lightID;
 
         for (uint32_t j = counter; j <= zoneLightPointMax; j++)
         {
@@ -46,14 +46,14 @@ void WorldDataExtensions::FillZoneLightData()
 
             counter++;
 
-            if (!tempRow || tempRow->zoneLightID < row->ID)
+            if (!tempRow || tempRow->m_zoneLightID < row->m_ID)
                 continue;
 
-            if (tempRow->zoneLightID > row->ID)
+            if (tempRow->m_zoneLightID > row->m_ID)
                 break;
 
-            tempVec.x = tempRow->positionX;
-            tempVec.y = tempRow->positionY;
+            tempVec.x = tempRow->m_positionX;
+            tempVec.y = tempRow->m_positionY;
 
             points.push_back(tempVec);
 

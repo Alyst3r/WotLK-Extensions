@@ -456,9 +456,9 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 
     cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    FrameScript::PushBoolean(L, cdbcRole->Roles & 2);
-    FrameScript::PushBoolean(L, cdbcRole->Roles & 4);
-    FrameScript::PushBoolean(L, cdbcRole->Roles & 8);
+    FrameScript::PushBoolean(L, cdbcRole->m_roles & 2);
+    FrameScript::PushBoolean(L, cdbcRole->m_roles & 4);
+    FrameScript::PushBoolean(L, cdbcRole->m_roles & 8);
 
     return 3;
 }
@@ -483,7 +483,7 @@ int CustomLua::SetLFGRole(lua_State* L)
 
     cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    CVar::sub_766940(ptr, roles & cdbcRole->Roles, 1, 0, 0, 1);
+    CVar::sub_766940(ptr, roles & cdbcRole->m_roles, 1, 0, 0, 1);
     FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
 
     return 0;

@@ -2,13 +2,7 @@
 #include <CDBCMgr/CDBC.hpp>
 #include <CDBCMgr/CDBCMgr.hpp>
 
-struct ZoneLightRow
-{
-    int32_t ID;
-    char* name;
-    int32_t mapID;
-    int32_t lightID;
-};
+#include <SharedDefines.hpp>
 
 class ZoneLight : public CDBC
 {
@@ -35,8 +29,8 @@ public:
         uintptr_t stringTable = (uintptr_t)this->stringTable;
         for (uint32_t i = 0; i < this->numRows; i++)
         {
-            row->name = (char*)(stringTable + (uintptr_t)row->name);
-            GlobalCDBCMap.addRow(this->fileName, row->ID, *row);
+            row->m_name = (char*)(stringTable + (uintptr_t)row->m_name);
+            GlobalCDBCMap.addRow(this->fileName, row->m_ID, *row);
             ++row;
         }
     };

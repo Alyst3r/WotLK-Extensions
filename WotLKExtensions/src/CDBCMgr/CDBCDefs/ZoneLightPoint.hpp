@@ -2,14 +2,7 @@
 #include <CDBCMgr/CDBC.hpp>
 #include <CDBCMgr/CDBCMgr.hpp>
 
-struct ZoneLightPointRow
-{
-    int32_t ID;
-    int32_t zoneLightID;
-    float positionX;
-    float positionY;
-    int32_t pointOrder;
-};
+#include <SharedDefines.hpp>
 
 class ZoneLightPoint : public CDBC
 {
@@ -35,7 +28,7 @@ public:
         ZoneLightPointRow* row = (ZoneLightPointRow*)this->rows;
         for (uint32_t i = 0; i < this->numRows; i++)
         {
-            GlobalCDBCMap.addRow(this->fileName, row->ID, *row);
+            GlobalCDBCMap.addRow(this->fileName, row->m_ID, *row);
             ++row;
         }
     };
