@@ -12,4 +12,8 @@ class Main
 public:
     static void OnAttach();
     static void Init();
+
+private:
+    Main() = delete;
+    ~Main() = delete;
 };

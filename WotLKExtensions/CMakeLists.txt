@@ -29,27 +29,34 @@ configure_file(
 
 file(GLOB_RECURSE WotlkExt_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
+
+file(GLOB_RECURSE WotlkExt_includes CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.inl"
 )
 
-file(GLOB_RECURSE WotlkExt_includes CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.inl"
-)
-
 add_library(WotLKExtensions SHARED
     ${WotlkExt_sources}
-    ${WotlkExt_includes}
+)
+
+target_sources(WotLKExtensions PRIVATE
+    FILE_SET HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
+    FILES ${WotlkExt_includes}
 )
 
 if(MSVC)
     target_compile_definitions(WotLKExtensions PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
 
-target_include_directories(WotLKExtensions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "DLL" FILES ${WotlkExt_sources})
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "Headers" FILES ${WotlkExt_includes})
+target_include_directories(WotLKExtensions PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/
+)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "DLL" FILES
+    ${WotlkExt_sources}
+    ${WotlkExt_includes}
+)
