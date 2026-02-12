@@ -8,6 +8,8 @@
 #include <Data/DBCAddresses.hpp>
 #include <Data/MiscAddresses.hpp>
 #include <GameObjects/Player.hpp>
+#include <GameObjects/CGUnit.hpp>
+#include <GameObjects/CGPlayer.hpp>
 
 void CustomLua::Apply()
 {
@@ -36,7 +38,7 @@ int CustomLua::GetShapeshiftFormID(lua_State* L)
     if (activePlayer)
     {
         CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
-        FrameScript::PushNumber(L, CGUnit_C::GetShapeshiftFormId(activeObjectPtr));
+        FrameScript::PushNumber(L, static_cast<double>(CGUnit::GetShapeshiftFormID(activeObjectPtr)));
 
         return 1;
     }
@@ -168,7 +170,7 @@ int CustomLua::ReloadMap(lua_State* L)
         MapRow* row = 0;
         int32_t mapId = *g_currentMapID;
         CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
-        CMovement* moveInfo = activeObjectPtr->movementInfo;
+        CMovement* moveInfo = activeObjectPtr->m_movementInfo;
 
         if (mapId > -1)
         {
@@ -434,8 +436,8 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 
     if (activeObjectPtr)
     {
-        gtCombatRating = DBClient::GetGameTableValue(1, activeObjectPtr->unitFields->level, cr);
-        gtOctClasCombatRatingScalar = DBClient::GetGameTableValue(1, activeObjectPtr->unitFields->bytes0.unitClass, cr);
+        gtCombatRating = DBClient::GetGameTableValue(1, activeObjectPtr->m_unitFields->m_level, cr);
+        gtOctClasCombatRatingScalar = DBClient::GetGameTableValue(1, activeObjectPtr->m_unitFields->m_bytes0.m_unitClass, cr);
 
         if (gtCombatRating && gtOctClasCombatRatingScalar)
             value = gtOctClasCombatRatingScalar * CustomFields::GetCustomCombatRating(cr - 25) / gtCombatRating;
@@ -514,7 +516,7 @@ int CustomLua::PortGraveyard(lua_State* L)
 {
     CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
 
-    if (activeObjectPtr && (activeObjectPtr->playerData->playerFlags & PLAYER_FLAGS_GHOST))
+    if (activeObjectPtr && (activeObjectPtr->m_playerData->m_playerFlags & PLAYER_FLAGS_GHOST))
     {
         CDataStore pkt;
 

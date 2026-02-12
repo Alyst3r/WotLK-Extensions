@@ -3,6 +3,7 @@
 #include <Data/DBCAddresses.hpp>
 #include <Data/MiscAddresses.hpp>
 #include <Data/Enums.hpp>
+#include <Data/Math.hpp>
 #include <Data/Structs.hpp>
 
 #include <PatchConfig.hpp>
@@ -15,72 +16,6 @@ static std::unordered_map<char*, void*> luaFuncts;
 typedef uint64_t WoWGUID;
 
 // structures
-struct C2Vector
-{
-    float x;
-    float y;
-};
-
-struct C3Vector
-{
-    float x;
-    float y;
-    float z;
-};
-
-struct CMovement
-{
-    uint32_t padding0x00[4];
-    C3Vector position;
-    float padding0x1C;
-    float orientation;
-    float pitch;
-    uint32_t padding28[7];
-    uint32_t movementFlags;
-    uint32_t movementFlags2;
-    uint32_t padding0x4C[63];
-};
-
-struct UnitBytes0
-{
-    uint8_t unitRace;
-    uint8_t unitClass;
-    uint8_t unitGender;
-    uint8_t unitPowerType;
-};
-
-struct UnitFields
-{
-    uint32_t padding0x00[17];
-    UnitBytes0 bytes0;
-    uint32_t padding0x48[30];
-    uint32_t level;
-    uint32_t padding0xC4[93];
-};
-
-struct CGUnit
-{
-    uint32_t padding0x00[52];
-    UnitFields* unitFields;
-    uint32_t padding0xD4;
-    CMovement* movementInfo;
-    uint32_t padding0x34[971];
-};
-
-struct PlayerFields
-{
-    WoWGUID playerDuelArbiter;
-    uint32_t playerFlags;
-    uint32_t padding0x0C[1175];
-};
-
-struct CGPlayer
-{
-    CGUnit unitData;
-    PlayerFields* playerData;
-    uint32_t padding0x1008[1024];
-};
-
 struct CustomNetClient
 {
     void* handler[NUM_CUSTOM_MSG_TYPES - SMSG_UPDATE_CUSTOM_COMBAT_RATING];
@@ -120,16 +55,6 @@ namespace CGChat
 namespace CGPetInfo
 {
     CLIENT_FUNCTION(GetPet, 0x5D3390, __cdecl, WoWGUID, (int32_t))
-}
-
-namespace CGPlayer_C
-{
-    CLIENT_FUNCTION(IsDeadOrGhost, 0x6DAC10, __thiscall, bool, (CGPlayer*))
-}
-
-namespace CGUnit_C
-{
-    CLIENT_FUNCTION(GetShapeshiftFormId, 0x71AF70, __thiscall, uint32_t, (CGUnit*))
 }
 
 namespace ClientPacket
