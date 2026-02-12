@@ -36,6 +36,11 @@ char* FrameScript::GetString(lua_State* L, int32_t index, bool p)
     return reinterpret_cast<char* (__cdecl*)(lua_State*, int32_t, bool)>(0x84E0E0)(L, index, p);
 }
 
+char* FrameScript::GetText(const char* str, int32_t a2, int32_t a3)
+{
+    return reinterpret_cast<char* (__cdecl*)(const char*, int32_t, int32_t)>(0x819D40)(str, a2, a3);
+}
+
 int32_t FrameScript::GetTop(lua_State* L, int32_t p)
 {
     return reinterpret_cast <int32_t(__cdecl*)(lua_State*, int32_t)>(0x84DBD0)(L, p);

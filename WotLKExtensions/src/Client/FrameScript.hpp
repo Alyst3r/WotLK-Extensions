@@ -12,6 +12,7 @@ public:
     static double GetNumber(lua_State* L, int32_t index);
     static bool GetParam(lua_State* L, int32_t index, bool p);
     static char* GetString(lua_State* L, int32_t index, bool p);
+    static char* GetText(const char* str, int32_t a2, int32_t a3);
     static int32_t GetTop(lua_State* L, int32_t p);
     static int32_t IsNumber(lua_State* L, int32_t index);
     static char* IsString(lua_State* L, int32_t index);

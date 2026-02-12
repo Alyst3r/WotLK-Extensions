@@ -38,6 +38,36 @@ struct MapRow
     uint32_t padding0x08[17];
 };
 
+struct SkillLineAbilityRow
+{
+    int32_t m_ID;
+    uint32_t m_skillLine;
+    uint32_t m_spell;
+    uint32_t m_raceMask;
+    uint32_t m_classMask;
+    uint32_t m_excludeRace;
+    uint32_t m_excludeClass;
+    uint32_t m_minSkillLineRank;
+    uint32_t m_supercededBySpell;
+    uint32_t m_acquireMethod;
+    uint32_t m_trivialSkillLineRankHigh;
+    uint32_t m_trivialSkillLineRankLow;
+    uint32_t m_characterPoints[2];
+    uint32_t m_numSkillUps;
+};
+
+struct SkillLineRow
+{
+    int32_t m_ID;
+    uint32_t m_categoryID;
+    uint32_t m_skillCostsID;
+    char* m_displayName_lang;
+    char* m_description_lang;
+    uint32_t m_spellIconID;
+    char* m_alternateVerb_lang;
+    uint32_t m_canLink;
+};
+
 struct SpellRow
 {
     int32_t m_ID;

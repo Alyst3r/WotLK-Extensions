@@ -117,6 +117,11 @@ namespace CGChat
     CLIENT_FUNCTION(AddChatMessage, 0x509DD0, __cdecl, bool, (char*, uint32_t, uint32_t, uint32_t, uint32_t*, uint32_t, char*, uint64_t, uint32_t, uint64_t, uint32_t, uint32_t, uint32_t*))
 }
 
+namespace CGPetInfo
+{
+    CLIENT_FUNCTION(GetPet, 0x5D3390, __cdecl, WoWGUID, (int32_t))
+}
+
 namespace CGPlayer_C
 {
     CLIENT_FUNCTION(IsDeadOrGhost, 0x6DAC10, __thiscall, bool, (CGPlayer*))
