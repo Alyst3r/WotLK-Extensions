@@ -27,10 +27,7 @@ struct CGPlayer : CGUnit
     static uint32_t GetClassRoles(uint32_t classId);
 };
 
-namespace CustomFields
+struct CGPlayerCustomFields
 {
-    inline int32_t combatRating[7] = { 0 };
-
-    inline int32_t GetCustomCombatRating(int8_t index) { return combatRating[index]; }
-    inline void SetCustomCombatRating(int8_t index, int32_t newValue) { combatRating[index] = newValue; }
-}
+    int32_t m_combatRating[7] = { 0 };
+};

@@ -12,7 +12,7 @@ public:
     static int GetAvailableRoles(lua_State* L);
     static int SetLFGRole(lua_State* L);
 private:
-    static void AddToFunctionMap(char* name, void* ptr);
+    static void AddToFunctionMap(const char* name, void* ptr);
     static void Apply();
     static void RegisterFunctions();
 

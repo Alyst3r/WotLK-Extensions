@@ -1,15 +1,24 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CDataStore.hpp>
+#include <Client/CGChat.hpp>
 #include <Client/ClientServices.hpp>
 #include <Client/CNetClient.hpp>
 #include <Client/CustomLua.hpp>
+#include <Client/CVar.hpp>
 #include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
+#include <Client/SpellParser.hpp>
 #include <Client/SStr.hpp>
 #include <Data/DBCAddresses.hpp>
+#include <Data/Enums.hpp>
 #include <Data/MiscAddresses.hpp>
 #include <GameObjects/CGUnit.hpp>
 #include <GameObjects/CGPlayer.hpp>
+#include <Misc/DataContainer.hpp>
+#include <Misc/Util.hpp>
+#include <WorldData/CWorld.hpp>
+
+#include <PatchConfig.hpp>
 
 void CustomLua::Apply()
 {
@@ -20,7 +29,9 @@ void CustomLua::Apply()
 
 int CustomLua::LoadScriptFunctionsCustom()
 {
-    for (auto& it : luaFuncts)
+    auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunstionMap();
+
+    for (auto& it : luaFunctionMap)
     {
         const char* name = it.first;
         void* ptr = it.second;
@@ -53,12 +64,12 @@ int CustomLua::GetSpellDescription(lua_State* L)
     if (FrameScript::IsNumber(L, 1))
     {
         uint32_t spellId = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
-        SpellRow* row = nullptr;
+        SpellRow row{};
         char desc[1024] = { 0 };
 
         if (DBClient::GetLocalizedRow(g_spellDB, spellId, &row))
         {
-            SpellParser::ParseText(&row, &desc, 1024, 0, 0, 0, 0, 1, 0);
+            SpellParser::ParseText(&row, desc, 1024, 0, 0, 0, 0, 1, 0);
             FrameScript::PushString(L, desc);
 
             return 1;
@@ -180,8 +191,8 @@ int CustomLua::ReloadMap(lua_State* L)
             {
                 char buffer[512];
 
-                World::UnloadMap();
-                World::LoadMap(row->m_Directory, &moveInfo->position, mapId);
+                CWorld::UnloadMap();
+                CWorld::LoadMap(row->m_Directory, &moveInfo->position, mapId);
                 SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_Directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
                 CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
@@ -410,7 +421,7 @@ int CustomLua::GetCustomCombatRating(lua_State* L)
     CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
-        value = CustomFields::GetCustomCombatRating(cr - 25);
+        value = DataContainer::GetInstance().GetCustomCombatRating(cr - 25);
 
     FrameScript::PushNumber(L, value);
 
@@ -440,10 +451,11 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
         gtOctClasCombatRatingScalar = DBClient::GetGameTableValue(1, activeObjectPtr->m_unitFields->m_bytes0.m_unitClass, cr);
 
         if (gtCombatRating && gtOctClasCombatRatingScalar)
-            value = gtOctClasCombatRatingScalar * CustomFields::GetCustomCombatRating(cr - 25) / gtCombatRating;
+            value = gtOctClasCombatRatingScalar * DataContainer::GetInstance().GetCustomCombatRating(cr - 25) / gtCombatRating;
     }
 
     FrameScript::PushNumber(L, value);
+
     return 1;
 }
 
@@ -485,7 +497,7 @@ int CustomLua::SetLFGRole(lua_State* L)
 
     cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    CVar::sub_766940(ptr, roles & cdbcRole->m_roles, 1, 0, 0, 1);
+    CVar::Set(ptr, roles & cdbcRole->m_roles, 1, 0, 0, 1);
     FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
 
     return 0;
@@ -500,9 +512,9 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     C3Vector pos3d = { ox, oy, oz };
     C3Vector pos2d = {};
     uint32_t flags = 0;
-    int result = World::Pos3Dto2D(worldFrame, nullptr, &pos3d, &pos2d, &flags);
-    float x;
-    float y;
+    int result = CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
+    float x = 0.f;
+    float y = 0.f;
 
     Util::PercToScreenPos(pos2d.x, pos2d.y, &x, &y);
     FrameScript::PushNumber(L, x);
@@ -532,9 +544,9 @@ int CustomLua::PortGraveyard(lua_State* L)
     return 0;
 }
 
-void CustomLua::AddToFunctionMap(char* name, void* ptr)
+void CustomLua::AddToFunctionMap(const char* name, void* ptr)
 {
-    luaFuncts.insert(std::make_pair(name, ptr));
+    DataContainer::GetInstance().AddLuaFunction(name, ptr);
 }
 
 void CustomLua::RegisterFunctions()

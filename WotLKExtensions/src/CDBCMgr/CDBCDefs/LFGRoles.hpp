@@ -1,8 +1,9 @@
 #pragma optimize("", off)
 #include <CDBCMgr/CDBC.hpp>
 #include <CDBCMgr/CDBCMgr.hpp>
+#include <Data/Structs.hpp>
 
-#include <SharedDefines.hpp>
+#include <cstdint>
 
 class LFGRoles : public CDBC
 {

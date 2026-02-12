@@ -1,7 +1,9 @@
 #include <Client/CDataStore.hpp>
 #include <Client/ClientServices.hpp>
 #include <Client/CNetClient.hpp>
+#include <Data/Enums.hpp>
 #include <GameObjects/CGPlayer.hpp>
+#include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 #include <SharedDefines.hpp>
 
@@ -55,12 +57,19 @@ void __fastcall CNetClient::ProcessMessageEx(void* _this, uint32_t unused, uint3
     else
     {
         ++*(uint32_t*)0xC5D638;
-        uint32_t num = opcode - NUM_ORIGINAL_MSG_TYPES;
-        if (opcode < NUM_CUSTOM_MSG_TYPES && customData.handler[num])
-            // I've got cancer writing this, function typedefs are ugly as sin
-            ((void(*)(void*, uint32_t, uint32_t, CDataStore*))customData.handler[num])(customData.handlerParam[num], opcode, a2, a3);
-        else
-            CDataStore::IsRead(a3);
+        auto& packetData = DataContainer::GetInstance().GetPacketHandlerMap();
+
+        for (auto& it : packetData)
+        {
+            if (opcode < NUM_CUSTOM_MSG_TYPES && it.first == opcode)
+            {
+                auto& data = it.second;
+
+                reinterpret_cast<void (__cdecl*)(void*, uint32_t, uint32_t, CDataStore*)>(data.m_handler)(data.m_handler, opcode, a2, a3);
+            }
+            else
+                CDataStore::IsRead(a3);
+        }
     }
 }
 
@@ -69,12 +78,7 @@ void __fastcall CNetClient::SetMessageHandlerEx(void* _this, uint32_t unused, ui
     if (opcode < NUM_ORIGINAL_MSG_TYPES)
         CNetClient::SetMessageHandler(_this, opcode, handler, param);
     else
-    {
-        uint32_t num = opcode - NUM_ORIGINAL_MSG_TYPES;
-
-        customData.handler[num] = handler;
-        customData.handlerParam[num] = param;
-    }
+        DataContainer::GetInstance().AddPacketHandler(opcode, CNetClientCustomPacket(handler, param));
 }
 
 void CNetClient::Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uint32_t opcode, uint32_t a2, CDataStore* a3)
@@ -87,8 +91,8 @@ void CNetClient::Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uin
     if (ratingID > -1 && ratingID < 7)
     {
         if (ratingAmount > -1)
-            CustomFields::SetCustomCombatRating(ratingID, ratingAmount);
+            DataContainer::GetInstance().SetCustomCombatRating(ratingID, ratingAmount);
         else
-            CustomFields::SetCustomCombatRating(ratingID, 0);
+            DataContainer::GetInstance().SetCustomCombatRating(ratingID, 0);
     }
 }

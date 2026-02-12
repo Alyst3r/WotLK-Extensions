@@ -4,10 +4,17 @@ void Main::OnAttach()
 {
     Init();
     
+    // this one is non-optional, it's WoWTime fix I guess
+    // and don't let me get started how retarded original idea behind packing like this is
+    WoWTime::ApplyWoWTimePatches();
+
     // Apply patches
     Misc::ApplyPatches();
     CGPlayer::ApplyPatches();
-    WorldDataExtensions::ApplyPatches();
+    
+#if CUSTOM_DBC && ZONELIGHT_DBC
+    ZoneLightData::ApplyZoneLightsExtensions();
+#endif
 
     // Custom dbc loader
 #if CUSTOM_DBC
@@ -17,7 +24,10 @@ void Main::OnAttach()
 
 void Main::Init()
 {
-    Misc::SetYearOffsetMultiplier();
+    // just to create singleton early to let everything else access already initialized instance
+    DataContainer& dc = DataContainer::GetInstance();
+
+    dc.SetYearOffsetMultiplier();
 
 #if CUSTOMPACKETS_PATCH
     CNetClient::Apply();
@@ -25,8 +35,8 @@ void Main::Init()
 
 #if OOBLUAFUNCTIONS_PATCH || CUSTOM_DBC || CUSTOMPACKETS_PATCH
     // From AwesomeWotLK, invalid function pointer hack
-    *(uint32_t*)0xD415B8 = 1;
-    *(uint32_t*)0xD415BC = 0x7FFFFFFF;
+    *reinterpret_cast<uint32_t*>(0xD415B8) = 1;
+    *reinterpret_cast<uint32_t*>(0xD415BC) = 0x7FFFFFFF;
 #endif
 
 #if OOBLUAFUNCTIONS_PATCH || CUSTOMPACKETS_PATCH

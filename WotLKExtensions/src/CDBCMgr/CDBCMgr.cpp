@@ -2,6 +2,9 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
+#include <Misc/Util.hpp>
+
+#include <PatchConfig.hpp>
 
 CDBCMgr GlobalCDBCMap;
 

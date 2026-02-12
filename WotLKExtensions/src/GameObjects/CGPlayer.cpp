@@ -1,9 +1,11 @@
-#include <PatchConfig.hpp>
-
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/ClientServices.hpp>
 #include <GameObjects/CGPlayer.hpp>
+#include <Misc/DataContainer.hpp>
+#include <Misc/Util.hpp>
+
+#include <PatchConfig.hpp>
 #include <SharedDefines.hpp>
 
 bool CGPlayer::IsDeadOrGhost(CGPlayer* thisPlayer)
@@ -30,28 +32,33 @@ void CGPlayer::CharacterCreationRaceCrashfix()
 {
     std::vector<uint32_t> patchedAddresses = { 0x4E157D, 0x4E16A3, 0x4E15B5, 0x4E20EE, 0x4E222A, 0x4E2127, 0x4E1E94, 0x4E1C3A };
 
-    for (uint8_t i = 0; i < patchedAddresses.size(); i++)
-        Util::OverwriteUInt32AtAddress(patchedAddresses[i], (uint32_t)&memoryTable);
+    uint32_t* raceNameTablePtr = DataContainer::GetInstance().GetRaceTablePtr();
+    uint32_t* memoryTablePtr = DataContainer::GetInstance().GetMemoryTablePtr();
 
-    Util::OverwriteUInt32AtAddress(0x4CDA43, (uint32_t)&raceNameTable);
+    for (uint8_t i = 0; i < patchedAddresses.size(); i++)
+        Util::OverwriteUInt32AtAddress(patchedAddresses[i], reinterpret_cast<uint32_t>(memoryTablePtr));
+
+    Util::OverwriteUInt32AtAddress(0x4CDA43, reinterpret_cast<uint32_t>(raceNameTablePtr));
 
     // copy existing pointer table from wow.exe and fill the remaining slots with pointer to dummy
-    memcpy(&raceNameTable, (const void*)0xB24180, 0x30);
+    memcpy(raceNameTablePtr, reinterpret_cast<const void*>(0xB24180), 0x30);
 
     for (uint8_t i = 22; i < 32; i++)
-        raceNameTable[i] = (uint32_t)&dummy;
+        raceNameTablePtr[i] = (uint32_t)&dummy;
 
     // I have a hunch this one is needed too
-    Util::SetByteAtAddress((void*)0x4E0F86, 0x40);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x4E0F86), 0x40);
 }
 
 void CGPlayer::LFDClassRoleExtension()
 {
 #if CLASSLFDROLES_PATCH && (!CUSTOM_DBC || !LFGROLES_DBC)
+    uint32_t tablePtr = reinterpret_cast<uint32_t>(DataContainer::GetInstance().GetClassRoleMaskTablePtr());
+
     std::vector<uint32_t> patchedAddresses = { 0x552948, 0x553B7D, 0x553B94, 0x553DE7, 0x554922 };
 
     for (uint8_t i = 0; i < patchedAddresses.size(); i++)
-        Util::OverwriteUInt32AtAddress(patchedAddresses[i], (uint32_t)&classRoleMask);
+        Util::OverwriteUInt32AtAddress(patchedAddresses[i], tablePtr);
 #else
     Util::OverwriteUInt32AtAddress(0x553E90, (uint32_t)&CheckLFGRoles - 0x553E94);
     Util::OverwriteUInt32AtAddress(0x55736D, (uint32_t)&CheckLFGRoles - 0x557371);

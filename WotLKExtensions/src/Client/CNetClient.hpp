@@ -4,6 +4,16 @@
 
 struct CDataStore;
 
+struct CNetClientCustomPacket
+{
+    void* m_handler;
+    void* m_param;
+
+    CNetClientCustomPacket(void* handler, void* param) : m_handler(handler), m_param(param)
+    {
+    }
+};
+
 class CNetClient
 {
 public:
@@ -26,5 +36,5 @@ private:
     static void __fastcall SetMessageHandlerEx(void* _this, uint32_t unused, uint32_t opcode, void* function, void* param);
 
     // custom packets
-    static void Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uint32_t opcode, uint32_t a2, CDataStore* a3);
+    static void __cdecl Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uint32_t opcode, uint32_t a2, CDataStore* a3);
 };
