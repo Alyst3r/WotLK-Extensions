@@ -9,6 +9,17 @@
 #include <PatchConfig.hpp>
 #include <Misc/Util.hpp>
 
+static uint32_t memoryTable[64] = { 0 };
+static uint32_t raceNameTable[32] = { 0 };
+// Just for clarity's sake, class role masks go as followed
+// ID0, War, Pal, Hun, Rog, Pri, DK, Sha, Mag, Warl, ID10, Dru
+// bitmasks: 1 - leader, 2 - tank, 4 - healer, 8 - dps
+// so for example warrior is: leader + tank + dps -> 0x01 + 0x02 + 0x08 = 0x0B
+static uint8_t classRoleMask[32] = {
+    0x00, 0x0B, 0x0F, 0x09, 0x09, 0x0D, 0x0B, 0x0D,	0x09, 0x09, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
 static uint32_t dummy = 0;
 
 static std::unordered_map<char*, void*> luaFuncts;
@@ -21,6 +32,8 @@ struct CustomNetClient
     void* handler[NUM_CUSTOM_MSG_TYPES - SMSG_UPDATE_CUSTOM_COMBAT_RATING];
     void* handlerParam[NUM_CUSTOM_MSG_TYPES - SMSG_UPDATE_CUSTOM_COMBAT_RATING];
 };
+
+static CustomNetClient customData = { 0 };
 
 // Aleist3r: afaik it's not a full structure but I don't need the rest defined
 struct WoWTime
@@ -57,17 +70,6 @@ namespace CGPetInfo
     CLIENT_FUNCTION(GetPet, 0x5D3390, __cdecl, WoWGUID, (int32_t))
 }
 
-namespace ClientPacket
-{
-    CLIENT_FUNCTION(MSG_SET_ACTION_BUTTON, 0x5AA390, __cdecl, void, (uint32_t, bool, bool))
-}
-
-namespace ClntObjMgr
-{
-    CLIENT_FUNCTION(GetActivePlayer, 0x4D3790, __cdecl, WoWGUID, ())
-    CLIENT_FUNCTION(ObjectPtr, 0x4D4DB0, __cdecl, void*, (WoWGUID, uint32_t))
-}
-
 namespace CVar
 {
     CLIENT_FUNCTION(sub_766940, 0x766940, __thiscall, void, (void*, int, char, char, char, char))
@@ -79,11 +81,6 @@ namespace DNInfo
 {
     CLIENT_FUNCTION(AddZoneLight, 0x7ED150, __thiscall, void, (void*, int32_t, float))
     CLIENT_FUNCTION(GetDNInfoPtr, 0x7ECEF0, __stdcall, void*, ())
-}
-
-namespace NTempest
-{
-    CLIENT_FUNCTION(DistanceSquaredFromEdge, 0x7F9C90, __cdecl, bool, (int32_t, void*, C2Vector*, float*))
 }
 
 namespace SpellParser

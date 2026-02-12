@@ -6,7 +6,7 @@ void Main::OnAttach()
     
     // Apply patches
     Misc::ApplyPatches();
-    Player::ApplyPatches();
+    CGPlayer::ApplyPatches();
     WorldDataExtensions::ApplyPatches();
 
     // Custom dbc loader
@@ -20,7 +20,7 @@ void Main::Init()
     Misc::SetYearOffsetMultiplier();
 
 #if CUSTOMPACKETS_PATCH
-    CustomPacket::Apply();
+    CNetClient::Apply();
 #endif
 
 #if OOBLUAFUNCTIONS_PATCH || CUSTOM_DBC || CUSTOMPACKETS_PATCH
@@ -32,11 +32,6 @@ void Main::Init()
 #if OOBLUAFUNCTIONS_PATCH || CUSTOMPACKETS_PATCH
     CustomLua::Apply();
 #endif
-}
-
-extern "C"
-{
-    __declspec(dllexport) void WotLKExtensionsDummy() {}
 }
 
 bool __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)

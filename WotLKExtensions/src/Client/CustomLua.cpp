@@ -1,13 +1,13 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CDataStore.hpp>
 #include <Client/ClientServices.hpp>
+#include <Client/CNetClient.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
 #include <Client/SStr.hpp>
 #include <Data/DBCAddresses.hpp>
 #include <Data/MiscAddresses.hpp>
-#include <GameObjects/Player.hpp>
 #include <GameObjects/CGUnit.hpp>
 #include <GameObjects/CGPlayer.hpp>
 
@@ -33,11 +33,11 @@ int CustomLua::LoadScriptFunctionsCustom()
 
 int CustomLua::GetShapeshiftFormID(lua_State* L)
 {
-    WoWGUID activePlayer = ClntObjMgr::GetActivePlayer();
+    WoWGUID activePlayer = ClientServices::GetActivePlayer();
 
     if (activePlayer)
     {
-        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
+        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(activePlayer, TYPEMASK_UNIT));
         FrameScript::PushNumber(L, static_cast<double>(CGUnit::GetShapeshiftFormID(activeObjectPtr)));
 
         return 1;
@@ -127,7 +127,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
         if (g_actionBarSpellIDArray[i] == oldSpellID)
         {
             g_actionBarSpellIDArray[i] = newSpellID;
-            ClientPacket::MSG_SET_ACTION_BUTTON(i, 1, 0);
+            CNetClient::Packet_MSG_SET_ACTION_BUTTON(i, true, false);
 
             for (uint8_t j = i + 72; j < 144; j += 12)
             {
@@ -135,7 +135,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
                 {
                     g_actionBarSpellIDArray[i] = newSpellID;
                     g_actionButtonsArray[j] = 1;
-                    ClientPacket::MSG_SET_ACTION_BUTTON(j, 1, 0);
+                    CNetClient::Packet_MSG_SET_ACTION_BUTTON(j, true, false);
                 }
             }
         }
@@ -155,7 +155,7 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
             g_actionButtonsArray[slotID] = 1;
 
         g_actionBarSpellIDArray[slotID] = spellID;
-        ClientPacket::MSG_SET_ACTION_BUTTON(slotID, 1, 0);
+        CNetClient::Packet_MSG_SET_ACTION_BUTTON(slotID, true, false);
     }
 
     return 0;
@@ -163,13 +163,13 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
 
 int CustomLua::ReloadMap(lua_State* L)
 {
-    uint64_t activePlayer = ClntObjMgr::GetActivePlayer();
+    uint64_t activePlayer = ClientServices::GetActivePlayer();
 
     if (activePlayer)
     {
         MapRow* row = 0;
         int32_t mapId = *g_currentMapID;
-        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(activePlayer, TYPEMASK_UNIT));
+        CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(activePlayer, TYPEMASK_UNIT));
         CMovement* moveInfo = activeObjectPtr->m_movementInfo;
 
         if (mapId > -1)
@@ -407,7 +407,7 @@ int CustomLua::GetCustomCombatRating(lua_State* L)
     if (cr < 25 || cr >= 32)
         FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
+    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
         value = CustomFields::GetCustomCombatRating(cr - 25);
@@ -432,7 +432,7 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
     if (cr < 25 || cr >= 32)
         FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 26, 32);
 
-    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
+    CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
     {
@@ -514,7 +514,7 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
 
 int CustomLua::PortGraveyard(lua_State* L)
 {
-    CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClntObjMgr::ObjectPtr(ClntObjMgr::GetActivePlayer(), TYPEMASK_PLAYER));
+    CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr && (activeObjectPtr->m_playerData->m_playerFlags & PLAYER_FLAGS_GHOST))
     {
