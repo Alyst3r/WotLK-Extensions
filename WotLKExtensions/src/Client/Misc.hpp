@@ -6,6 +6,7 @@ public:
     static void ApplyPatches();
 
     static void SetYearOffsetMultiplier();
+
 private:
     Misc() = delete;
     ~Misc() = delete;

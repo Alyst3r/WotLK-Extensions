@@ -22,7 +22,7 @@ void DataContainer::AddLuaFunction(const char* name, void* ptr)
     m_luaFunctions.insert(std::make_pair(name, ptr));
 }
 
-std::unordered_map<const char*, void*>& DataContainer::GetLuaFunstionMap()
+std::unordered_map<const char*, void*>& DataContainer::GetLuaFunctionMap()
 {
     return m_luaFunctions;
 }

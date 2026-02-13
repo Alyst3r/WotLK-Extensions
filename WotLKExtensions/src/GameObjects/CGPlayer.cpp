@@ -1,6 +1,7 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/ClientServices.hpp>
+#include <Data/DBCAddresses.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
@@ -74,7 +75,7 @@ uint32_t CGPlayer::CheckLFGRoles(uint32_t roles)
 {
     uint32_t classId = ClientServices::GetCharacterClass();
 
-    if (classId > *(uint32_t*)0xAD3410 || classId < *(uint32_t*)0xAD3414) // ChrClasses.dbc max/min indices
+    if (classId > g_chrClassesDB->m_maxIndex || classId < g_chrClassesDB->m_minIndex) // ChrClasses.dbc max/min indices
         classId = 0;
 
     LFGRolesRow* cdbcRoles = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);

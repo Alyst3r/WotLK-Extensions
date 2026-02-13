@@ -29,7 +29,7 @@ void CustomLua::Apply()
 
 int CustomLua::LoadScriptFunctionsCustom()
 {
-    auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunstionMap();
+    auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunctionMap();
 
     for (auto& it : luaFunctionMap)
     {
@@ -138,6 +138,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
         if (g_actionBarSpellIDArray[i] == oldSpellID)
         {
             g_actionBarSpellIDArray[i] = newSpellID;
+
             CNetClient::Packet_MSG_SET_ACTION_BUTTON(i, true, false);
 
             for (uint8_t j = i + 72; j < 144; j += 12)
@@ -146,6 +147,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
                 {
                     g_actionBarSpellIDArray[i] = newSpellID;
                     g_actionButtonsArray[j] = 1;
+
                     CNetClient::Packet_MSG_SET_ACTION_BUTTON(j, true, false);
                 }
             }
@@ -166,6 +168,7 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
             g_actionButtonsArray[slotID] = 1;
 
         g_actionBarSpellIDArray[slotID] = spellID;
+
         CNetClient::Packet_MSG_SET_ACTION_BUTTON(slotID, true, false);
     }
 
@@ -461,7 +464,7 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 
 int CustomLua::GetAvailableRoles(lua_State* L)
 {
-    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_ChrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
+    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
     LFGRolesRow* cdbcRole = 0;
 
@@ -479,7 +482,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 
 int CustomLua::SetLFGRole(lua_State* L)
 {
-    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_ChrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
+    ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     LFGRolesRow* cdbcRole = 0;
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;

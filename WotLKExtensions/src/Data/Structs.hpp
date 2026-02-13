@@ -120,7 +120,7 @@ struct SpellRow
     float m_speed;
     uint32_t m_modalNextSpell;
     uint32_t m_cumulativeAura;
-    uint32_t m_totem0[2];
+    uint32_t m_totem[2];
     uint32_t m_reagent[8];
     uint32_t m_reagentCount[8];
     uint32_t m_equippedItemClass;

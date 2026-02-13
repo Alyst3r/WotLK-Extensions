@@ -16,7 +16,7 @@ public:
     static DataContainer& GetInstance();
 
     void AddLuaFunction(const char* name, void* ptr);
-    std::unordered_map<const char*, void*>& GetLuaFunstionMap();
+    std::unordered_map<const char*, void*>& GetLuaFunctionMap();
 
     void AddPacketHandler(uint32_t opcode, CNetClientCustomPacket packetData);
     std::unordered_map <uint32_t, CNetClientCustomPacket>& GetPacketHandlerMap();
