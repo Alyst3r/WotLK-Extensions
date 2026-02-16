@@ -4,8 +4,8 @@
 
 struct C2Vector
 {
-    float x;
-    float y;
+    float x = 0.f;
+    float y = 0.f;
 };
 
 struct C3Vector

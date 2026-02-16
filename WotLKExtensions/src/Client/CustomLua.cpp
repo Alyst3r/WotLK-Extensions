@@ -196,7 +196,7 @@ int CustomLua::ReloadMap(lua_State* L)
 
                 CWorld::UnloadMap();
                 CWorld::LoadMap(row->m_directory, &moveInfo->position, mapId);
-                SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_Directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
+                SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
                 CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
         }
@@ -466,16 +466,16 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
-    LFGRolesRow* cdbcRole = 0;
+    LFGRolesRow cdbcRole{};
 
     if (row)
         classId = row->m_ID;
 
-    cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);//GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
 
-    FrameScript::PushBoolean(L, cdbcRole->m_roles & 2);
-    FrameScript::PushBoolean(L, cdbcRole->m_roles & 4);
-    FrameScript::PushBoolean(L, cdbcRole->m_roles & 8);
+    FrameScript::PushBoolean(L, cdbcRole.m_roles & 2);
+    FrameScript::PushBoolean(L, cdbcRole.m_roles & 4);
+    FrameScript::PushBoolean(L, cdbcRole.m_roles & 8);
 
     return 3;
 }
@@ -483,7 +483,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 int CustomLua::SetLFGRole(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
-    LFGRolesRow* cdbcRole = 0;
+    LFGRolesRow cdbcRole{};
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
     void* ptr = *reinterpret_cast<void**>(0xBD0A28);
@@ -498,9 +498,9 @@ int CustomLua::SetLFGRole(lua_State* L)
     if (row)
         classId = row->m_ID;
 
-    cdbcRole = GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);
 
-    CVar::Set(ptr, roles & cdbcRole->m_roles, 1, 0, 0, 1);
+    CVar::Set(ptr, roles & cdbcRole.m_roles, 1, 0, 0, 1);
     FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
 
     return 0;
@@ -531,7 +531,7 @@ int CustomLua::PortGraveyard(lua_State* L)
 {
     CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
-    if (activeObjectPtr && (activeObjectPtr->m_playerData->m_playerFlags & PLAYER_FLAGS_GHOST))
+    if (activeObjectPtr && (activeObjectPtr->m_playerData->m_flags & PLAYER_FLAGS_GHOST))
     {
         CDataStore pkt;
 

@@ -2,7 +2,8 @@
 
 #include <ctime>
 
-DataContainer::DataContainer()
+DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_zoneLightCDBC(ZoneLight::GetInstance()),
+    m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
 {
 }
 
@@ -35,6 +36,55 @@ void DataContainer::AddPacketHandler(uint32_t opcode, CNetClientCustomPacket pac
 std::unordered_map <uint32_t, CNetClientCustomPacket>& DataContainer::GetPacketHandlerMap()
 {
     return m_packetData;
+}
+
+void DataContainer::LoadLFGRolesDB()
+{
+    m_lfgRolesCDBC.LoadDB();
+}
+
+void DataContainer::GetLFGRolesRow(LFGRolesRow& row, int32_t index)
+{
+    m_lfgRolesCDBC.GetRow(row, index);
+}
+
+void DataContainer::LoadZoneLightDB()
+{
+    m_zoneLightCDBC.LoadDB();
+}
+
+void DataContainer::GetZoneLightRow(ZoneLightRow& row, int32_t index)
+{
+    m_zoneLightCDBC.GetRow(row, index);
+}
+
+int32_t DataContainer::GetZoneLightRowMinIndex() const
+{
+    return m_zoneLightCDBC.GetMinIndex();
+}
+int32_t DataContainer::GetZoneLightRowMaxIndex() const
+{
+    return m_zoneLightCDBC.GetMaxIndex();
+}
+
+void DataContainer::LoadZoneLightPointDB()
+{
+    m_zoneLightPointCDBC.LoadDB();
+}
+
+void DataContainer::GetZoneLightPointRow(ZoneLightPointRow& row, int32_t index)
+{
+    m_zoneLightPointCDBC.GetRow(row, index);
+}
+
+int32_t DataContainer::GetZoneLightPointRowMinIndex() const
+{
+    return m_zoneLightPointCDBC.GetMinIndex();
+}
+
+int32_t DataContainer::GetZoneLightPointRowMaxIndex() const
+{
+    return m_zoneLightPointCDBC.GetMaxIndex();
 }
 
 uint32_t* DataContainer::GetRaceTablePtr()

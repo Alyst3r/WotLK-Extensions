@@ -1,5 +1,8 @@
 #pragma once
 
+#include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
+#include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
+#include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
 #include <Client/CNetClient.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <WorldData/ZoneLightData.hpp>
@@ -21,6 +24,19 @@ public:
     void AddPacketHandler(uint32_t opcode, CNetClientCustomPacket packetData);
     std::unordered_map <uint32_t, CNetClientCustomPacket>& GetPacketHandlerMap();
 
+    void LoadLFGRolesDB();
+    void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
+
+    void LoadZoneLightDB();
+    void GetZoneLightRow(ZoneLightRow& row, int32_t index);
+    int32_t GetZoneLightRowMinIndex() const;
+    int32_t GetZoneLightRowMaxIndex() const;
+
+    void LoadZoneLightPointDB();
+    void GetZoneLightPointRow(ZoneLightPointRow& row, int32_t index);
+    int32_t GetZoneLightPointRowMinIndex() const;
+    int32_t GetZoneLightPointRowMaxIndex() const;
+
     uint32_t* GetRaceTablePtr();
     uint32_t* GetMemoryTablePtr();
     uint8_t* GetClassRoleMaskTablePtr();
@@ -37,6 +53,10 @@ public:
 private:
     std::unordered_map<const char*, void*> m_luaFunctions;
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
+
+    LFGRoles& m_lfgRolesCDBC;
+    ZoneLight& m_zoneLightCDBC;
+    ZoneLightPoint& m_zoneLightPointCDBC;
 
     uint32_t m_raceNameTable[32] = { 0 };
     uint32_t m_memoryTable[64] = { 0 };

@@ -1,6 +1,6 @@
-#pragma optimize("", off)
+#pragma once
+
 #include <CDBCMgr/CDBC.hpp>
-#include <CDBCMgr/CDBCMgr.hpp>
 #include <Data/Structs.hpp>
 
 #include <cstdint>
@@ -8,32 +8,21 @@
 class LFGRoles : public CDBC
 {
 public:
-    const char* fileName = "LFGRoles";
+    static LFGRoles& GetInstance();
 
-    LFGRoles(): CDBC()
-    {
-        this->numColumns = sizeof(LFGRolesRow) / 4;
-        this->rowSize = sizeof(LFGRolesRow);
-    }
+    void LoadDB();
+    void ReloadDB();
+    void UnloadDB();
+    
+    void GetRow(LFGRolesRow& row, int32_t index);
 
-    LFGRoles* LoadDB()
-    {
-        GlobalCDBCMap.addCDBC(this->fileName);
-        CDBC::LoadDB(this->fileName);
-        LFGRoles::setupTable();
-        GlobalCDBCMap.setIndexRange(this->fileName, this->minIndex, this->maxIndex);
-        return this;
-    };
+protected:
+    LFGRoles();
+    virtual ~LFGRoles() = default;
 
-    void LFGRoles::setupTable()
-    {
-        LFGRolesRow* row = (LFGRolesRow*)this->rows;
+protected:
+    std::vector<LFGRolesRow> m_rows;
 
-        for (uint32_t i = 0; i < this->numRows; i++)
-        {
-            GlobalCDBCMap.addRow(this->fileName, row->m_classID, *row);
-            ++row;
-        }
-    };
+    void ReserveDataBlock() override;
+    void SetMinMaxIndices() override; 
 };
-#pragma optimize("", on)

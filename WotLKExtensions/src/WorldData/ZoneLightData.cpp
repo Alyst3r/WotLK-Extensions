@@ -18,43 +18,42 @@ void ZoneLightData::ApplyZoneLightsExtensions()
 
 void ZoneLightData::FillZoneLightData()
 {
-    int32_t zoneLightMin = GlobalCDBCMap.getIndexRange("ZoneLight").first;
-    int32_t zoneLightMax = GlobalCDBCMap.getIndexRange("ZoneLight").second;
-    int32_t zoneLightPointMin = GlobalCDBCMap.getIndexRange("ZoneLightPoint").first;
-    int32_t zoneLightPointMax = GlobalCDBCMap.getIndexRange("ZoneLightPoint").second;
+    DataContainer& dc = DataContainer::GetInstance();
     uint32_t counter = 1;
 
-    for (uint32_t i = zoneLightMin; i <= zoneLightMax; i++)
+    for (uint32_t i = dc.GetZoneLightRowMinIndex(); i <= dc.GetZoneLightRowMaxIndex(); i++)
     {
         ZoneLightData data;
-        ZoneLightRow* row = GlobalCDBCMap.getRow<ZoneLightRow>("ZoneLight", i);
-        std::vector<C2Vector> points{};
+        ZoneLightRow row;
+        std::vector<C2Vector> points;
 
-        if (!row)
+        dc.GetZoneLightRow(row, i);
+
+        if (row.m_ID <= -1)
             continue;
 
-        data.m_mapID = row->m_mapID;
-        data.m_lightID = row->m_lightID;
+        data.m_mapID = row.m_mapID;
+        data.m_lightID = row.m_lightID;
 
-        for (uint32_t j = counter; j <= zoneLightPointMax; j++)
+        for (uint32_t j = counter; j <= dc.GetZoneLightPointRowMaxIndex(); j++, counter++)
         {
-            ZoneLightPointRow* tempRow = GlobalCDBCMap.getRow<ZoneLightPointRow>("ZoneLightPoint", j);
-            C2Vector tempVec = { 0 };
+            ZoneLightPointRow tempRow;
+            C2Vector tempVec;
 
-            counter++;
+            dc.GetZoneLightPointRow(tempRow, j);
 
-            if (!tempRow || tempRow->m_zoneLightID < row->m_ID)
+            if (tempRow.m_ID <= -1 || tempRow.m_zoneLightID < row.m_ID)
                 continue;
 
-            if (tempRow->m_zoneLightID > row->m_ID)
+            if (tempRow.m_zoneLightID > row.m_ID)
                 break;
 
-            tempVec.x = tempRow->m_positionX;
-            tempVec.y = tempRow->m_positionY;
+            tempVec.x = tempRow.m_positionX;
+            tempVec.y = tempRow.m_positionY;
 
             points.push_back(tempVec);
 
-            if (j == zoneLightPointMin)
+            if (j == dc.GetZoneLightPointRowMinIndex())
             {
                 data.m_minX, data.m_maxX = tempVec.x;
                 data.m_maxY, data.m_maxY = tempVec.y;

@@ -1,6 +1,6 @@
-#pragma optimize("", off)
+#pragma once
+
 #include <CDBCMgr/CDBC.hpp>
-#include <CDBCMgr/CDBCMgr.hpp>
 #include <Data/Structs.hpp>
 
 #include <cstdint>
@@ -8,30 +8,21 @@
 class ZoneLightPoint : public CDBC
 {
 public:
-    const char* fileName = "ZoneLightPoint";
-    ZoneLightPoint() : CDBC()
-    {
-        this->numColumns = sizeof(ZoneLightPointRow) / 4;
-        this->rowSize = sizeof(ZoneLightPointRow);
-    }
+    static ZoneLightPoint& GetInstance();
 
-    ZoneLightPoint* LoadDB()
-    {
-        GlobalCDBCMap.addCDBC(this->fileName);
-        CDBC::LoadDB(this->fileName);
-        ZoneLightPoint::setupTable();
-        GlobalCDBCMap.setIndexRange(this->fileName, this->minIndex, this->maxIndex);
-        return this;
-    }
+    void LoadDB();
+    void ReloadDB();
+    void UnloadDB();
 
-    void ZoneLightPoint::setupTable()
-    {
-        ZoneLightPointRow* row = (ZoneLightPointRow*)this->rows;
-        for (uint32_t i = 0; i < this->numRows; i++)
-        {
-            GlobalCDBCMap.addRow(this->fileName, row->m_ID, *row);
-            ++row;
-        }
-    };
+    void GetRow(ZoneLightPointRow& row, int32_t index);
+
+protected:
+    ZoneLightPoint();
+    virtual ~ZoneLightPoint() = default;
+
+private:
+    std::vector<ZoneLightPointRow> m_rows;
+
+    void ReserveDataBlock() override;
+    void SetMinMaxIndices() override;
 };
-#pragma optimize("", on)

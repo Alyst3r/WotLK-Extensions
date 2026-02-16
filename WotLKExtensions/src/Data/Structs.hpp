@@ -5,25 +5,25 @@
 // cdbc
 struct LFGRolesRow
 {
-    uint32_t m_classID;
-    uint32_t m_roles;
+    int32_t m_classID = -1;
+    int32_t m_roles = - 1;
 };
 
 struct ZoneLightRow
 {
-    int32_t m_ID;
-    char* m_name;
-    int32_t m_mapID;
-    int32_t m_lightID;
+    int32_t m_ID = -1;
+    char* m_name = nullptr;
+    int32_t m_mapID = -1;
+    int32_t m_lightID = -1;
 };
 
 struct ZoneLightPointRow
 {
-    int32_t m_ID;
-    int32_t m_zoneLightID;
-    float m_positionX;
-    float m_positionY;
-    int32_t m_pointOrder;
+    int32_t m_ID = -1;
+    int32_t m_zoneLightID = -1;
+    float m_positionX = 0.f;
+    float m_positionY = 0.f;
+    int32_t m_pointOrder = -1;
 };
 
 // dbc
@@ -137,7 +137,7 @@ struct SpellRow
     uint32_t m_baseLevel;
     uint32_t m_spellLevel;
     uint32_t m_durationIndex;
-    uint32_t m_powerType;
+    int32_t m_powerType;
     uint32_t m_manaCost;
     uint32_t m_manaCostPerLevel;
     uint32_t m_manaPerSecond;

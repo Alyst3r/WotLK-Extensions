@@ -2,31 +2,26 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
+#include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 
 #include <PatchConfig.hpp>
 
-CDBCMgr GlobalCDBCMap;
-
 void CDBCMgr::Load()
 {
+    DataContainer& dc = DataContainer::GetInstance();
+
 #if LFGROLES_DBC
-    LFGRoles().LoadDB();
+    dc.LoadLFGRolesDB();
 #endif
 
 #if ZONELIGHT_DBC
-    ZoneLight().LoadDB();
-    ZoneLightPoint().LoadDB();
+    dc.LoadZoneLightDB();
+    dc.LoadZoneLightPointDB();
 #endif
 }
 
-void CDBCMgr::addCDBC(std::string cdbcName)
-{
-    allCDBCs[cdbcName] = CDBC();
-    cdbcIndexRanges[cdbcName] = { 0, 0 };
-}
-
-void __declspec(naked) RegisterDBCEx()
+static void __declspec(naked) RegisterDBCEx()
 {
     CDBCMgr::Load();
 

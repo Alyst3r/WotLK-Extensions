@@ -1,6 +1,6 @@
-#pragma optimize("", off)
+#pragma once
+
 #include <CDBCMgr/CDBC.hpp>
-#include <CDBCMgr/CDBCMgr.hpp>
 #include <Data/Structs.hpp>
 
 #include <cstdint>
@@ -8,32 +8,21 @@
 class ZoneLight : public CDBC
 {
 public:
-    const char* fileName = "ZoneLight";
-    ZoneLight() : CDBC()
-    {
-        this->numColumns = sizeof(ZoneLightRow) / 4;
-        this->rowSize = sizeof(ZoneLightRow);
-    }
+    static ZoneLight& GetInstance();
 
-    ZoneLight* LoadDB()
-    {
-        GlobalCDBCMap.addCDBC(this->fileName);
-        CDBC::LoadDB(this->fileName);
-        ZoneLight::setupStringsAndTable();
-        GlobalCDBCMap.setIndexRange(this->fileName, this->minIndex, this->maxIndex);
-        return this;
-    };
+    void LoadDB();
+    void ReloadDB();
+    void UnloadDB();
 
-    void ZoneLight::setupStringsAndTable()
-    {
-        ZoneLightRow* row = (ZoneLightRow*)this->rows;
-        uintptr_t stringTable = (uintptr_t)this->stringTable;
-        for (uint32_t i = 0; i < this->numRows; i++)
-        {
-            row->m_name = (char*)(stringTable + (uintptr_t)row->m_name);
-            GlobalCDBCMap.addRow(this->fileName, row->m_ID, *row);
-            ++row;
-        }
-    };
+    void GetRow(ZoneLightRow& row, int32_t index);
+
+protected:
+    ZoneLight();
+    virtual ~ZoneLight() = default;
+
+private:
+    std::vector<ZoneLightRow> m_rows;
+
+    void ReserveDataBlock() override;
+    void SetMinMaxIndices() override;
 };
-#pragma optimize("", on)

@@ -4,91 +4,86 @@
 #include <Client/SMem.hpp>
 #include <Client/SStr.hpp>
 
-CDBC* CDBC::LoadDB(const char* name)
+#include <string>
+
+CDBC::CDBC(int32_t numColumns, int32_t rowSize) : m_numColumns(numColumns), m_rowSize(rowSize)
 {
-    uint32_t Buffer = 0;
-    void* FileBlock = 0;
-    int v26;
-    int v27;
-    int len;
+}
 
-    char filePath[512];
-    SStr::Printf(filePath, 512, "DBFilesClient\\%s.cdbc", name);
+void CDBC::LoadDB(const char* name, std::vector<char>* data)
+{
+    uint32_t buffer = 0;
+    void* file = nullptr;
+    std::string path = "DBFilesClient\\" + std::string(name);
+    const char* filepath = path.c_str();
 
-    if (this->isLoaded)
-        return this;
+    if (m_isLoaded)
+        return;
 
-    if (!SFile::OpenFileEx(0, filePath, 0x20000, &FileBlock))
-        SErr::PrepareAppFatal(0x85100079, "Unable to open %s", filePath);
+    if (!SFile::OpenFileEx(nullptr, filepath, 0x20000, &file))
+        SErr::PrepareAppFatal(0x85100079, "Unable to open %s", filepath);
 
-    if (!SFile::ReadFile(FileBlock, &Buffer, 4, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read signature from %s", filePath);
+    if (!SFile::ReadFile(file, &buffer, 4, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read signature from %s", filepath);
 
-    if (Buffer != 0x43424457) // WDBC but little endian so technically CBDW
-        SErr::PrepareAppFatal(0x85100079, "Invalid signature 0x%x from %s", Buffer, filePath);
+    if (buffer != 0x43424457) // WDBC but little endian so technically CBDW
+        SErr::PrepareAppFatal(0x85100079, "Invalid signature 0x%x from %s", buffer, filepath);
 
-    if (!SFile::ReadFile(FileBlock, &this->numRows, 4, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read record count from %s", filePath);
+    if (!SFile::ReadFile(file, &m_numRows, 4, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read record count from %s", filepath);
 
-    if (!this->numRows) {
-        SFile::CloseFile(FileBlock);
-        return this;
+    if (!m_numRows)
+    {
+        SFile::CloseFile(file);
+
+        return;
     }
 
-    if (!SFile::ReadFile(FileBlock, &v26, 4, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read column count from %s", filePath);
+    if (!SFile::ReadFile(file, &buffer, 4, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read column count from %s", filepath);
 
-    if (v26 != this->numColumns)
-        SErr::PrepareAppFatal(0x85100079, "%s has wrong number of columns (found %i, expected %i)", filePath, v26, this->numColumns);
+    if (buffer != m_numColumns)
+        SErr::PrepareAppFatal(0x85100079, "%s has wrong number of columns (found %i, expected %i)", filepath, buffer, m_numColumns);
 
-    if (!SFile::ReadFile(FileBlock, &v27, 4, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read row size from %s", filePath);
+    if (!SFile::ReadFile(file, &buffer, 4, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read row size from %s", filepath);
 
-    if (v27 != this->rowSize)
-        SErr::PrepareAppFatal(0x85100079, "%s has wrong row size (found %i, expected %i)", filePath, v27, this->rowSize);
+    if (buffer != m_rowSize)
+        SErr::PrepareAppFatal(0x85100079, "%s has wrong row size (found %i, expected %i)", filepath, buffer, m_rowSize);
 
-    if (!SFile::ReadFile(FileBlock, &len, 4, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read string size from %s", filePath);
+    if (!SFile::ReadFile(file, &buffer, 4, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read string size from %s", filepath);
 
-    this->rows = SMem::Alloc(this->numRows * this->rowSize, filePath, -2, 0);
+    ReserveDataBlock();
+    m_stringTable.resize(buffer);
 
-    if (!SFile::ReadFile(FileBlock, this->rows, this->numRows * this->rowSize, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100079, "Unable to read row data from %s", filePath);
+    if (!SFile::ReadFile(file, data->data(), m_numRows * m_rowSize, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100079, "Unable to read row data from %s", filepath);
 
-    this->stringTable = SMem::Alloc(len, filePath, -2, 0);
+    if (!SFile::ReadFile(file, m_stringTable.data(), buffer, 0, 0, 0))
+        SErr::PrepareAppFatal(0x85100086, "%s: Cannot read string table", filepath);
 
-    if (!SFile::ReadFile(FileBlock, this->stringTable, len, 0, 0, 0))
-        SErr::PrepareAppFatal(0x85100086, "%s: Cannot read string table", filePath);
+    m_isLoaded = true;
 
-    this->isLoaded = true;
-
-    GetMinMaxIndices();
-    SFile::CloseFile(FileBlock);
-
-    return this;
+    SetMinMaxIndices();
+    SFile::CloseFile(file);
 }
 
 void CDBC::UnloadDB()
 {
-    if (this->rows)
-        SMem::Free(this->rows, "delete[]", -1, 0);
+    m_isLoaded = false;
+    m_numRows = 0;
+    m_maxIndex = 0xFFFFFFFF;
+    m_minIndex = 0x7FFFFFFF;
+    m_stringTable.clear();
+}
 
-    if (this->stringTable)
-        SMem::Free(this->stringTable, "delete[]", -1, 0);
-
-    this->rows = 0;
-    this->stringTable = 0;
-    this->numRows = 0;
-    this->minIndex = 0;
-    this->maxIndex = 0;
-    this->isLoaded = false;
-};
-
-void CDBC::GetMinMaxIndices()
+int32_t CDBC::GetMinIndex() const
 {
-    uintptr_t* firstRow = (uintptr_t*)this->rows;
-    uintptr_t* lastRow = firstRow + ((numRows - 1) * this->numColumns);
+    return m_minIndex;
+}
 
-    this->minIndex = *firstRow;  // First row is the minimum
-    this->maxIndex = *lastRow;   // Last row is the maximum
+int32_t CDBC::GetMaxIndex() const
+{
+    return m_maxIndex;
 }
