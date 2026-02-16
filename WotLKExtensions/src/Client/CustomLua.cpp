@@ -466,7 +466,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
-    LFGRolesRow cdbcRole{};
+    LFGRolesRow cdbcRole;
 
     if (row)
         classId = row->m_ID;
@@ -483,7 +483,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
 int CustomLua::SetLFGRole(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
-    LFGRolesRow cdbcRole{};
+    LFGRolesRow cdbcRole;
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
     void* ptr = *reinterpret_cast<void**>(0xBD0A28);
