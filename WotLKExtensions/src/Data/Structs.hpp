@@ -35,9 +35,35 @@ struct ChrClassesRow
 
 struct MapRow
 {
+    int32_t m_ID;
+    char* m_directory;
+    uint32_t m_instanceType;
+    uint32_t m_flags;
+    uint32_t m_PVP;
+    char* m_mapName_lang;
+    uint32_t m_areaTableID;
+    char* m_mapDescription0_lang;
+    char* m_mapDescription1_lang;
+    uint32_t m_loadingScreenID;
+    float m_minimapIconScale;
+    uint32_t m_corpseMapID;
+    float m_corpseX;
+    float m_corpseY;
+    uint32_t m_timeOfDayOverride;
+    uint32_t m_expansionID;
+    uint32_t m_raidOffset;
+    uint32_t m_maxPlayers;
+    uint32_t m_parentMapID;
+};
+
+struct PowerDisplayRow
+{
     uint32_t m_ID;
-    char* m_Directory;
-    uint32_t padding0x08[17];
+    uint32_t m_actualType;
+    char* m_globalStringBaseTag;
+    uint8_t m_red;
+    uint8_t m_green;
+    uint8_t m_blue;
 };
 
 struct SkillLineAbilityRow

@@ -181,7 +181,7 @@ int CustomLua::ReloadMap(lua_State* L)
 
     if (activePlayer)
     {
-        MapRow* row = 0;
+        MapRow* row = nullptr;
         int32_t mapId = *g_currentMapID;
         CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(activePlayer, TYPEMASK_UNIT));
         CMovement* moveInfo = activeObjectPtr->m_movementInfo;
@@ -195,7 +195,7 @@ int CustomLua::ReloadMap(lua_State* L)
                 char buffer[512];
 
                 CWorld::UnloadMap();
-                CWorld::LoadMap(row->m_Directory, &moveInfo->position, mapId);
+                CWorld::LoadMap(row->m_directory, &moveInfo->position, mapId);
                 SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_Directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
                 CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }

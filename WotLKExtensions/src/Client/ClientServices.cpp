@@ -24,3 +24,8 @@ void ClientServices::SendPacket(CDataStore* packet)
 {
     reinterpret_cast<void (__cdecl*)(CDataStore*)>(0x6B0B50)(packet);
 }
+
+SkillLineAbilityRow* ClientServices::SpellTableLookupAbility(uint32_t raceID, uint32_t classID, uint32_t spellID)
+{
+    return reinterpret_cast<SkillLineAbilityRow* (__cdecl*)(uint32_t, uint32_t, uint32_t)>(0x812410)(raceID, classID, spellID);
+}
