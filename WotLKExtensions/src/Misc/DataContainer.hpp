@@ -62,15 +62,15 @@ private:
 
     std::vector<const char*> m_spellVariables;
 
-    uint32_t m_raceNameTable[32] = { 0 };
-    uint32_t m_memoryTable[64] = { 0 };
+    std::vector<uint32_t> m_raceNameTable;
+    std::vector<uint32_t> m_memoryTable;
 
     // Just for clarity's sake, class role masks go as followed
     // ID0, War, Pal, Hun, Rog, Pri, DK, Sha, Mag, Warl, ID10, Dru
     // bitmasks: 1 - leader, 2 - tank, 4 - healer, 8 - dps
     // so for example warrior is: leader + tank + dps -> 0x01 + 0x02 + 0x08 = 0x0B
     // this table is only ever used if you don't use custom dbc
-    uint8_t m_classRoleMask[32] =
+    std::vector<uint8_t> m_classRoleMask =
     {
         0x00, 0x0B, 0x0F, 0x09, 0x09, 0x0D, 0x0B, 0x0D,	0x09, 0x09, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00

@@ -5,6 +5,8 @@
 DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_zoneLightCDBC(ZoneLight::GetInstance()),
     m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
 {
+    m_raceNameTable.resize(32, 0);
+    m_memoryTable.resize(64, 0);
 }
 
 DataContainer::~DataContainer()
@@ -94,17 +96,17 @@ std::vector<const char*>& DataContainer::GetSpellVariableData()
 
 uint32_t* DataContainer::GetRaceTablePtr()
 {
-    return m_raceNameTable;
+    return m_raceNameTable.data();
 }
 
 uint32_t* DataContainer::GetMemoryTablePtr()
 {
-    return m_memoryTable;
+    return m_memoryTable.data();
 }
 
 uint8_t* DataContainer::GetClassRoleMaskTablePtr()
 {
-    return m_classRoleMask;
+    return m_classRoleMask.data();
 }
 
 uint32_t DataContainer::GetYearOffsetMultiplier() const
