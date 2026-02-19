@@ -66,7 +66,7 @@ int32_t __fastcall CFormula::GetVariableValueEx(void* thisVar, int32_t unused, i
                 case SPELLVARIABLE_POWER5:
                 case SPELLVARIABLE_POWER6:
                 case SPELLVARIABLE_POWER7:
-                    value = activePlayer->m_unitFields->m_currPowers[spellVariable - SPELLVARIABLE_POWER1];
+                    value = activePlayer->m_unitFields->m_maxPowers[spellVariable - SPELLVARIABLE_POWER1];
                     break;
                 case SPELLVARIABLE_bpct:
                     value = activePlayer->m_playerData->m_blockPct;
