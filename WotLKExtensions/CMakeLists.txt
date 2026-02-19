@@ -19,6 +19,7 @@ option(CLASSLFDROLES_PATCH "Allow more than 12 classes in dungeon finder" ON)
 option(OOBLUAFUNCTIONS_PATCH "Allows registering lua functions from addresses outside of wow.exe; suggested to leave it on as it's required for various other patches" ON)
 option(CUSTOMPACKETS_PATCH "Enables possibility of implementing and using custom packets" OFF)
 option(ITEMMODEXT_PATCH "Expands ITEM_MOD table, allowing to add and display more custom tooltip mods - see Misc.hpp for more info" OFF)
+option(SPELLDESCRIPTIONEXT_PATCH "Enables possibility to add more variable arguments used in spell descriptions, like $hp, $ power1, etc." OFF)
 option(ACTIONBAR_LUA "Enables some additional action bar functions like 'ReplaceActionBarSpell'" OFF)
 option(DEVHELPER_LUA "Various Lua functions useful in dev, like 'ReloadMap' or toggle rendering of various elements: liquids, terrain, etc." OFF)
 

@@ -37,6 +37,8 @@ public:
     int32_t GetZoneLightPointRowMinIndex() const;
     int32_t GetZoneLightPointRowMaxIndex() const;
 
+    std::vector<const char*>& GetSpellVariableData();
+
     uint32_t* GetRaceTablePtr();
     uint32_t* GetMemoryTablePtr();
     uint8_t* GetClassRoleMaskTablePtr();
@@ -57,6 +59,8 @@ private:
     LFGRoles& m_lfgRolesCDBC;
     ZoneLight& m_zoneLightCDBC;
     ZoneLightPoint& m_zoneLightPointCDBC;
+
+    std::vector<const char*> m_spellVariables;
 
     uint32_t m_raceNameTable[32] = { 0 };
     uint32_t m_memoryTable[64] = { 0 };

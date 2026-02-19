@@ -15,7 +15,11 @@ struct UnitFields
 {
     uint32_t m_padding0x00[17];
     UnitBytes0 m_bytes0;
-    uint32_t m_padding0x48[30];
+    uint32_t m_currHealth;
+    uint32_t m_currPowers[7];
+    uint32_t m_maxHealth;
+    uint32_t m_maxPowers[7];
+    uint32_t m_padding0x88[14];
     uint32_t m_level;
     uint32_t m_padding0xC4[93];
 };

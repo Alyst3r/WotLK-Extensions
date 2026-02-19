@@ -87,6 +87,11 @@ int32_t DataContainer::GetZoneLightPointRowMaxIndex() const
     return m_zoneLightPointCDBC.GetMaxIndex();
 }
 
+std::vector<const char*>& DataContainer::GetSpellVariableData()
+{
+    return m_spellVariables;
+}
+
 uint32_t* DataContainer::GetRaceTablePtr()
 {
     return m_raceNameTable;

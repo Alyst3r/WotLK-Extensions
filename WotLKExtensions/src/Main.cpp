@@ -11,6 +11,7 @@ void Main::OnAttach()
     // Apply patches
     Misc::ApplyPatches();
     CGPlayer::ApplyPatches();
+    CGTooltip::ApplyPatches();
     
 #if CUSTOM_DBC && ZONELIGHT_DBC
     ZoneLightData::ApplyZoneLightsExtensions();
