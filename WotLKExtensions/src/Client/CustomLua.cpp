@@ -27,7 +27,7 @@ void CustomLua::Apply()
     RegisterFunctions();
 }
 
-int CustomLua::LoadScriptFunctionsCustom()
+int32_t CustomLua::LoadScriptFunctionsCustom()
 {
     auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunctionMap();
 
@@ -42,7 +42,7 @@ int CustomLua::LoadScriptFunctionsCustom()
     return FrameScript::LoadFunctions();
 }
 
-int CustomLua::GetShapeshiftFormID(lua_State* L)
+int32_t CustomLua::GetShapeshiftFormID(lua_State* L)
 {
     WoWGUID activePlayer = ClientServices::GetActivePlayer();
 
@@ -59,7 +59,7 @@ int CustomLua::GetShapeshiftFormID(lua_State* L)
     return 1;
 }
 
-int CustomLua::GetSpellDescription(lua_State* L)
+int32_t CustomLua::GetSpellDescription(lua_State* L)
 {
     if (FrameScript::IsNumber(L, 1))
     {
@@ -81,7 +81,7 @@ int CustomLua::GetSpellDescription(lua_State* L)
     return 1;
 }
 
-int CustomLua::GetSpellNameById(lua_State* L)
+int32_t CustomLua::GetSpellNameById(lua_State* L)
 {
     if (FrameScript::IsNumber(L, 1))
     {
@@ -103,7 +103,7 @@ int CustomLua::GetSpellNameById(lua_State* L)
     return 2;
 }
 
-int CustomLua::FindSpellActionBarSlots(lua_State* L)
+int32_t CustomLua::FindSpellActionBarSlots(lua_State* L)
 {
     uint32_t spellID = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
     uint8_t count = 0;
@@ -128,7 +128,7 @@ int CustomLua::FindSpellActionBarSlots(lua_State* L)
         return count;
 }
 
-int CustomLua::ReplaceActionBarSpell(lua_State* L)
+int32_t CustomLua::ReplaceActionBarSpell(lua_State* L)
 {
     uint32_t oldSpellID = FrameScript::GetNumber(L, 1);
     uint32_t newSpellID = FrameScript::GetNumber(L, 2);
@@ -157,7 +157,7 @@ int CustomLua::ReplaceActionBarSpell(lua_State* L)
     return 0;
 }
 
-int CustomLua::SetSpellInActionBarSlot(lua_State* L)
+int32_t CustomLua::SetSpellInActionBarSlot(lua_State* L)
 {
     uint32_t spellID = static_cast<uint32_t>(FrameScript::GetNumber(L, 1));
     uint8_t slotID = static_cast<uint8_t>(FrameScript::GetNumber(L, 2));
@@ -175,7 +175,7 @@ int CustomLua::SetSpellInActionBarSlot(lua_State* L)
     return 0;
 }
 
-int CustomLua::ReloadMap(lua_State* L)
+int32_t CustomLua::ReloadMap(lua_State* L)
 {
     uint64_t activePlayer = ClientServices::GetActivePlayer();
 
@@ -195,8 +195,8 @@ int CustomLua::ReloadMap(lua_State* L)
                 char buffer[512];
 
                 CWorld::UnloadMap();
-                CWorld::LoadMap(row->m_directory, &moveInfo->position, mapId);
-                SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_directory, moveInfo->position.x, moveInfo->position.y, moveInfo->position.z);
+                CWorld::LoadMap(row->m_directory, &moveInfo->m_position, mapId);
+                SStr::Printf(buffer, 512, "Map ID: %d (Directory: \"%s\", x: %f, y: %f, z: %f) reloaded.", mapId, row->m_directory, moveInfo->m_position.m_x, moveInfo->m_position.m_y, moveInfo->m_position.m_z);
                 CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
         }
@@ -205,7 +205,7 @@ int CustomLua::ReloadMap(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleDisplayNormals(lua_State* L)
+int32_t CustomLua::ToggleDisplayNormals(lua_State* L)
 {
     char buffer[512];
     bool areNormalsDisplayed = renderFlags4 & 0x40;
@@ -228,7 +228,7 @@ int CustomLua::ToggleDisplayNormals(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleGroundEffects(lua_State* L)
+int32_t CustomLua::ToggleGroundEffects(lua_State* L)
 {
     char buffer[512];
     bool areGroundEffectsDisplayed = renderFlags3 & 0x10;
@@ -251,7 +251,7 @@ int CustomLua::ToggleGroundEffects(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleLiquids(lua_State* L)
+int32_t CustomLua::ToggleLiquids(lua_State* L)
 {
     char buffer[512];
     bool areLiquidsShowing = renderFlags4 & 0x03;
@@ -274,7 +274,7 @@ int CustomLua::ToggleLiquids(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleM2(lua_State* L)
+int32_t CustomLua::ToggleM2(lua_State* L)
 {
     char buffer[512];
     bool areM2Displayed = renderFlags1 & 0x01;
@@ -297,7 +297,7 @@ int CustomLua::ToggleM2(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleTerrain(lua_State* L)
+int32_t CustomLua::ToggleTerrain(lua_State* L)
 {
     char buffer[512];
     bool isTerrainShown = renderFlags1 & 0x02;
@@ -320,7 +320,7 @@ int CustomLua::ToggleTerrain(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleTerrainCulling(lua_State* L)
+int32_t CustomLua::ToggleTerrainCulling(lua_State* L)
 {
     char buffer[512];
     bool isTerrainCullingOn = renderFlags1 & 0x32;
@@ -343,7 +343,7 @@ int CustomLua::ToggleTerrainCulling(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleWireframeMode(lua_State* L)
+int32_t CustomLua::ToggleWireframeMode(lua_State* L)
 {
     char buffer[512];
     bool isWireframeModeOn = renderFlags4 & 0x20;
@@ -366,7 +366,7 @@ int CustomLua::ToggleWireframeMode(lua_State* L)
     return 0;
 }
 
-int CustomLua::ToggleWMO(lua_State* L)
+int32_t CustomLua::ToggleWMO(lua_State* L)
 {
     char buffer[512];
     bool areWMOsDisplayed = renderFlags2 & 0x01;
@@ -389,7 +389,7 @@ int CustomLua::ToggleWMO(lua_State* L)
     return 0;
 }
 
-int CustomLua::FlashGameWindow(lua_State* L)
+int32_t CustomLua::FlashGameWindow(lua_State* L)
 {
     HWND activeWindow = *g_window;
 
@@ -408,7 +408,7 @@ int CustomLua::FlashGameWindow(lua_State* L)
     return 0;
 }
 
-int CustomLua::GetCustomCombatRating(lua_State* L)
+int32_t CustomLua::GetCustomCombatRating(lua_State* L)
 {
     uint8_t cr = 0;
     float value = 0;
@@ -431,7 +431,7 @@ int CustomLua::GetCustomCombatRating(lua_State* L)
     return 1;
 }
 
-int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
+int32_t CustomLua::GetCustomCombatRatingBonus(lua_State* L)
 {
     uint32_t cr = 0;
     float value = 0.f;
@@ -462,7 +462,7 @@ int CustomLua::GetCustomCombatRatingBonus(lua_State* L)
     return 1;
 }
 
-int CustomLua::GetAvailableRoles(lua_State* L)
+int32_t CustomLua::GetAvailableRoles(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
@@ -480,7 +480,7 @@ int CustomLua::GetAvailableRoles(lua_State* L)
     return 3;
 }
 
-int CustomLua::SetLFGRole(lua_State* L)
+int32_t CustomLua::SetLFGRole(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     LFGRolesRow cdbcRole;
@@ -506,7 +506,7 @@ int CustomLua::SetLFGRole(lua_State* L)
     return 0;
 }
 
-int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
+int32_t CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
 {
     float ox = static_cast<float>(FrameScript::GetNumber(L, 1));
     float oy = static_cast<float>(FrameScript::GetNumber(L, 2));
@@ -515,19 +515,19 @@ int CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     C3Vector pos3d = { ox, oy, oz };
     C3Vector pos2d = {};
     uint32_t flags = 0;
-    int result = CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
+    int32_t result = CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
     float x = 0.f;
     float y = 0.f;
 
-    Util::PercToScreenPos(pos2d.x, pos2d.y, &x, &y);
+    Util::PercToScreenPos(pos2d.m_x, pos2d.m_y, &x, &y);
     FrameScript::PushNumber(L, x);
     FrameScript::PushNumber(L, y);
-    FrameScript::PushNumber(L, pos2d.z);
+    FrameScript::PushNumber(L, pos2d.m_z);
 
     return 3;
 }
 
-int CustomLua::PortGraveyard(lua_State* L)
+int32_t CustomLua::PortGraveyard(lua_State* L)
 {
     CGPlayer* activeObjectPtr = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 

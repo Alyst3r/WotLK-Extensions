@@ -21,7 +21,7 @@ void CGPlayer::ApplyPatches()
 #endif
 
 #if COMBOPOINT_FIX
-    Util::SetByteAtAddress((void*)0x611707, 0xEB);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x611707), 0xEB);
 #endif
 
 #if CLASSLFDROLES_PATCH || LFGROLES_DBC
@@ -56,7 +56,10 @@ void CGPlayer::LFDClassRoleExtension()
 #if CLASSLFDROLES_PATCH && (!CUSTOM_DBC || !LFGROLES_DBC)
     uint32_t tablePtr = reinterpret_cast<uint32_t>(DataContainer::GetInstance().GetClassRoleMaskTablePtr());
 
-    std::vector<uint32_t> patchedAddresses = { 0x552948, 0x553B7D, 0x553B94, 0x553DE7, 0x554922 };
+    std::vector<uint32_t> patchedAddresses =
+    {
+        0x552948, 0x553B7D, 0x553B94, 0x553DE7, 0x554922
+    };
 
     for (uint8_t i = 0; i < patchedAddresses.size(); i++)
         Util::OverwriteUInt32AtAddress(patchedAddresses[i], tablePtr);
@@ -76,7 +79,7 @@ uint32_t CGPlayer::CheckLFGRoles(uint32_t roles)
     uint32_t classId = ClientServices::GetCharacterClass();
     LFGRolesRow cdbcRoles;
 
-    if (classId > g_chrClassesDB->m_maxIndex || classId < g_chrClassesDB->m_minIndex) // ChrClasses.dbc max/min indices
+    if (classId > g_chrClassesDB->m_maxIndex || classId < g_chrClassesDB->m_minIndex)
         classId = 0;
 
     DataContainer::GetInstance().GetLFGRolesRow(cdbcRoles, classId);

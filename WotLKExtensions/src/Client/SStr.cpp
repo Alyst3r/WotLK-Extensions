@@ -3,7 +3,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-int SStr::Printf(char* buf, uint32_t length, char* fmt, ...)
+int32_t SStr::Printf(char* buf, uint32_t length, char* fmt, ...)
 {
     char buffer[2048] = { 0 };
     va_list args;
@@ -13,7 +13,7 @@ int SStr::Printf(char* buf, uint32_t length, char* fmt, ...)
     va_end(args);
 
     // original SStr::Printf
-    return reinterpret_cast<int(__cdecl*)(char*, uint32_t, char*, ...)>(0x76F070)(buf, length, "%s", buffer);
+    return reinterpret_cast<int32_t(__cdecl*)(char*, uint32_t, char*, ...)>(0x76F070)(buf, length, "%s", buffer);
 }
 
 // in some IDA dbs known as SStrCopy_0

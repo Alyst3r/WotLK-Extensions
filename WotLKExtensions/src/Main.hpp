@@ -7,6 +7,7 @@
 #include <Client/CNetClient.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/Misc.hpp>
+#include <Client/Spell.hpp>
 #include <Client/WoWTime.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>

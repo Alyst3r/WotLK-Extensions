@@ -48,28 +48,28 @@ void ZoneLightData::FillZoneLightData()
             if (tempRow.m_zoneLightID > row.m_ID)
                 break;
 
-            tempVec.x = tempRow.m_positionX;
-            tempVec.y = tempRow.m_positionY;
+            tempVec.m_x = tempRow.m_positionX;
+            tempVec.m_y = tempRow.m_positionY;
 
             points.push_back(tempVec);
 
             if (j == dc.GetZoneLightPointRowMinIndex())
             {
-                data.m_minX, data.m_maxX = tempVec.x;
-                data.m_maxY, data.m_maxY = tempVec.y;
+                data.m_minX, data.m_maxX = tempVec.m_x;
+                data.m_maxY, data.m_maxY = tempVec.m_y;
             }
 
-            if (data.m_minX > tempVec.x)
-                data.m_minX = tempVec.x;
+            if (data.m_minX > tempVec.m_x)
+                data.m_minX = tempVec.m_x;
 
-            if (data.m_minY > tempVec.y)
-                data.m_minY = tempVec.y;
+            if (data.m_minY > tempVec.m_y)
+                data.m_minY = tempVec.m_y;
 
-            if (data.m_maxX < tempVec.x)
-                data.m_maxX = tempVec.x;
+            if (data.m_maxX < tempVec.m_x)
+                data.m_maxX = tempVec.m_x;
 
-            if (data.m_maxY < tempVec.y)
-                data.m_maxY = tempVec.y;
+            if (data.m_maxY < tempVec.m_y)
+                data.m_maxY = tempVec.m_y;
 
             if (points.size())
                 data.m_pointData = points;
@@ -89,14 +89,14 @@ void ZoneLightData::FindAndAddZoneLightEx(C3Vector* vec)
     auto& zoneLightData = DataContainer::GetInstance().GetZoneLightData();
     void* g_dnInfo = DNInfo::GetDNInfoPtr();
     int32_t currentMap = *reinterpret_cast<int32_t*>(0xADFBC4);
-    C2Vector vec2d{ -(vec->y - 17066.666f), -(vec->x - 17066.666f) };
+    C2Vector vec2d{ -(vec->m_y - 17066.666f), -(vec->m_x - 17066.666f) };
 
     if (!zoneLightData.size())
         return;
 
     for (auto& it : zoneLightData)
     {
-        if (it.m_mapID == currentMap && it.m_minX <= vec2d.x && it.m_minY <= vec2d.y && it.m_maxX >= vec2d.x && it.m_maxY >= vec2d.y)
+        if (it.m_mapID == currentMap && it.m_minX <= vec2d.m_x && it.m_minY <= vec2d.m_y && it.m_maxX >= vec2d.m_x && it.m_maxY >= vec2d.m_y)
         {
             float temp = 0.f;
             bool isWithin = NTempest::DistanceSquaredFromEdge(it.m_pointData.size(), it.m_pointData.data(), &vec2d, &temp);

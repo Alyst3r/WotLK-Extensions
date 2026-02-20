@@ -12,6 +12,7 @@ void Main::OnAttach()
     Misc::ApplyPatches();
     CGPlayer::ApplyPatches();
     CGTooltip::ApplyPatches();
+    Spell::ApplyPatches();
     
 #if CUSTOM_DBC && ZONELIGHT_DBC
     ZoneLightData::ApplyZoneLightsExtensions();
@@ -45,7 +46,7 @@ void Main::Init()
 #endif
 }
 
-bool __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+static bool __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {

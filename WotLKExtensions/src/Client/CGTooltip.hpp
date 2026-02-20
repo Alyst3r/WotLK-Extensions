@@ -8,8 +8,8 @@ public:
     static void ApplyPatches();
 
     static void AddLine(void* thisTooltip, char* str1, char* str2, uint32_t color1, uint32_t color2, int32_t a6);
-    static int AddTalentPrereqs(void* thisTooltip, int32_t a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6);
-    static int ClearTooltip(void* thisTooltip);
+    static int32_t AddTalentPrereqs(void* thisTooltip, int32_t a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6);
+    static int32_t ClearTooltip(void* thisTooltip);
 
 private:
     CGTooltip() = delete;
@@ -19,7 +19,7 @@ private:
 class CSimpleFrame
 {
 public:
-    static int Hide(void* thisFrame);
+    static int32_t Hide(void* thisFrame);
 
 private:
     CSimpleFrame() = delete;

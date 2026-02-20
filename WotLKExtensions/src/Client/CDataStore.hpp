@@ -8,8 +8,8 @@ struct CDataStore_vTable
 {
     void (__thiscall* InternalInitialize)(CDataStore*, uint8_t*, uint32_t, uint32_t);
     void (__thiscall* InternalDestroy)(CDataStore*, uint8_t*, uint32_t, uint32_t);
-    int (__thiscall* InternalFetchRead)(CDataStore*, uint32_t, uint32_t, uint8_t*, uint32_t, uint32_t);
-    int (__thiscall* InternalFetchWrite)(CDataStore*, uint32_t, uint32_t, uint8_t*, uint32_t, uint32_t);
+    int32_t (__thiscall* InternalFetchRead)(CDataStore*, uint32_t, uint32_t, uint8_t*, uint32_t, uint32_t);
+    int32_t (__thiscall* InternalFetchWrite)(CDataStore*, uint32_t, uint32_t, uint8_t*, uint32_t, uint32_t);
     void (__thiscall* Destructor)(CDataStore*);
     void (__thiscall* Reset)(CDataStore*);
     bool (__thiscall* IsRead)(CDataStore*);
