@@ -8,6 +8,9 @@ void Main::OnAttach()
     // and don't let me get started how retarded original idea behind packing like this is
     WoWTime::ApplyWoWTimePatches();
 
+    // non-optional as well, disables crashes from missing m2 map models, replacing them with pink cube
+    CMap::Apply();
+
     // Apply patches
     Misc::ApplyPatches();
     CGPlayer::ApplyPatches();

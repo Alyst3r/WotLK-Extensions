@@ -5,7 +5,8 @@
 struct lua_State;
 class Main;
 
-class CustomLua {
+class CustomLua
+{
 public:
     static int32_t LoadScriptFunctionsCustom();
 

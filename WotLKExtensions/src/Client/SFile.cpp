@@ -1,5 +1,10 @@
 #include <Client/SFile.hpp>
 
+bool SFile::OpenFile(const char* filename, HANDLE* fileBlock)
+{
+    return OpenFileEx(nullptr, filename, 0, fileBlock);
+}
+
 bool SFile::OpenFileEx(HANDLE handle, const char* filename, uint32_t flags, HANDLE* fileBlock)
 {
     return reinterpret_cast<bool (__stdcall*)(HANDLE, const char*, uint32_t, HANDLE*)>(0x424B50)(handle, filename, flags, fileBlock);
