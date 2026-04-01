@@ -32,4 +32,9 @@ struct CGUnit : CGObject
     uint32_t m_padding0x34[971];
 
     static uint32_t GetShapeshiftFormID(CGUnit* thisUnit);
+
+    uint8_t GetClass() const;
+    uint8_t GetGender() const;
+    uint8_t GetPowerType() const;
+    uint8_t GetRace() const;
 };
