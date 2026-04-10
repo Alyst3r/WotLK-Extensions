@@ -22,6 +22,8 @@ option(ITEMMODEXT_PATCH "Expands ITEM_MOD table, allowing to add and display mor
 option(SPELLDESCRIPTIONEXT_PATCH "Enables possibility to add more variable arguments used in spell descriptions, like $hp, $ power1, etc." OFF)
 option(ACTIONBAR_LUA "Enables some additional action bar functions like 'ReplaceActionBarSpell'" OFF)
 option(DEVHELPER_LUA "Various Lua functions useful in dev, like 'ReloadMap' or toggle rendering of various elements: liquids, terrain, etc." OFF)
+option(TOOLTIPID_PATCH "Enables ID display of various targeted elements, such as spells, items or npcs in tooltip. Work in progress." OFF)
+option(TOOLTIPDKRUNEEXT_PATCH "Enables possibility to display runic power cost next to rune cost. Requires some core edits. More info in 'CGTooltip::AppendRuneCostLine' function." OFF)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchConfig.hpp.in"

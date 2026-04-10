@@ -14,3 +14,11 @@ void* DBClient::GetRow(void* vtable2, uint32_t rowIndex)
 {
     return reinterpret_cast<void* (__thiscall*)(void*, uint32_t)>(0x65C290)(vtable2, rowIndex);
 }
+
+bool DBClient::IsValidIndex(DBClient* dbc, uint32_t rowIndex)
+{
+    if (rowIndex >= dbc->m_minIndex && rowIndex <= dbc->m_maxIndex)
+        return true;
+
+    return false;
+}

@@ -15,6 +15,8 @@
 #cmakedefine01 CUSTOMPACKETS_PATCH
 #cmakedefine01 ITEMMODEXT_PATCH
 #cmakedefine01 SPELLDESCRIPTIONEXT_PATCH
+#cmakedefine01 TOOLTIPID_PATCH
+#cmakedefine01 TOOLTIPDKRUNEEXT_PATCH
 
 // Lua functions
 #cmakedefine01 ACTIONBAR_LUA

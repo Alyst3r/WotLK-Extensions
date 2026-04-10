@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GameObjects/CGBag.hpp>
 #include <GameObjects/CGUnit.hpp>
 #include <SharedDefines.hpp>
 
@@ -140,7 +141,7 @@ struct PlayerFields
 struct CGPlayer : CGUnit
 {
     PlayerFields* m_playerData;
-    uint32_t m_padding0x1008[1024];
+    uint32_t m_padding0x100C[1024];
 
     static bool IsDeadOrGhost(CGPlayer* thisPlayer);
 
