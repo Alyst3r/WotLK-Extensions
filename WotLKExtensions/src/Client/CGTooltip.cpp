@@ -50,9 +50,12 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     return reinterpret_cast<int32_t (__thiscall*)(CGTooltip*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, uint32_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t)>(0x6238A0)(thisTooltip, spellId, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
 
     bool displayRange = true;
+    bool unc = false;
     CGPlayer* activePlayer = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
     CGUnit* unit = nullptr;
     char powerCostLine[128] = { 0 };
+    int32_t result = 0;
+    int32_t talentPrereq = 1;
     SpellRow spellRow{};
 
     if (!a11)
@@ -92,14 +95,12 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     else
         AddLine(thisTooltip, spellRow.m_name_lang, (a3 || a6) ? spellRow.m_nameSubtext_lang : nullptr, &sTextWhite, &sTextGrey, 0);
 
-    int32_t v134 = 1;
-
     if (a9 && !a11)
     {
         AddTalentRankLine(thisTooltip, a14, a15);
 
         if (a14 < 0)
-            v134 = AddTalentPrereqs(thisTooltip, a9, a10, a7, a5, a12);
+            talentPrereq = AddTalentPrereqs(thisTooltip, a9, a10, a7, a5, a12);
     }
 
     if (!a3)
@@ -110,30 +111,33 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
 
     AddPowerAndRangeLines(thisTooltip, powerCostLine, unit, &spellRow, displayRange);
 
-    bool unk = false;
-
     if (!a4 || !IsTradespell(&spellRow))
     {
         if (spellRow.m_effect[0] == SPELL_EFFECT_TRADE_SKILL || (spellRow.m_attributes & SPELL_ATTR0_PASSIVE))
-            unk = true;
+            unc = true;
         else if (spellRow.m_effect[0] != SPELL_EFFECT_ATTACK)
             AddCastTimeLine(thisTooltip, &spellRow, unit, a3, a5, a7);
     }
 
+    AddTotemsLine(thisTooltip, activePlayer, &spellRow, a3, a5);
+    AddRequiredItemLine(thisTooltip, &spellRow);
+
     // TODO
 
+    AddRequiredLevelLine(thisTooltip, unit, &spellRow, unc);
     AddReagentsLine(thisTooltip, activePlayer, &spellRow, a5, a3);
 
-    int v109 = AddCooldownLine(thisTooltip, a4);
+    result = AddCooldownLine(thisTooltip, a4);
 
     if (!a3)
     {
-        v109 = !v109 ? AddSpecialActionLine(thisTooltip, activePlayer, &spellRow, unk) : 1;
+        result = !result ? AddSpecialActionLine(thisTooltip, activePlayer, &spellRow, unc) : 1;
+
         AddDrainAllPowerLine(thisTooltip, &spellRow);
         AddSpellDescriptionLine(thisTooltip, &spellRow, a5, a7);
 
         if (a9 && !a7 && a16)
-            AddTalentLearnText(thisTooltip, a9, a10, v134, a14, a15, 0, a8, a5, a12);
+            AddTalentLearnText(thisTooltip, a9, a10, talentPrereq, a14, a15, 0, a8, a5, a12);
 
         AddEmbeddedItemBlock(thisTooltip, &spellRow);
     }
@@ -148,7 +152,7 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     CSimpleFrame::Show(thisTooltip);
     CalculateSize(thisTooltip);
 
-    return v109;
+    return result;
 }
 
 void CGTooltip::AddLine(CGTooltip* thisTooltip, char* str1, char* str2, uint32_t* color1, uint32_t* color2, int32_t a6)
@@ -158,29 +162,29 @@ void CGTooltip::AddLine(CGTooltip* thisTooltip, char* str1, char* str2, uint32_t
 
 void CGTooltip::AddEmbeddedItemBlock(CGTooltip* thisTooltip, SpellRow* spellRow)
 {
-    if (IsCreateItemSpell(spellRow))
+    if (!IsCreateItemSpell(spellRow))
+        return;
+
+    int32_t itemID = 0;
+
+    for (int32_t i = 0; i < 3; i++)
     {
-        int32_t itemID = 0;
-
-        for (int32_t i = 0; i < 3; i++)
+        if (spellRow->m_effectItemType[i])
         {
-            if (spellRow->m_effectItemType[i])
-            {
-                itemID = spellRow->m_effectItemType[i];
+            itemID = spellRow->m_effectItemType[i];
 
-                break;
-            }
+            break;
         }
+    }
 
-        if (itemID)
-        {
-            reinterpret_cast<int(__thiscall*)(void*)>(0x50F590)(&thisTooltip->padding[250]);
+    if (itemID)
+    {
+        reinterpret_cast<int(__thiscall*)(void*)>(0x50F590)(&thisTooltip->padding[250]);
 
-            int32_t dummy = 0;
-            int64_t guid = 0;
+        int32_t dummy = 0;
+        int64_t guid = 0;
 
-            SetItemEx(thisTooltip, 0, itemID, &dummy, &guid, 0, 0, 0, 1, 0i64, 0, 0, 0, 0, 0, 0, 1);
-        }
+        SetItemEx(thisTooltip, 0, itemID, &dummy, &guid, 0, 0, 0, 1, 0i64, 0, 0, 0, 0, 0, 0, 1);
     }
 }
 
@@ -410,9 +414,9 @@ void CGTooltip::AddPowerAndRangeLines(CGTooltip* thisTooltip, char* powerLine, C
     }
 }
 
-void CGTooltip::AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a2, int32_t a3)
+void CGTooltip::AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a4, int32_t a5)
 {
-    if (!a2 && reinterpret_cast<bool (__cdecl*)(CGPlayer*, SpellRow*)>(0x800D60)(player, spellRow));
+    if (!a4 && reinterpret_cast<bool (__cdecl*)(CGPlayer*, SpellRow*)>(0x800D60)(player, spellRow));
     {
         bool isFirst = true;
         bool smth = true;
@@ -423,49 +427,70 @@ void CGTooltip::AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellR
         {
             int32_t reagentID = spellRow->m_reagent[i];
 
-            if (reagentID > 0)
+            if (reagentID <= 0)
+                continue;
+
+            int64_t guid = spellRow->m_ID & 0x1FE0000000000000;
+            DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(reinterpret_cast<DBItemCache*>(0xC5D828), reagentID, &guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
+
+            if (!infoBlock)
             {
-                int64_t guid = spellRow->m_ID & 0x1FE0000000000000;
-                DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(reinterpret_cast<DBItemCache*>(0xC5D828), reagentID, &guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
+                thisTooltip->padding[242]++;
 
-                if (!infoBlock)
-                {
-                    thisTooltip->padding[424]++;
-
-                    continue;
-                }
-
-                if (isFirst)
-                {
-                    isFirst = false;
-
-                    SStr::Copy(buffer, FrameScript::GetText("SPELL_REAGENTS", -1, 0), 4096);
-                }
-                else
-                    SStr::Append(buffer, ", ", 4096);
-
-                char* name = infoBlock->m_name;
-
-                if (spellRow->m_reagentCount[i] <= 1)
-                    SStr::Copy(format, name, 128);
-                else
-                    SStr::Printf(format, 128, "%s (%d)", name, spellRow->m_reagentCount[i]);
-
-                if (CGBag::GetItemTypeCount(reinterpret_cast<CGBag*>(&player->m_padding0x100C[569]), spellRow->m_reagent[i], 0) >= spellRow->m_reagentCount[i])
-                    SStr::Append(buffer, format, 4096);
-                else
-                {
-                    SStr::Append(buffer, sStringRed, 4096);
-                    SStr::Append(buffer, format, 4096);
-                    SStr::Append(buffer, "|r", 4096);
-
-                    smth = false;
-                }
+                continue;
             }
+
+            if (isFirst)
+            {
+                isFirst = false;
+
+                SStr::Copy(buffer, FrameScript::GetText("SPELL_REAGENTS", -1, 0), 4096);
+            }
+            else
+                SStr::Append(buffer, ", ", 4096);
+
+            char* name = infoBlock->m_name;
+
+            if (spellRow->m_reagentCount[i] <= 1)
+                SStr::Copy(format, name, 128);
+            else
+                SStr::Printf(format, 128, "%s (%d)", name, spellRow->m_reagentCount[i]);
+
+            bool result = CGBag::GetItemTypeCount(reinterpret_cast<CGBag*>(&player->m_padding0x100C[569]), spellRow->m_reagent[i], 0) >= spellRow->m_reagentCount[i];
+
+            if (!result)
+            {
+                SStr::Append(buffer, sStringRed, 4096);
+
+                smth = false;
+            }
+            SStr::Append(buffer, format, 4096);
+
+            if (!result)
+                SStr::Append(buffer, "|r", 4096);
         }
 
-        if (!isFirst && (!smth || !a3))
+        if (!isFirst && (!smth || !a5))
             AddLine(thisTooltip, buffer, 0, &sTextWhite, &sTextWhite, 1);
+    }
+}
+
+void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, SpellRow* spellRow)
+{
+    if (!(spellRow->m_targets & 0x10) && !(spellRow->m_equippedItemClass & 0x80000000) && spellRow->m_equippedItemSubclass)
+    {
+
+    }
+}
+
+void CGTooltip::AddRequiredLevelLine(CGTooltip* thisTooltip, CGUnit* unit, SpellRow* spellRow, bool a4)
+{
+    if (a4 && unit && unit->GetLevel() < spellRow->m_baseLevel)
+    {
+        char buffer[128] = { 0 };
+
+        SStr::Printf(buffer, 128, FrameScript::GetText("ITEM_MIN_LEVEL", -1, 0), spellRow->m_baseLevel);
+        AddLine(thisTooltip, buffer, nullptr, &sTextRed, &sTextRed, 0);
     }
 }
 
@@ -546,6 +571,97 @@ void CGTooltip::AddTalentNextRankLine(CGTooltip* thisTooltip)
 
     SStr::Printf(buffer, 128, "\n%s", FrameScript::GetText("TOOLTIP_TALENT_NEXT_RANK", -1, 0));
     CGTooltip::AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+}
+
+void CGTooltip::AddTotemsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a4, int32_t a5)
+{
+    if (a5)
+        return;
+
+    bool isFirst = true;
+    bool smth = true;
+    char buffer[4096] = { 0 };
+    char format[128] = { 0 };
+
+    for (int32_t i = 0; i < 2; i++)
+    {
+        int32_t totemID = spellRow->m_totem[i];
+
+        if (!totemID)
+            continue;
+
+        int64_t guid = spellRow->m_ID & 0x1FE0000000000000;
+        DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(reinterpret_cast<DBItemCache*>(0xC5D828), totemID, &guid, reinterpret_cast<void(__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
+
+        if (!infoBlock)
+        {
+            thisTooltip->padding[242]++;
+
+            continue;
+        }
+
+        if (isFirst)
+        {
+            isFirst = false;
+
+            SStr::Copy(buffer, FrameScript::GetText("SPELL_TOTEMS", -1, 0), 4096);
+        }
+        else
+            SStr::Append(buffer, ", ", 4096);
+
+        int32_t temp = CGBag::FindItemOfType(reinterpret_cast<CGBag*>(&player->m_padding0x100C[569]), spellRow->m_totem[i], 0);
+
+        if (!temp)
+        {
+            SStr::Append(buffer, sStringRed, 4096);
+
+            smth = false;
+        }
+
+        SStr::Append(buffer, infoBlock->m_name, 4096);
+
+        if (!temp)
+            SStr::Append(buffer, "|r", 4096);
+    }
+
+    for (int32_t j = 0; j < 2; j++)
+    {
+        int32_t totemCategory = spellRow->m_requiredTotemCategoryID[j];
+
+        if (!DBClient::IsValidIndex(g_totemCategoryDB, totemCategory))
+            continue;
+        
+        TotemCategoryRow* totemCategoryRow = reinterpret_cast<TotemCategoryRow*>(DBClient::GetRow(&g_totemCategoryDB->m_vtable2, totemCategory));
+
+        if (!totemCategoryRow)
+            continue;
+
+        if (isFirst)
+        {
+            isFirst = false;
+
+            SStr::Copy(buffer, FrameScript::GetText("SPELL_TOTEMS", -1, 0), 4096);
+        }
+        else
+            SStr::Append(buffer, ", ", 4096);
+
+        bool result = CGBag::GetTotemCategory(totemCategory, 0);
+
+        if (!result)
+        {
+            SStr::Append(buffer, sStringRed, 4096);
+
+            smth = false;
+        }
+
+        SStr::Append(buffer, totemCategoryRow->m_nameLang, 4096);
+
+        if (!result)
+            SStr::Append(buffer, "|r", 4096);
+    }
+
+    if (!isFirst || (!smth || !a4))
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
 }
 
 void CGTooltip::AddTradeSkillLine(CGTooltip* thisTooltip, CGPlayer* activePlayer, SpellRow* spellRow, int32_t spellId)

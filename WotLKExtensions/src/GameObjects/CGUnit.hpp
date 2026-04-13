@@ -37,4 +37,6 @@ struct CGUnit : CGObject
     uint8_t GetGender() const;
     uint8_t GetPowerType() const;
     uint8_t GetRace() const;
+
+    uint32_t GetLevel() const;
 };

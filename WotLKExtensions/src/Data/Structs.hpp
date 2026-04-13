@@ -213,3 +213,11 @@ struct SpellRuneCostRow
     int32_t m_frost;
     int32_t m_runicPower;
 };
+
+struct TotemCategoryRow
+{
+    int32_t m_ID;
+    char* m_nameLang;
+    int32_t m_totemCategoryType;
+    int32_t m_totemCategoryMask;
+};

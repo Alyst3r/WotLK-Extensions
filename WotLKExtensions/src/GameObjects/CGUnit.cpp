@@ -24,3 +24,8 @@ uint8_t CGUnit::GetRace() const
 {
     return m_unitFields->m_bytes0.m_unitRace;
 }
+
+uint32_t CGUnit::GetLevel() const
+{
+    return m_unitFields->m_level;
+}
