@@ -28,8 +28,10 @@ public:
     static void AddDrainAllPowerLine(CGTooltip* thisTooltip, SpellRow* spellRow);
     static void AddPowerAndRangeLines(CGTooltip* thisTooltip, char* powerLine, CGUnit* unit, SpellRow* spellRow, bool displayRange);
     static void AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a2, int32_t a3);
-    static void AddRequiredItemLine(CGTooltip* thisTooltip, SpellRow* spellRow);
+    static void AddRequiredFactionLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a3);
+    static void AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a4, int32_t a5);
     static void AddRequiredLevelLine(CGTooltip* thisTooltip, CGUnit* unit, SpellRow* spellRow, bool a4);
+    static void AddRequiredShapeshiftFormLine(CGTooltip* thisTooltip, CGUnit* unit, SpellRow* spellRow, int32_t a4);
     static int32_t AddSpecialActionLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, bool a4);
     static void AddSpellDescriptionLine(CGTooltip* thisTooltip, SpellRow* spellRow, int32_t a3, int32_t a4);
     static void AddSpellIDLine(CGTooltip* thisTooltip, SpellRow* spellRow);

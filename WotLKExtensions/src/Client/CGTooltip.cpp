@@ -1,4 +1,5 @@
 #include <Client/CFormula.hpp>
+#include <Client/CGReputationInfo.hpp>
 #include <Client/CGTooltip.hpp>
 #include <Client/ClientServices.hpp>
 #include <Client/DBClient.hpp>
@@ -47,8 +48,6 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
 
 int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused, int32_t spellId, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, uint32_t* a9, int32_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16)
 {
-    return reinterpret_cast<int32_t (__thiscall*)(CGTooltip*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, uint32_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t)>(0x6238A0)(thisTooltip, spellId, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-
     bool displayRange = true;
     bool unc = false;
     CGPlayer* activePlayer = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
@@ -120,10 +119,9 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     }
 
     AddTotemsLine(thisTooltip, activePlayer, &spellRow, a3, a5);
-    AddRequiredItemLine(thisTooltip, &spellRow);
-
-    // TODO
-
+    AddRequiredItemLine(thisTooltip, activePlayer, &spellRow, a3, a5);
+    AddRequiredShapeshiftFormLine(thisTooltip, unit, &spellRow, a3);
+    AddRequiredFactionLine(thisTooltip, activePlayer, &spellRow, a3);
     AddRequiredLevelLine(thisTooltip, unit, &spellRow, unc);
     AddReagentsLine(thisTooltip, activePlayer, &spellRow, a5, a3);
 
@@ -382,7 +380,7 @@ void CGTooltip::AddPowerAndRangeLines(CGTooltip* thisTooltip, char* powerLine, C
                 else
                     SStr::Printf(format, 32, "%d-%d", static_cast<int32_t>(minRange0), static_cast<int32_t>(maxRange0));
 
-                // TODO: figure out why it does shit itself with those varargs
+                // TODO: figure out why does it shit itself with those varargs
                 // SStr::Printf(buffer, 128, FrameScript::GetText("SPELL_RANGE_DUAL", -1, 0), FrameScript::GetText("ENEMY", -1, 0), format);
                 // direct address call somehow works without any hiccups
                 reinterpret_cast<int32_t(__cdecl*)(char*, uint32_t, char*, ...)>(0x76F070)(buffer, 128, FrameScript::GetText("SPELL_RANGE_DUAL", -1, 0), FrameScript::GetText("ENEMY", -1, 0), format);
@@ -475,11 +473,91 @@ void CGTooltip::AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellR
     }
 }
 
-void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, SpellRow* spellRow)
+void CGTooltip::AddRequiredFactionLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a3)
 {
-    if (!(spellRow->m_targets & 0x10) && !(spellRow->m_equippedItemClass & 0x80000000) && spellRow->m_equippedItemSubclass)
+    if (spellRow->m_minFactionID)
     {
+        int32_t factionStanding = CGReputationInfo::GetFactionStanding(spellRow->m_minFactionID);
+        bool meetsRequirement = factionStanding >= (reinterpret_cast<int32_t*>(0xA2D2FC))[spellRow->m_minFactionID];
 
+        if (factionStanding < (reinterpret_cast<int32_t*>(0xA2D2FC))[spellRow->m_minFactionID] || !a3)
+        {
+            char buffer[128] = { 0 };
+            char format[128] = { 0 };
+
+            FactionRow* factionRow = nullptr;
+
+            if (DBClient::IsValidIndex(g_factionDB, spellRow->m_minFactionID))
+                factionRow = reinterpret_cast<FactionRow*>(DBClient::GetRow(&g_factionDB->m_vtable2, spellRow->m_minFactionID));
+
+            SStr::Printf(format, 128, "FACTION_STANDING_LABEL%d", spellRow->m_minReputation + 1);
+            SStr::Printf(buffer, 128, FrameScript::GetText("ITEM_REQ_REPUTATION", -1, 0), factionRow ? factionRow->m_name_lang : "UNKNOWN", CGUnit::GetFrameScriptText(player, format, -1));
+            AddLine(thisTooltip, buffer, nullptr, meetsRequirement ? &sTextWhite : &sTextRed, meetsRequirement ? &sTextWhite : &sTextRed, 0);
+        }
+    }
+}
+
+void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow* spellRow, int32_t a4, int32_t a5)
+{
+    if ((spellRow->m_targets & 0x10) || (spellRow->m_equippedItemClass & 0x80000000) || !spellRow->m_equippedItemSubclass)
+        return;
+
+    bool isFirst = true;
+    bool meetsRequirements = true;
+    bool useItemClassMask = false;
+    char buffer[512] = { 0 };
+    char format[512] = { 0 };
+    int32_t requirementFlags = -1;
+
+    for (int32_t i = 0; i < g_itemSubClassMaskDB->m_numRows; i++)
+    {
+        ItemSubClassMaskRow* itemSubClassMaskRow = reinterpret_cast<ItemSubClassMaskRow*>(DBClient::GetRow(g_itemSubClassMaskDB, i));
+
+        if (itemSubClassMaskRow && spellRow->m_equippedItemClass == itemSubClassMaskRow->m_classID && spellRow->m_equippedItemSubclass == itemSubClassMaskRow->m_mask)
+        {
+            SStr::Copy(format, itemSubClassMaskRow->m_name_lang, 512);
+
+            useItemClassMask = true;
+
+            break;
+        }
+    }
+
+    if (spellRow->m_attributesExC & SPELL_ATTR3_MAIN_HAND)
+        requirementFlags = 0x8000;
+    else if (spellRow->m_attributesExC & SPELL_ATTR3_REQ_OFFHAND)
+        requirementFlags = 0x10000;
+
+    if (!CGUnit::EquippedItemMeetsSpellRequirements(player, spellRow, requirementFlags) || (((spellRow->m_attributesExC & (SPELL_ATTR3_REQ_OFFHAND | SPELL_ATTR3_MAIN_HAND)) == 0x1000400) && !CGUnit::EquippedItemMeetsSpellRequirements(player, spellRow, 0x10000)))
+        meetsRequirements = false;
+
+    for (int32_t j = 0; j < g_itemSubClassDB->m_numRows; j++)
+    {
+        ItemSubClassRow* itemSubClassRow = reinterpret_cast<ItemSubClassRow*>(DBClient::GetRow(g_itemSubClassDB, j));
+
+        if (itemSubClassRow)
+        {
+            if (spellRow->m_equippedItemClass == itemSubClassRow->m_classID && (spellRow->m_equippedItemSubclass & (1 << itemSubClassRow->m_subClassID)) && !useItemClassMask)
+            {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    SStr::Append(format, ", ", 512);
+
+                SStr::Append(format, (itemSubClassRow->m_verboseName_lang && *itemSubClassRow->m_verboseName_lang) ? itemSubClassRow->m_verboseName_lang : itemSubClassRow->m_displayName_lang, 512);
+            }
+        }
+    }
+
+    if (a5)
+        meetsRequirements = true;
+
+    if (*format && (!meetsRequirements && !a4))
+    {
+        char* equipped = (!meetsRequirements && a4) ? "SPELL_EQUIPPED_ITEM_NOSPACE" : "SPELL_EQUIPPED_ITEM";
+
+        SStr::Printf(buffer, 512, FrameScript::GetText(equipped, -1, 0), format);
+        AddLine(thisTooltip, buffer, nullptr, meetsRequirements ? &sTextWhite : &sTextRed, meetsRequirements ? &sTextWhite : &sTextRed, 1);
     }
 }
 
@@ -491,6 +569,65 @@ void CGTooltip::AddRequiredLevelLine(CGTooltip* thisTooltip, CGUnit* unit, Spell
 
         SStr::Printf(buffer, 128, FrameScript::GetText("ITEM_MIN_LEVEL", -1, 0), spellRow->m_baseLevel);
         AddLine(thisTooltip, buffer, nullptr, &sTextRed, &sTextRed, 0);
+    }
+}
+
+void CGTooltip::AddRequiredShapeshiftFormLine(CGTooltip* thisTooltip, CGUnit* unit, SpellRow* spellRow, int32_t a4)
+{
+    if (!spellRow->m_shapeshiftMask[0] && !spellRow->m_shapeshiftMask[1])
+        return;
+
+    bool isUsable = false;
+    bool isFirst = true;
+    bool needsShapeshift = !(spellRow->m_attributesExB & SPELL_ATTR2_NOT_NEED_SHAPESHIFT);
+    char format[512] = { 0 };
+    char* form = a4 ? "SPELL_REQUIRED_FORM_NOSPACE" : "SPELL_REQUIRED_FORM";
+
+    if (needsShapeshift)
+    {
+        int32_t numRows = g_spellShapeshiftFormDB->m_numRows > 64 ? 64 : g_spellShapeshiftFormDB->m_numRows;
+
+        if (!numRows)
+            return;
+
+        for (int32_t i = 0; i < numRows; i++)
+        {
+            if (Spell::UsableInShapeshiftForm(spellRow, i))
+            {
+                SpellShapeshiftFormRow* shapeshiftRow = reinterpret_cast<SpellShapeshiftFormRow*>(DBClient::GetRow(&g_spellShapeshiftFormDB->m_vtable2, i + 1));
+
+                if (!shapeshiftRow || !shapeshiftRow->m_name_lang || !*shapeshiftRow->m_name_lang)
+                    continue;
+
+                if (isFirst)
+                {
+                    SStr::Copy(format, shapeshiftRow->m_name_lang, 512);
+
+                    isFirst = false;
+                }
+                else
+                {
+                    SStr::Append(format, ", ", 512);
+                    SStr::Append(format, shapeshiftRow->m_name_lang, 512);
+                }
+            }
+        }
+    }
+
+    int32_t shapeshiftForm = CGUnit::GetShapeshiftFormID(unit);
+
+    if (!unit || Spell::UsableInShapeshiftForm(spellRow, shapeshiftForm - 1) || !needsShapeshift && !CGUnit::IsShapeshifted(unit) || CGUnit::HasAuraMatchingSpellClass(unit, SPELL_AURA_MOD_IGNORE_SHAPESHIFT, spellRow))
+        isUsable = true;
+
+    if (isFirst)
+        return;
+
+    if (!isUsable || !a4)
+    {
+        char buffer[512] = { 0 };
+        
+        SStr::Printf(buffer, 512, FrameScript::GetText(form, -1, 0), format);
+        AddLine(thisTooltip, buffer, nullptr, isUsable ? &sTextWhite : &sTextRed, isUsable ? &sTextWhite : &sTextRed, 0);
     }
 }
 
@@ -524,7 +661,7 @@ int32_t CGTooltip::AddSpecialActionLine(CGTooltip* thisTooltip, CGPlayer* player
             break;
     }
 
-    if (effect == SPELL_EFFECT_ATTACK || (a4 && (effect == SPELL_EFFECT_DODGE || effect == SPELL_EFFECT_PARRY || effect == SPELL_EFFECT_BLOCK)))
+    if ((effect == SPELL_EFFECT_ATTACK || (a4 && (effect == SPELL_EFFECT_DODGE || effect == SPELL_EFFECT_PARRY || effect == SPELL_EFFECT_BLOCK))) && string)
     {
         SStr::Printf(buffer, 128, FrameScript::GetText(string, -1, 0), amount);
         AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
@@ -645,7 +782,7 @@ void CGTooltip::AddTotemsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow
         else
             SStr::Append(buffer, ", ", 4096);
 
-        bool result = CGBag::GetTotemCategory(totemCategory, 0);
+        bool result = CGBag::FindTotemOfCategory(totemCategory, 0);
 
         if (!result)
         {

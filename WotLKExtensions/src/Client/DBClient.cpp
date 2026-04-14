@@ -15,6 +15,15 @@ void* DBClient::GetRow(void* vtable2, uint32_t rowIndex)
     return reinterpret_cast<void* (__thiscall*)(void*, uint32_t)>(0x65C290)(vtable2, rowIndex);
 }
 
+// Aleist3r: wrapper for some special case DBCs where index column is omitted
+void* DBClient::GetRow(DBClient* thisRow, uint32_t index)
+{
+    if (index >= thisRow->m_numRows)
+        return nullptr;
+
+    return &thisRow->m_firstRow[index];
+}
+
 bool DBClient::IsValidIndex(DBClient* dbc, uint32_t rowIndex)
 {
     if (rowIndex >= dbc->m_minIndex && rowIndex <= dbc->m_maxIndex)

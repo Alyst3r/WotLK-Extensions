@@ -33,6 +33,45 @@ struct ChrClassesRow
     int32_t padding0x04[13];
 };
 
+struct FactionRow
+{
+    int32_t m_ID;
+    int32_t m_reputationIndex;
+    int32_t m_reputationRaceMask[4];
+    int32_t m_reputationClassMask[4];
+    int32_t m_reputationBase[4];
+    int32_t m_reputationFlags[4];
+    int32_t m_parentFactionID;
+    float m_parentFactionMod[2];
+    int32_t m_parentFactionCap[2];
+    char* m_name_lang;
+    char* m_description_lang;
+};
+
+struct ItemSubClassRow
+{
+    int32_t m_classID;
+    int32_t m_subClassID;
+    int32_t m_prerequisiteProficiency;
+    int32_t m_postrequisiteProficiency;
+    int32_t m_flags;
+    int32_t m_displayFlags;
+    int32_t m_weaponParrySeq;
+    int32_t m_weaponReadySeq;
+    int32_t m_weaponAttackSeq;
+    int32_t m_WeaponSwingSize;
+    char* m_displayName_lang;
+    char* m_verboseName_lang;
+};
+
+struct ItemSubClassMaskRow
+{
+    //int32_t m_generatedID;
+    int32_t m_classID;
+    int32_t m_mask;
+    char* m_name_lang;
+};
+
 struct MapRow
 {
     int32_t m_ID;
@@ -212,6 +251,19 @@ struct SpellRuneCostRow
     int32_t m_unholy;
     int32_t m_frost;
     int32_t m_runicPower;
+};
+
+struct SpellShapeshiftFormRow
+{
+    int32_t m_ID;
+    int32_t m_bonusActionBar;
+    char* m_name_lang;
+    int32_t m_flags;
+    int32_t m_creatureType;
+    int32_t m_attackIconID;
+    int32_t m_combatRoundTime;
+    int32_t m_creatureDisplayID[4];
+    int32_t m_presetSpellID[8];
 };
 
 struct TotemCategoryRow

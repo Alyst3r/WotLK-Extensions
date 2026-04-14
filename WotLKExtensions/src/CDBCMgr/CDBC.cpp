@@ -1,7 +1,6 @@
 #include <CDBCMgr/CDBC.hpp>
 #include <Client/SErr.hpp>
 #include <Client/SFile.hpp>
-#include <Client/SMem.hpp>
 #include <Client/SStr.hpp>
 
 #include <string>

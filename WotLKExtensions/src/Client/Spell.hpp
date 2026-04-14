@@ -19,6 +19,7 @@ public:
     static bool IsModifiedStat(SpellRow* spell, int32_t stat);
     static int32_t ModifySpellValueInt(SpellRow* spellRow, int32_t* a2, int32_t value);
     static int32_t sub_7FEF60(int32_t* a1, SpellRow* spellRow, int32_t value);
+    static bool UsableInShapeshiftForm(SpellRow* spell, int32_t shapeshift);
     static bool UsesDefaultMinRange(SpellRow* spell);
     static bool UsesMeleeRange(SpellRow* spell);
 

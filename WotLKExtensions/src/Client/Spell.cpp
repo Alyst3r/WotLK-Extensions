@@ -51,6 +51,11 @@ int32_t Spell::sub_7FEF60(int32_t* a1, SpellRow* spellRow, int32_t value)
     return reinterpret_cast<int32_t (__cdecl*)(int32_t*, SpellRow*, int32_t)>(0x7FEF60)(a1, spellRow, value);
 }
 
+bool Spell::UsableInShapeshiftForm(SpellRow* spell, int32_t shapeshift)
+{
+    return reinterpret_cast<bool (__cdecl*)(SpellRow*, int32_t)>(0x7FE850)(spell, shapeshift);
+}
+
 bool Spell::UsesDefaultMinRange(SpellRow* spell)
 {
     return reinterpret_cast<bool (__cdecl*)(SpellRow*)>(0x7FF3C0)(spell);
