@@ -7,6 +7,7 @@
 #include <Client/CVar.hpp>
 #include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
+#include <Client/Spell.hpp>
 #include <Client/SpellParser.hpp>
 #include <Client/SStr.hpp>
 #include <Data/DBCAddresses.hpp>
@@ -471,7 +472,7 @@ int32_t CustomLua::GetAvailableRoles(lua_State* L)
     if (row)
         classId = row->m_ID;
 
-    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);//GlobalCDBCMap.getRow<LFGRolesRow>("LFGRoles", classId);
+    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);
 
     FrameScript::PushBoolean(L, cdbcRole.m_roles & 2);
     FrameScript::PushBoolean(L, cdbcRole.m_roles & 4);
@@ -547,6 +548,61 @@ int32_t CustomLua::PortGraveyard(lua_State* L)
     return 0;
 }
 
+int32_t CustomLua::UnitCustomCastingData(lua_State* L)
+{
+    if (!FrameScript::IsString(L, 1))
+        FrameScript::DisplayError(L, "Usage: UnitCustomCastingData(\"unit\")");
+
+    bool isNil = false;
+    CGUnit* unit = ClientServices::GetUnitFromName(FrameScript::GetString(L, 1, 0));
+
+    if (!unit)
+        isNil = true;
+
+    bool hideCastbar = false;
+    bool invertCastbar = false;
+    SpellRow spellRow{ 0 };
+    uint32_t currentCast = 0;
+
+    if (!isNil && unit->m_currentCastId)
+        currentCast = unit->m_currentCastId;
+
+    if (!isNil && !currentCast && unit->m_currentChannelId)
+        currentCast = unit->m_currentChannelId;
+
+    if (!currentCast || !DBClient::GetLocalizedRow(g_spellDB, currentCast, &spellRow))
+        isNil = true;
+
+    SpellAttributesExtendedRow spellAttributesExtendedRow{};
+
+    // Aleist3r: should be safe if currentCast is 0 or doesn't exist in cdbc, it'll just use default values
+    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, currentCast);
+
+    if (spellAttributesExtendedRow.m_ID != currentCast)
+        isNil = true;
+
+    if (!isNil && ((Spell::GetCastTime(&spellRow, 0, 0, 1) <= 250 && spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_LOW_CASTTIME_FORCE_HIDE_CASTBAR)) || spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_FORCE_HIDE_CASTBAR)))
+        hideCastbar = true;
+
+    if (!isNil && spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_INVERT_CASTBAR))
+        invertCastbar = true;
+
+    if (!isNil)
+    {
+        FrameScript::PushNumber(L, static_cast<double>(currentCast));
+        FrameScript::PushBoolean(L, hideCastbar);
+        FrameScript::PushBoolean(L, invertCastbar);
+    }
+    else
+    {
+        FrameScript::PushNil(L);
+        FrameScript::PushNil(L);
+        FrameScript::PushNil(L);
+    }
+
+    return 3;
+}
+
 void CustomLua::AddToFunctionMap(const char* name, void* ptr)
 {
     DataContainer::GetInstance().AddLuaFunction(name, ptr);
@@ -584,5 +640,9 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("GetCustomCombatRating", &GetCustomCombatRating);
     AddToFunctionMap("GetCustomCombatRatingBonus", &GetCustomCombatRatingBonus);
     AddToFunctionMap("PortGraveyard", &PortGraveyard);
+#endif
+
+#if SPELLATTRIBUTESEXTENDED_DBC
+    AddToFunctionMap("UnitCustomCastingData", &UnitCustomCastingData);
 #endif
 }

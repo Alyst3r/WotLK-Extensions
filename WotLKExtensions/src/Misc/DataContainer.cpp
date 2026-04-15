@@ -2,8 +2,8 @@
 
 #include <ctime>
 
-DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_zoneLightCDBC(ZoneLight::GetInstance()),
-    m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
+DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_spellAttributesExtendedCDBC(SpellAttributesExtended::GetInstance()),
+    m_zoneLightCDBC(ZoneLight::GetInstance()), m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
 {
     m_raceNameTable.resize(32, 0);
     m_memoryTable.resize(64, 0);
@@ -48,6 +48,16 @@ void DataContainer::LoadLFGRolesDB()
 void DataContainer::GetLFGRolesRow(LFGRolesRow& row, int32_t index)
 {
     m_lfgRolesCDBC.GetRow(row, index);
+}
+
+void DataContainer::LoadSpellAttributesExtendedDB()
+{
+    m_spellAttributesExtendedCDBC.LoadDB();
+}
+
+void DataContainer::GetSpellAttributesExtendedRow(SpellAttributesExtendedRow& row, int32_t index)
+{
+    m_spellAttributesExtendedCDBC.GetRow(row, index);
 }
 
 void DataContainer::LoadZoneLightDB()

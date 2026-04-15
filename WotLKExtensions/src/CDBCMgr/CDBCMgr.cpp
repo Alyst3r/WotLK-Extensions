@@ -15,6 +15,10 @@ void CDBCMgr::Load()
     dc.LoadLFGRolesDB();
 #endif
 
+#if SPELLATTRIBUTESEXTENDED_DBC
+    dc.LoadSpellAttributesExtendedDB();
+#endif
+
 #if ZONELIGHT_DBC
     dc.LoadZoneLightDB();
     dc.LoadZoneLightPointDB();

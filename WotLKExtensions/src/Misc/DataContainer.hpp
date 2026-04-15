@@ -1,6 +1,7 @@
 #pragma once
 
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
+#include <CDBCMgr/CDBCDefs/SpellAttributesExtended.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
 #include <Client/CNetClient.hpp>
@@ -26,6 +27,9 @@ public:
 
     void LoadLFGRolesDB();
     void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
+
+    void LoadSpellAttributesExtendedDB();
+    void GetSpellAttributesExtendedRow(SpellAttributesExtendedRow& row, int32_t index);
 
     void LoadZoneLightDB();
     void GetZoneLightRow(ZoneLightRow& row, int32_t index);
@@ -57,6 +61,7 @@ private:
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
 
     LFGRoles& m_lfgRolesCDBC;
+    SpellAttributesExtended& m_spellAttributesExtendedCDBC;
     ZoneLight& m_zoneLightCDBC;
     ZoneLightPoint& m_zoneLightPointCDBC;
 

@@ -43,6 +43,12 @@ In no particular order:
 [DrFrugal (aka 4bhorrent)](https://drfrugal.xyz/) - what I can mention here, [video](https://www.youtube.com/watch?v=9qsCw3Y0-g4) explaining render flags, saved me some research time  
 [Titi](https://gitlab.com/T1ti) - some ideas what to add (for example, dehardcoding lfg roles from Wow.exe)  
 [M'Dic](https://github.com/acidmanifesto) - c'mon, who wouldn't  
+[hater](https://github.com/hatersgit)  
+[Tb](https://github.com/Terrorblade)  
+[Saty](https://github.com/SatyPardus)  
+[Sylian](https://github.com/Sylian1337)  
+[AzDeltaQQ(aka xidk)](https://github.com/AzDeltaQQ)  
+[iThorgrim](https://github.com/iThorgrim)  
 *A certain furry* whose empty promises with zero real results ultimately pushed me towards reverse engineering; you may or may not know who you are if you ever read this :P  
 Guys in WoW Modding Community Discord, reverse engineering channel: Natrist (again ;]), balake, Ike for help while I was trying to figure out custom packets  
 [I'm probably forgetting a bunch of people, I will add you when I remember](https://github.com/Alyst3r/WotLK-Extensions)  

@@ -9,6 +9,17 @@ struct LFGRolesRow
     int32_t m_roles = - 1;
 };
 
+struct SpellAttributesExtendedRow
+{
+    int32_t m_ID = -1;
+    uint32_t m_attributesCu0 = 0;
+
+    inline bool HasCustomAttribute0(uint32_t attribute) const
+    {
+        return !!(m_attributesCu0 & attribute);
+    }
+};
+
 struct ZoneLightRow
 {
     int32_t m_ID = -1;
@@ -141,14 +152,14 @@ struct SpellRow
     int32_t m_category;
     int32_t m_dispelType;
     int32_t m_mechanic;
-    int32_t m_attributes;
-    int32_t m_attributesEx;
-    int32_t m_attributesExB;
-    int32_t m_attributesExC;
-    int32_t m_attributesExD;
-    int32_t m_attributesExE;
-    int32_t m_attributesExF;
-    int32_t m_attributesExG;
+    uint32_t m_attributes;
+    uint32_t m_attributesEx;
+    uint32_t m_attributesExB;
+    uint32_t m_attributesExC;
+    uint32_t m_attributesExD;
+    uint32_t m_attributesExE;
+    uint32_t m_attributesExF;
+    uint32_t m_attributesExG;
     int32_t m_shapeshiftMask[2];
     int32_t m_shapeshiftExclude[2];
     int32_t m_targets;

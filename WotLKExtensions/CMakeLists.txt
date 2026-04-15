@@ -11,7 +11,7 @@ project(WotlkExtensions LANGUAGES CXX)
 
 option(CUSTOM_DBC "Enable custom DBC loader" OFF)
 option(LFGROLES_DBC "Dungeon finder roles dehardcoded to custom DBC file; requires custom DBC loader" OFF)
-option(ZONELIGHT_DBC "Enables ZoneLight.dbc as seen in newer expansions; requires custom DBC loader" OFF)
+option(ZONELIGHT_DBC "Enables ZoneLight.cdbc as seen in newer expansions; requires custom DBC loader" OFF)
 option(NOAMMO_PATCH "Removes need for ammo for ranged weapons" OFF)
 option(CHARCREATIONRACE_FIX "Fixes crash if more than 21 playable races are present during character creation" ON)
 option(COMBOPOINT_FIX "Fix for combo points so they work for all classes" ON)
@@ -24,6 +24,7 @@ option(ACTIONBAR_LUA "Enables some additional action bar functions like 'Replace
 option(DEVHELPER_LUA "Various Lua functions useful in dev, like 'ReloadMap' or toggle rendering of various elements: liquids, terrain, etc." OFF)
 option(TOOLTIPID_PATCH "Enables ID display of various targeted elements, such as spells, items or npcs in tooltip. Work in progress." OFF)
 option(TOOLTIPDKRUNEEXT_PATCH "Enables possibility to display runic power cost next to rune cost. Requires some core edits. More info in 'CGTooltip::AppendRuneCostLine' function." OFF)
+option(SPELLATTRIBUTESEXTENDED_DBC "Enables additional (mostly client-side) spell attributes that could, for example, be used to modify behavior of various part of tooltip; requires custom DBC loader" OFF)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchConfig.hpp.in"

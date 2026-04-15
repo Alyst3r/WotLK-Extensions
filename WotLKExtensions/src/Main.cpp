@@ -16,6 +16,7 @@ void Main::OnAttach()
     CGPlayer::ApplyPatches();
     CGTooltip::ApplyPatches();
     Spell::ApplyPatches();
+    CMissile::ApplyPatches();
     
 #if CUSTOM_DBC && ZONELIGHT_DBC
     ZoneLightData::ApplyZoneLightsExtensions();

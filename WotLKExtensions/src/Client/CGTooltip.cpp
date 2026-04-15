@@ -39,6 +39,24 @@ void CGTooltip::ApplyPatches()
 
     for (size_t i = 0; i < setSpellAddresses.size(); i++)
         Util::OverwriteUInt32AtAddress(setSpellAddresses[i] - 4, reinterpret_cast<uint32_t>(&SetSpellEx) - setSpellAddresses[i]);
+
+    std::vector<uint32_t> setItemAddresses =
+    {
+        0x626708, /*TODO: remove later*/0x62C412/*/TODO*/, 0x62DBC1, 0x62E1C8,
+        0x62E376, 0x62E4BE, 0x62E649, 0x62E767,
+        0x62E8D4, 0x62EA72, 0x62EC56, 0x62ED52,
+        0x62EE50, 0x62EFCC, 0x62F1C1, 0x62F3FB,
+        0x62F6C7, 0x62F98C, 0x62FBE0, 0x62FCB1,
+        0x62FEF7, 0x630092, 0x630190, 0x63023B,
+        0x63035B, 0x630495, 0x630600, 0x630780,
+        0x6307D2, 0x630930, 0x630982, 0x630A74,
+        0x630B70, 0x630C5D, 0x630EBD, 0x630EFB,
+        0x6312B5, 0x6312E5, 0x631915, 0x6319C4,
+        0x631B11
+    };
+
+    for (size_t j = 0; j < setItemAddresses.size(); j++)
+        Util::OverwriteUInt32AtAddress(setItemAddresses[j] - 4, reinterpret_cast<uint32_t>(&SetItemEx) - setItemAddresses[j]);
 }
 
 int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, int32_t itemID, int32_t* a4, int64_t* guid, int32_t a6, int32_t a7, int32_t a8, int32_t a9, uint64_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16, int32_t a17)
@@ -232,6 +250,17 @@ void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUn
 
     int32_t castTime = Spell::GetCastTime(spellRow, a5, a6, 1);
 
+#if SPELLATTRIBUTESEXTENDED_DBC
+    SpellAttributesExtendedRow spellAttributesExtendedRow{};
+
+    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+
+    bool treatAsInstant = castTime <= 250 ? spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_LOW_CASTTIME_TREAT_AS_INSTANT) : spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_TREAT_AS_INSTANT);
+
+    if (treatAsInstant)
+        castTime = 0;
+#endif
+
     if (castTime > 0)
     {
         SStr::Printf(bufferLeft, 128, FrameScript::GetText(castTime < 60000 ? "SPELL_CAST_TIME_SEC" : "SPELL_CAST_TIME_MIN", -1, 0), static_cast<float>(castTime) / (castTime < 60000 ? 1000.f : 60000.f));
@@ -293,7 +322,16 @@ int32_t CGTooltip::AddCooldownLine(CGTooltip* thisTooltip, int32_t cooldown)
 
 void CGTooltip::AddDrainAllPowerLine(CGTooltip* thisTooltip, SpellRow* spellRow)
 {
-    if (spellRow->m_attributesEx & SPELL_ATTR1_DRAIN_ALL_POWER)
+    bool hide = false;
+#if SPELLATTRIBUTESEXTENDED_DBC
+    SpellAttributesExtendedRow spellAttributesExtendedRow{};
+
+    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+
+    hide = spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST);
+#endif
+
+    if ((spellRow->m_attributesEx & SPELL_ATTR1_DRAIN_ALL_POWER) && !hide)
     {
         char buffer[128] = { 0 };
         char* powerCostStr = "SPELL_USE_ALL_HEALTH";
@@ -826,6 +864,18 @@ void CGTooltip::AddTradeSkillLine(CGTooltip* thisTooltip, CGPlayer* activePlayer
 
 void CGTooltip::AppendPowerCostLine(CGTooltip* thisTooltip, char* buffer, CGUnit* unit, SpellRow* spellRow)
 {
+    bool hide = false;
+#if SPELLATTRIBUTESEXTENDED_DBC
+    SpellAttributesExtendedRow spellAttributesExtendedRow{};
+
+    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+
+    hide = spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST);
+#endif
+
+    if (hide)
+        return;
+
     char* powerCostStr = "HEALTH_COST";
     char* powerCostStrTable[] = { "MANA_COST", "RAGE_COST", "FOCUS_COST", "ENERGY_COST", "HAPPINESS_COST", "RUNE_COST", "RUNIC_POWER_COST" };
     int32_t powerCost = Spell::GetPowerCost(spellRow, unit) / ClientServices::GetPowerDivisor(spellRow->m_powerType);

@@ -5,6 +5,7 @@
 #include <CDBCMgr/CDBCMgr.hpp>
 #include <Client/CGTooltip.hpp>
 #include <Client/CMap.hpp>
+#include <Client/CMissile.hpp>
 #include <Client/CNetClient.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/Misc.hpp>

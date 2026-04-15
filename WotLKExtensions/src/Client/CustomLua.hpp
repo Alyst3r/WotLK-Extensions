@@ -44,5 +44,7 @@ private:
 
     static int32_t PortGraveyard(lua_State* L);
 
+    static int32_t UnitCustomCastingData(lua_State* L);
+
     friend class Main;
 };

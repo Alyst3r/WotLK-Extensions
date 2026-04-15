@@ -33,6 +33,11 @@ uint32_t ClientServices::GetPowerDivisor(int32_t powerType)
     }
 }
 
+CGUnit* ClientServices::GetUnitFromName(const char* name)
+{
+    return reinterpret_cast<CGUnit* (__cdecl*)(const char*)>(0x60C1F0)(name);
+}
+
 void ClientServices::InitializePlayer()
 {
     reinterpret_cast<void (__cdecl*)()>(0x6E83B0)();
