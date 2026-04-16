@@ -5,6 +5,7 @@
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
 #include <Client/CNetClient.hpp>
+#include <Data/Structs.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <WorldData/ZoneLightData.hpp>
 
@@ -22,8 +23,14 @@ public:
     void AddLuaFunction(const char* name, void* ptr);
     std::unordered_map<const char*, void*>& GetLuaFunctionMap();
 
+    void AddGlueLuaFunction(const char* name, void* ptr);
+    std::unordered_map<const char*, void*>& GetGlueLuaFunctionMap();
+
     void AddPacketHandler(uint32_t opcode, CNetClientCustomPacket packetData);
-    std::unordered_map <uint32_t, CNetClientCustomPacket>& GetPacketHandlerMap();
+    std::unordered_map<uint32_t, CNetClientCustomPacket>& GetPacketHandlerMap();
+
+    void AddGlueCVar(const CustomCVar& entry);
+    std::vector<CustomCVar>& GetGlueCVarVector();
 
     void LoadLFGRolesDB();
     void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
@@ -58,6 +65,7 @@ public:
 
 private:
     std::unordered_map<const char*, void*> m_luaFunctions;
+    std::unordered_map<const char*, void*> m_glueLuaFunctions;
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
 
     LFGRoles& m_lfgRolesCDBC;
@@ -84,6 +92,8 @@ private:
     uint32_t m_yearOffsetMult = 0;
 
     std::vector<ZoneLightData> m_zoneLightData;
+
+    std::vector<CustomCVar> m_customGlueCVars;
 
     CGPlayerCustomFields m_playerFields;
 

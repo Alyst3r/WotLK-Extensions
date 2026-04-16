@@ -2,6 +2,20 @@
 
 #include <cstdint>
 
+// custom data
+struct CustomCVar
+{
+    const char* m_name;
+    const char* m_description;
+    uint32_t m_size;
+    const char* m_defaultValue;
+    void* m_callback;
+    uint32_t m_flags;
+    int32_t n_a8;
+    bool m_a7;
+    bool m_a9;
+};
+
 // cdbc
 struct LFGRolesRow
 {

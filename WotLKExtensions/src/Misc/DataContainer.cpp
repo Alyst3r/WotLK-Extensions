@@ -30,6 +30,16 @@ std::unordered_map<const char*, void*>& DataContainer::GetLuaFunctionMap()
     return m_luaFunctions;
 }
 
+void DataContainer::AddGlueLuaFunction(const char* name, void* ptr)
+{
+    m_glueLuaFunctions.insert(std::make_pair(name, ptr));
+}
+
+std::unordered_map<const char*, void*>& DataContainer::GetGlueLuaFunctionMap()
+{
+    return m_glueLuaFunctions;
+}
+
 void DataContainer::AddPacketHandler(uint32_t opcode, CNetClientCustomPacket packetData)
 {
     m_packetData.insert(std::make_pair(opcode, packetData));
@@ -38,6 +48,16 @@ void DataContainer::AddPacketHandler(uint32_t opcode, CNetClientCustomPacket pac
 std::unordered_map <uint32_t, CNetClientCustomPacket>& DataContainer::GetPacketHandlerMap()
 {
     return m_packetData;
+}
+
+void DataContainer::AddGlueCVar(const CustomCVar& entry)
+{
+    m_customGlueCVars.push_back(entry);
+}
+
+std::vector<CustomCVar>& DataContainer::GetGlueCVarVector()
+{
+    return m_customGlueCVars;
 }
 
 void DataContainer::LoadLFGRolesDB()

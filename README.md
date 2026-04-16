@@ -49,6 +49,7 @@ In no particular order:
 [Sylian](https://github.com/Sylian1337)  
 [AzDeltaQQ(aka xidk)](https://github.com/AzDeltaQQ)  
 [iThorgrim](https://github.com/iThorgrim)  
+[gromchek](https://github.com/gromchek)  
 *A certain furry* whose empty promises with zero real results ultimately pushed me towards reverse engineering; you may or may not know who you are if you ever read this :P  
 Guys in WoW Modding Community Discord, reverse engineering channel: Natrist (again ;]), balake, Ike for help while I was trying to figure out custom packets  
 [I'm probably forgetting a bunch of people, I will add you when I remember](https://github.com/Alyst3r/WotLK-Extensions)  

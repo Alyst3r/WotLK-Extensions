@@ -8,6 +8,11 @@ enum CustomOpcodes
     NUM_CUSTOM_MSG_TYPES
 };
 
+enum CVarFlags : uint32_t
+{
+    CVAR_FLAG_ARCHIVE = 0x01,  // Saved to config.wtf
+};
+
 enum FrameXMLEvent
 {
     EVENT_LFG_ROLE_UPDATE = 506,

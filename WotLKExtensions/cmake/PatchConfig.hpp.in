@@ -22,3 +22,4 @@
 // Lua functions
 #cmakedefine01 ACTIONBAR_LUA
 #cmakedefine01 DEVHELPER_LUA
+#cmakedefine01 GLUEMGREXTENSION

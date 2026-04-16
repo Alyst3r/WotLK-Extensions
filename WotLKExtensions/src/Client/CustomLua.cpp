@@ -23,7 +23,7 @@
 
 void CustomLua::Apply()
 {
-    Util::OverwriteUInt32AtAddress(0x52AB17, (uint32_t)&LoadScriptFunctionsCustom - 0x52AB1B);
+    Util::OverwriteUInt32AtAddress(0x52AB17, reinterpret_cast<uint32_t>(&LoadScriptFunctionsCustom) - 0x52AB1B);
 
     RegisterFunctions();
 }
@@ -33,12 +33,7 @@ int32_t CustomLua::LoadScriptFunctionsCustom()
     auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunctionMap();
 
     for (auto& it : luaFunctionMap)
-    {
-        const char* name = it.first;
-        void* ptr = it.second;
-
-        FrameScript::RegisterFunction(name, ptr);
-    }
+        FrameScript::RegisterFunction(it.first, it.second);
 
     return FrameScript::LoadFunctions();
 }
@@ -487,7 +482,7 @@ int32_t CustomLua::SetLFGRole(lua_State* L)
     LFGRolesRow cdbcRole;
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
-    void* ptr = *reinterpret_cast<void**>(0xBD0A28);
+    CVar* ptr = *reinterpret_cast<CVar**>(0xBD0A28);
 
     if (FrameScript::GetParam(L, 2, 0))
         roles |= 2;
@@ -516,10 +511,10 @@ int32_t CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     C3Vector pos3d = { ox, oy, oz };
     C3Vector pos2d = {};
     uint32_t flags = 0;
-    int32_t result = CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
     float x = 0.f;
     float y = 0.f;
 
+    CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
     Util::PercToScreenPos(pos2d.m_x, pos2d.m_y, &x, &y);
     FrameScript::PushNumber(L, x);
     FrameScript::PushNumber(L, y);

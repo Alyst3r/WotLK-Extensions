@@ -39,10 +39,15 @@ void Main::Init()
     CNetClient::Apply();
 #endif
 
-#if OOBLUAFUNCTIONS_PATCH || CUSTOM_DBC || CUSTOMPACKETS_PATCH
+#if OOBLUAFUNCTIONS_PATCH || CUSTOM_DBC || CUSTOMPACKETS_PATCH || GLUEMGREXTENSION
     // From AwesomeWotLK, invalid function pointer hack
     *reinterpret_cast<uint32_t*>(0xD415B8) = 1;
     *reinterpret_cast<uint32_t*>(0xD415BC) = 0x7FFFFFFF;
+#endif
+
+#if GLUEMGREXTENSION
+    CGlueMgr::Apply();
+    CVar::Apply();
 #endif
 
 #if OOBLUAFUNCTIONS_PATCH || CUSTOMPACKETS_PATCH

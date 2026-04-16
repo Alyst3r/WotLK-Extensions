@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+struct lua_State;
+
 typedef uint64_t WoWGUID;
 
 static uint32_t dummy = 0;
