@@ -13,9 +13,13 @@ enum CVarFlags : uint32_t
     CVAR_FLAG_ARCHIVE = 0x01,  // Saved to config.wtf
 };
 
-enum FrameXMLEvent
+enum FrameXMLEvents
 {
     EVENT_LFG_ROLE_UPDATE = 506,
+};
+
+enum FrameXMLEventsCustom
+{
 };
 
 enum Opcodes

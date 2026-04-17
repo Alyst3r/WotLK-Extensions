@@ -8,10 +8,10 @@
 
 void ZoneLightData::ApplyZoneLightsExtensions()
 {
-    Util::OverwriteUInt32AtAddress(0x781426, (uint32_t)&FillZoneLightData - 0x78142A);
+    Util::OverwriteUInt32AtAddress(0x781426, reinterpret_cast<uint32_t>(&FillZoneLightData) - 0x78142A);
     // sets the check for map id to > -1 so it's always true unless no map is loaded
     Util::OverwriteUInt32AtAddress(0x781730, 0xFFFFFFFF);
-    Util::OverwriteUInt32AtAddress(0x781751, (uint32_t)&FindAndAddZoneLightEx - 0x781755);
+    Util::OverwriteUInt32AtAddress(0x781751, reinterpret_cast<uint32_t>(&FindAndAddZoneLightEx) - 0x781755);
     // calls nullsub_3 instead of original function
     Util::OverwriteUInt32AtAddress(0x9E0360, 0x5EEB70);
 }
@@ -37,8 +37,8 @@ void ZoneLightData::FillZoneLightData()
 
         for (uint32_t j = counter; j <= dc.GetZoneLightPointRowMaxIndex(); j++, counter++)
         {
-            ZoneLightPointRow tempRow;
-            C2Vector tempVec;
+            ZoneLightPointRow tempRow{};
+            C2Vector tempVec{};
 
             dc.GetZoneLightPointRow(tempRow, j);
 

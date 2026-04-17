@@ -73,6 +73,18 @@ struct FactionRow
     char* m_description_lang;
 };
 
+struct gtCombatRatingsRow
+{
+    uint32_t m_ID;
+    float m_rating;
+};
+
+struct gtOCTClassCombatRatingScalarRow
+{
+    uint32_t m_ID;
+    float m_scalar;
+};
+
 struct ItemSubClassRow
 {
     int32_t m_classID;

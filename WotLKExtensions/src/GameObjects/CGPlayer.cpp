@@ -64,20 +64,20 @@ void CGPlayer::LFDClassRoleExtension()
     for (uint8_t i = 0; i < patchedAddresses.size(); i++)
         Util::OverwriteUInt32AtAddress(patchedAddresses[i], tablePtr);
 #else
-    Util::OverwriteUInt32AtAddress(0x553E90, (uint32_t)&CheckLFGRoles - 0x553E94);
-    Util::OverwriteUInt32AtAddress(0x55736D, (uint32_t)&CheckLFGRoles - 0x557371);
-    Util::OverwriteUInt32AtAddress(0x4E0B12, (uint32_t)&GetClassRoles - 0x4E0B16);
+    Util::OverwriteUInt32AtAddress(0x553E90, reinterpret_cast<uint32_t>(&CheckLFGRoles) - 0x553E94);
+    Util::OverwriteUInt32AtAddress(0x55736D, reinterpret_cast<uint32_t>(&CheckLFGRoles) - 0x557371);
+    Util::OverwriteUInt32AtAddress(0x4E0B12, reinterpret_cast<uint32_t>(&GetClassRoles) - 0x4E0B16);
     // Lua_GetAvailableRoles pointer, we want direct address not offset in this case 
-    Util::OverwriteUInt32AtAddress(0xACD7FC, (uint32_t)&CustomLua::GetAvailableRoles);
+    Util::OverwriteUInt32AtAddress(0xACD7FC, reinterpret_cast<uint32_t>(&CustomLua::GetAvailableRoles));
     // Lua_SetLFGRole pointer, ditto
-    Util::OverwriteUInt32AtAddress(0xACD72C, (uint32_t)&CustomLua::SetLFGRole);
+    Util::OverwriteUInt32AtAddress(0xACD72C, reinterpret_cast<uint32_t>(&CustomLua::SetLFGRole));
 #endif
 }
 
 uint32_t CGPlayer::CheckLFGRoles(uint32_t roles)
 {
     uint32_t classId = ClientServices::GetCharacterClass();
-    LFGRolesRow cdbcRoles;
+    LFGRolesRow cdbcRoles{};
 
     if (classId > g_chrClassesDB->m_maxIndex || classId < g_chrClassesDB->m_minIndex)
         classId = 0;
@@ -89,7 +89,7 @@ uint32_t CGPlayer::CheckLFGRoles(uint32_t roles)
 
 uint32_t CGPlayer::GetClassRoles(uint32_t classId)
 {
-    LFGRolesRow cdbcRoles;
+    LFGRolesRow cdbcRoles{};
 
     DataContainer::GetInstance().GetLFGRolesRow(cdbcRoles, classId);
 

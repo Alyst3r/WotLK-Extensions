@@ -39,6 +39,8 @@ void Main::Init()
     CNetClient::Apply();
 #endif
 
+    MacroConditions::Apply();
+
 #if OOBLUAFUNCTIONS_PATCH || CUSTOM_DBC || CUSTOMPACKETS_PATCH || GLUEMGREXTENSION
     // From AwesomeWotLK, invalid function pointer hack
     *reinterpret_cast<uint32_t*>(0xD415B8) = 1;

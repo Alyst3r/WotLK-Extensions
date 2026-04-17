@@ -64,7 +64,7 @@ void __fastcall CNetClient::ProcessMessageEx(void* _this, uint32_t unused, uint3
     }
     else
     {
-        ++*(uint32_t*)0xC5D638;
+        ++*reinterpret_cast<uint32_t*>(0xC5D638);
         auto& packetData = DataContainer::GetInstance().GetPacketHandlerMap();
 
         for (auto& it : packetData)

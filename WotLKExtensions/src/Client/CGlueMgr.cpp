@@ -33,5 +33,5 @@ void CGlueMgr::RegisterFunctions()
 
 int32_t CGlueMgr::LoadFunctions()
 {
-    return reinterpret_cast<int32_t(__cdecl*)()>(0x60A120)();
+    return reinterpret_cast<int32_t (__cdecl*)()>(0x60A120)();
 }

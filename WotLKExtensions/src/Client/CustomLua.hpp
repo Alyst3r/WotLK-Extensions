@@ -39,6 +39,9 @@ private:
     static int32_t GetSpellDescription(lua_State* L);
     static int32_t GetSpellNameById(lua_State* L);
 
+    static int32_t GetCombatRatingMultiplier(lua_State* L);
+    static int32_t GetCombatRatingScalar(lua_State* L);
+
     static int32_t GetCustomCombatRating(lua_State* L);
     static int32_t GetCustomCombatRatingBonus(lua_State* L);
 

@@ -13,6 +13,7 @@
 #include <Data/DBCAddresses.hpp>
 #include <Data/Enums.hpp>
 #include <Data/MiscAddresses.hpp>
+#include <Data/Structs.hpp>
 #include <GameObjects/CGUnit.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>
@@ -188,7 +189,7 @@ int32_t CustomLua::ReloadMap(lua_State* L)
 
             if (row)
             {
-                char buffer[512];
+                char buffer[512] = { 0 };
 
                 CWorld::UnloadMap();
                 CWorld::LoadMap(row->m_directory, &moveInfo->m_position, mapId);
@@ -203,7 +204,7 @@ int32_t CustomLua::ReloadMap(lua_State* L)
 
 int32_t CustomLua::ToggleDisplayNormals(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool areNormalsDisplayed = renderFlags4 & 0x40;
 
     if (areNormalsDisplayed)
@@ -226,7 +227,7 @@ int32_t CustomLua::ToggleDisplayNormals(lua_State* L)
 
 int32_t CustomLua::ToggleGroundEffects(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool areGroundEffectsDisplayed = renderFlags3 & 0x10;
 
     if (areGroundEffectsDisplayed)
@@ -249,7 +250,7 @@ int32_t CustomLua::ToggleGroundEffects(lua_State* L)
 
 int32_t CustomLua::ToggleLiquids(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool areLiquidsShowing = renderFlags4 & 0x03;
 
     if (areLiquidsShowing)
@@ -272,7 +273,7 @@ int32_t CustomLua::ToggleLiquids(lua_State* L)
 
 int32_t CustomLua::ToggleM2(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool areM2Displayed = renderFlags1 & 0x01;
 
     if (areM2Displayed)
@@ -295,7 +296,7 @@ int32_t CustomLua::ToggleM2(lua_State* L)
 
 int32_t CustomLua::ToggleTerrain(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool isTerrainShown = renderFlags1 & 0x02;
 
     if (isTerrainShown)
@@ -318,7 +319,7 @@ int32_t CustomLua::ToggleTerrain(lua_State* L)
 
 int32_t CustomLua::ToggleTerrainCulling(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool isTerrainCullingOn = renderFlags1 & 0x32;
 
     if (isTerrainCullingOn)
@@ -341,7 +342,7 @@ int32_t CustomLua::ToggleTerrainCulling(lua_State* L)
 
 int32_t CustomLua::ToggleWireframeMode(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool isWireframeModeOn = renderFlags4 & 0x20;
 
     if (isWireframeModeOn)
@@ -364,7 +365,7 @@ int32_t CustomLua::ToggleWireframeMode(lua_State* L)
 
 int32_t CustomLua::ToggleWMO(lua_State* L)
 {
-    char buffer[512];
+    char buffer[512] = { 0 };
     bool areWMOsDisplayed = renderFlags2 & 0x01;
 
     if (areWMOsDisplayed)
@@ -407,7 +408,7 @@ int32_t CustomLua::FlashGameWindow(lua_State* L)
 int32_t CustomLua::GetCustomCombatRating(lua_State* L)
 {
     uint8_t cr = 0;
-    float value = 0;
+    float value = 0.f;
 
     if (!FrameScript::IsNumber(L, 1))
         FrameScript::DisplayError(L, "Usage: GetCustomCombatRating(ratingIndex)");
@@ -420,7 +421,7 @@ int32_t CustomLua::GetCustomCombatRating(lua_State* L)
     CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
-        value = DataContainer::GetInstance().GetCustomCombatRating(cr - 25);
+        value = static_cast<float>(DataContainer::GetInstance().GetCustomCombatRating(cr - 25));
 
     FrameScript::PushNumber(L, value);
 
@@ -462,7 +463,7 @@ int32_t CustomLua::GetAvailableRoles(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
     uint32_t classId = 0;
-    LFGRolesRow cdbcRole;
+    LFGRolesRow cdbcRole{};
 
     if (row)
         classId = row->m_ID;
@@ -479,7 +480,7 @@ int32_t CustomLua::GetAvailableRoles(lua_State* L)
 int32_t CustomLua::SetLFGRole(lua_State* L)
 {
     ChrClassesRow* row = reinterpret_cast<ChrClassesRow*>(DBClient::GetRow(&g_chrClassesDB->m_vtable2, ClientServices::GetCharacterClass()));
-    LFGRolesRow cdbcRole;
+    LFGRolesRow cdbcRole{};
     uint32_t roles = FrameScript::GetParam(L, 1, 0) != 0;
     uint32_t classId = 0;
     CVar* ptr = *reinterpret_cast<CVar**>(0xBD0A28);
@@ -529,7 +530,7 @@ int32_t CustomLua::PortGraveyard(lua_State* L)
 
     if (activeObjectPtr && (activeObjectPtr->m_playerData->m_flags & PLAYER_FLAGS_GHOST))
     {
-        CDataStore pkt;
+        CDataStore pkt{};
 
         CDataStore::GenPacket(&pkt);
         CDataStore::PutInt32(&pkt, CMSG_TELEPORT_GRAVEYARD_REQUEST);
@@ -598,6 +599,76 @@ int32_t CustomLua::UnitCustomCastingData(lua_State* L)
     return 3;
 }
 
+int32_t CustomLua::GetCombatRatingMultiplier(lua_State* L)
+{
+    bool skip = false;
+    CGPlayer* player = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
+    float value = 0.f;
+    uint8_t cr = 0;
+
+    if (!FrameScript::IsNumber(L, 1))
+    {
+        FrameScript::DisplayError(L, "Usage: GetCombatRatingMultiplier(ratingIndex)");
+
+        skip = true;
+    }
+    else
+        cr = static_cast<uint8_t>(FrameScript::GetNumber(L, 1)) - 1;
+
+    if (cr < 0 || cr >= 32)
+    {
+        FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 1, 32);
+
+        skip = true;
+    }
+
+    if (player && !skip)
+    {
+        gtCombatRatingsRow* ratingRow = reinterpret_cast<gtCombatRatingsRow*>(DBClient::GetRow(&g_gtCombatRatingsDB->m_vtable2, cr * 100 + player->GetLevel()));
+
+        value = ratingRow->m_rating;
+    }
+
+    FrameScript::PushNumber(L, static_cast<double>(value));
+
+    return 1;
+}
+
+int32_t CustomLua::GetCombatRatingScalar(lua_State* L)
+{
+    bool skip = false;
+    CGPlayer* player = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
+    float value = 0.f;
+    uint8_t cr = 0;
+
+    if (!FrameScript::IsNumber(L, 1))
+    {
+        FrameScript::DisplayError(L, "Usage: GetCombatRatingScalar(ratingIndex)");
+
+        skip = true;
+    }
+    else
+        cr = static_cast<uint8_t>(FrameScript::GetNumber(L, 1)) - 1;
+
+    if (cr < 0 || cr >= 32)
+    {
+        FrameScript::DisplayError(L, "ratingIndex is in the range %d .. %d", 1, 32);
+
+        skip = true;
+    }
+
+    if (player && !skip)
+    {
+        gtOCTClassCombatRatingScalarRow* scalarRow = reinterpret_cast<gtOCTClassCombatRatingScalarRow*>(DBClient::GetRow(&g_gtOCTClassCombatRatingScalarDB->m_vtable2, (player->GetClass() - 1) * 32 + cr));
+
+        value = scalarRow->m_scalar;
+    }
+
+    FrameScript::PushNumber(L, static_cast<double>(value));
+
+    return 1;
+}
+
 void CustomLua::AddToFunctionMap(const char* name, void* ptr)
 {
     DataContainer::GetInstance().AddLuaFunction(name, ptr);
@@ -611,6 +682,7 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("GetSpellDescription", &GetSpellDescription);
     AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
     AddToFunctionMap("ConvertCoordsToScreenSpace", &ConvertCoordsToScreenSpace);
+    AddToFunctionMap("GetCombatRatingScalar", &GetCombatRatingScalar);
 #endif
 
 #if ACTIONBAR_LUA

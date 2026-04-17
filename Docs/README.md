@@ -1,4 +1,8 @@
 ## Custom Lua functions  
+### GetCombatRatingMultiplier  
+args: combatRatingIndex (1..32), returns combet rating multiplier value (from gtCombatRatings.dbc) for currently logged character  
+### GetCombatRatingScalar  
+args: combatRatingIndex (1..32), returns combet rating scalar value (from gtOCTClassCombatRatingScalar.dbc) for currently logged character  
 ### GetShapeshiftFormId  
 originally added in 4.0.1, no args, returns ID of currently active shapeshift form  
 ### GetSpellDescription  

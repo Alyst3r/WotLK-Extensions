@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SharedDefines.hpp>
+
 #include <cstdint>
 
 struct lua_State;
@@ -9,6 +11,7 @@ class FrameScript
 public:
     static void DisplayError(lua_State* L, char* fmt, ...);
     static bool GetBoolean(lua_State* L, int32_t index);
+    static bool GetGUIDFromToken(const char* token, WoWGUID* guid, bool a3);
     static double GetNumber(lua_State* L, int32_t index);
     static bool GetParam(lua_State* L, int32_t index, bool p);
     static char* GetString(lua_State* L, int32_t index, bool p);
