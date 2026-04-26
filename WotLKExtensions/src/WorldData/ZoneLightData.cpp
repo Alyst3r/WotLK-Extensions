@@ -18,16 +18,15 @@ void ZoneLightData::ApplyZoneLightsExtensions()
 
 void ZoneLightData::FillZoneLightData()
 {
-    DataContainer& dc = DataContainer::GetInstance();
     uint32_t counter = 1;
 
-    for (uint32_t i = dc.GetZoneLightRowMinIndex(); i <= dc.GetZoneLightRowMaxIndex(); i++)
+    for (uint32_t i = sDC.GetZoneLightRowMinIndex(); i <= sDC.GetZoneLightRowMaxIndex(); i++)
     {
         ZoneLightData data;
         ZoneLightRow row;
         std::vector<C2Vector> points;
 
-        dc.GetZoneLightRow(row, i);
+        sDC.GetZoneLightRow(row, i);
 
         if (row.m_ID <= -1)
             continue;
@@ -35,12 +34,12 @@ void ZoneLightData::FillZoneLightData()
         data.m_mapID = row.m_mapID;
         data.m_lightID = row.m_lightID;
 
-        for (uint32_t j = counter; j <= dc.GetZoneLightPointRowMaxIndex(); j++, counter++)
+        for (uint32_t j = counter; j <= sDC.GetZoneLightPointRowMaxIndex(); j++, counter++)
         {
             ZoneLightPointRow tempRow{};
             C2Vector tempVec{};
 
-            dc.GetZoneLightPointRow(tempRow, j);
+            sDC.GetZoneLightPointRow(tempRow, j);
 
             if (tempRow.m_ID <= -1 || tempRow.m_zoneLightID < row.m_ID)
                 continue;
@@ -53,7 +52,7 @@ void ZoneLightData::FillZoneLightData()
 
             points.push_back(tempVec);
 
-            if (j == dc.GetZoneLightPointRowMinIndex())
+            if (j == sDC.GetZoneLightPointRowMinIndex())
             {
                 data.m_minX, data.m_maxX = tempVec.m_x;
                 data.m_maxY, data.m_maxY = tempVec.m_y;
@@ -80,13 +79,13 @@ void ZoneLightData::FillZoneLightData()
         data.m_maxX += 50.f;
         data.m_maxY += 50.f;
 
-        DataContainer::GetInstance().AddZoneLight(data);
+        sDC.AddZoneLight(data);
     }
 }
 
 void ZoneLightData::FindAndAddZoneLightEx(C3Vector* vec)
 {
-    auto& zoneLightData = DataContainer::GetInstance().GetZoneLightData();
+    auto& zoneLightData = sDC.GetZoneLightData();
     void* g_dnInfo = DNInfo::GetDNInfoPtr();
     int32_t currentMap = *reinterpret_cast<int32_t*>(0xADFBC4);
     C2Vector vec2d{ -(vec->m_y - 17066.666f), -(vec->m_x - 17066.666f) };

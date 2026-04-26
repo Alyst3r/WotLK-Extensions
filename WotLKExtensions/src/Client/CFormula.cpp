@@ -106,7 +106,7 @@ void CFormula::FillSpellVariableData()
     };
 
     size_t newSize = sizeof(uint32_t) * (SPELLVARIABLE_END - 21);
-    std::vector<const char*>& data = DataContainer::GetInstance().GetSpellVariableData();
+    std::vector<const char*>& data = sDC.GetSpellVariableData();
 
     data.resize(newSize);
     memcpy(data.data(), reinterpret_cast<const void*>(0xACE8F8), sizeof(const char*) * 140);

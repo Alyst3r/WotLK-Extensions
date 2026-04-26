@@ -20,7 +20,7 @@
 void CGTooltip::ApplyPatches()
 {
 #if SPELLDESCRIPTIONEXT_PATCH
-    std::vector<const char*>& data = DataContainer::GetInstance().GetSpellVariableData();
+    std::vector<const char*>& data = sDC.GetSpellVariableData();
 
     CFormula::FillSpellVariableData();
     Util::OverwriteUInt32AtAddress(0x576B63, reinterpret_cast<uint32_t>(data.data()));
@@ -253,7 +253,7 @@ void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUn
 #if SPELLATTRIBUTESEXTENDED_DBC
     SpellAttributesExtendedRow spellAttributesExtendedRow{};
 
-    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+    sDC.GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
 
     bool treatAsInstant = castTime <= 250 ? spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_LOW_CASTTIME_TREAT_AS_INSTANT) : spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_TREAT_AS_INSTANT);
 
@@ -326,7 +326,7 @@ void CGTooltip::AddDrainAllPowerLine(CGTooltip* thisTooltip, SpellRow* spellRow)
 #if SPELLATTRIBUTESEXTENDED_DBC
     SpellAttributesExtendedRow spellAttributesExtendedRow{};
 
-    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+    sDC.GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
 
     hide = spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST);
 #endif
@@ -868,7 +868,7 @@ void CGTooltip::AppendPowerCostLine(CGTooltip* thisTooltip, char* buffer, CGUnit
 #if SPELLATTRIBUTESEXTENDED_DBC
     SpellAttributesExtendedRow spellAttributesExtendedRow{};
 
-    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
+    sDC.GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellRow->m_ID);
 
     hide = spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST);
 #endif

@@ -111,7 +111,7 @@ void WoWTime::UnpackWoWTime(uint32_t packedTime, int32_t* minute, int32_t* hour,
     }
 
     if (year)
-        *year = (packedTime >> 24) & 31 + DataContainer::GetInstance().GetYearOffsetMultiplier() * 32;
+        *year = (packedTime >> 24) & 31 + sDC.GetYearOffsetMultiplier() * 32;
 
     if (flags)
     {

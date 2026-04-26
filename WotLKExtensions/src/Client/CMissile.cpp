@@ -31,7 +31,7 @@ void __fastcall CMissile::FireMissilesEx(CMissile* thisMissile, int32_t unused, 
 
         if (spellID && DBClient::GetLocalizedRow(g_spellDB, spellID, &spellRow))
         {
-            DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellID);
+            sDC.GetSpellAttributesExtendedRow(spellAttributesExtendedRow, spellID);
 
             if (spellID == spellAttributesExtendedRow.m_ID && spellAttributesExtendedRow.HasCustomAttribute0(SPELL_ATTR0_CU_MISSILE_SPEED_IS_DELAY_IN_SEC))
             {

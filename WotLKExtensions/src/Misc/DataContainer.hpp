@@ -103,3 +103,5 @@ private:
 
     DataContainer& operator=(const DataContainer&) = delete;
 };
+
+#define sDC DataContainer::GetInstance()

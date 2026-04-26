@@ -16,7 +16,7 @@ void CVar::Apply()
 
 int32_t CVar::RegisterGlueCVarsCustom()
 {
-    auto& customCVars = DataContainer::GetInstance().GetGlueCVarVector();
+    auto& customCVars = sDC.GetGlueCVarVector();
 
     for (auto& it : customCVars)
         Register(it.m_name, it.m_description, it.m_size, it.m_defaultValue, it.m_callback, it.m_flags, it.m_a7, it.n_a8, it.m_a9);
@@ -42,5 +42,5 @@ void CVar::AddToGlueCVarVector(const char* name, const char* description, uint32
 {
     CustomCVar temp{ name, description, size, defaultVal, callback, flags, a8, a7, a9 };
 
-    DataContainer::GetInstance().GetGlueCVarVector().push_back(temp);
+    sDC.GetGlueCVarVector().push_back(temp);
 }

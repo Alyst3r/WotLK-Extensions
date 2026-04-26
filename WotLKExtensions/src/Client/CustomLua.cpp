@@ -31,7 +31,7 @@ void CustomLua::Apply()
 
 int32_t CustomLua::LoadScriptFunctionsCustom()
 {
-    auto& luaFunctionMap = DataContainer::GetInstance().GetLuaFunctionMap();
+    auto& luaFunctionMap = sDC.GetLuaFunctionMap();
 
     for (auto& it : luaFunctionMap)
         FrameScript::RegisterFunction(it.first, it.second);
@@ -421,7 +421,7 @@ int32_t CustomLua::GetCustomCombatRating(lua_State* L)
     CGUnit* activeObjectPtr = reinterpret_cast<CGUnit*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
 
     if (activeObjectPtr)
-        value = static_cast<float>(DataContainer::GetInstance().GetCustomCombatRating(cr - 25));
+        value = static_cast<float>(sDC.GetCustomCombatRating(cr - 25));
 
     FrameScript::PushNumber(L, value);
 
@@ -451,7 +451,7 @@ int32_t CustomLua::GetCustomCombatRatingBonus(lua_State* L)
         gtOctClasCombatRatingScalar = DBClient::GetGameTableValue(1, activeObjectPtr->m_unitFields->m_bytes0.m_unitClass, cr);
 
         if (gtCombatRating && gtOctClasCombatRatingScalar)
-            value = gtOctClasCombatRatingScalar * DataContainer::GetInstance().GetCustomCombatRating(cr - 25) / gtCombatRating;
+            value = gtOctClasCombatRatingScalar * sDC.GetCustomCombatRating(cr - 25) / gtCombatRating;
     }
 
     FrameScript::PushNumber(L, value);
@@ -468,7 +468,7 @@ int32_t CustomLua::GetAvailableRoles(lua_State* L)
     if (row)
         classId = row->m_ID;
 
-    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);
+    sDC.GetLFGRolesRow(cdbcRole, classId);
 
     FrameScript::PushBoolean(L, cdbcRole.m_roles & 2);
     FrameScript::PushBoolean(L, cdbcRole.m_roles & 4);
@@ -495,7 +495,7 @@ int32_t CustomLua::SetLFGRole(lua_State* L)
     if (row)
         classId = row->m_ID;
 
-    DataContainer::GetInstance().GetLFGRolesRow(cdbcRole, classId);
+    sDC.GetLFGRolesRow(cdbcRole, classId);
 
     CVar::Set(ptr, roles & cdbcRole.m_roles, 1, 0, 0, 1);
     FrameScript::SignalEvent(EVENT_LFG_ROLE_UPDATE, 0);
@@ -572,7 +572,7 @@ int32_t CustomLua::UnitCustomCastingData(lua_State* L)
     SpellAttributesExtendedRow spellAttributesExtendedRow{};
 
     // Aleist3r: should be safe if currentCast is 0 or doesn't exist in cdbc, it'll just use default values
-    DataContainer::GetInstance().GetSpellAttributesExtendedRow(spellAttributesExtendedRow, currentCast);
+    sDC.GetSpellAttributesExtendedRow(spellAttributesExtendedRow, currentCast);
 
     if (spellAttributesExtendedRow.m_ID != currentCast)
         isNil = true;
@@ -671,7 +671,7 @@ int32_t CustomLua::GetCombatRatingScalar(lua_State* L)
 
 void CustomLua::AddToFunctionMap(const char* name, void* ptr)
 {
-    DataContainer::GetInstance().AddLuaFunction(name, ptr);
+    sDC.AddLuaFunction(name, ptr);
 }
 
 void CustomLua::RegisterFunctions()

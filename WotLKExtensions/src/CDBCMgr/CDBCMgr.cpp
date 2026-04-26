@@ -9,19 +9,17 @@
 
 void CDBCMgr::Load()
 {
-    DataContainer& dc = DataContainer::GetInstance();
-
 #if LFGROLES_DBC
-    dc.LoadLFGRolesDB();
+    sDC.LoadLFGRolesDB();
 #endif
 
 #if SPELLATTRIBUTESEXTENDED_DBC
-    dc.LoadSpellAttributesExtendedDB();
+    sDC.LoadSpellAttributesExtendedDB();
 #endif
 
 #if ZONELIGHT_DBC
-    dc.LoadZoneLightDB();
-    dc.LoadZoneLightPointDB();
+    sDC.LoadZoneLightDB();
+    sDC.LoadZoneLightPointDB();
 #endif
 }
 

@@ -1,5 +1,7 @@
 #include <Misc/DataContainer.hpp>
 
+#include <SharedDefines.hpp>
+
 #include <ctime>
 
 DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_spellAttributesExtendedCDBC(SpellAttributesExtended::GetInstance()),

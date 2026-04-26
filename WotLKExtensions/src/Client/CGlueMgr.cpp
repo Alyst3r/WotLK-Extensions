@@ -13,7 +13,7 @@ void CGlueMgr::Apply()
 
 int32_t CGlueMgr::LoadScriptFunctionsCustom()
 {
-    auto& luaFunctionMap = DataContainer::GetInstance().GetGlueLuaFunctionMap();
+    auto& luaFunctionMap = sDC.GetGlueLuaFunctionMap();
 
     for (auto& it : luaFunctionMap)
         FrameScript::RegisterFunction(it.first, it.second);
@@ -23,7 +23,7 @@ int32_t CGlueMgr::LoadScriptFunctionsCustom()
 
 void CGlueMgr::AddToFunctionMap(const char* name, void* ptr)
 {
-    DataContainer::GetInstance().AddGlueLuaFunction(name, ptr);
+    sDC.AddGlueLuaFunction(name, ptr);
 }
 
 void CGlueMgr::RegisterFunctions()

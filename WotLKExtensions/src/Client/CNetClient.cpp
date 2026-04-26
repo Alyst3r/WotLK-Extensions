@@ -4,6 +4,7 @@
 #include <Data/Enums.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>
+#include <Misc/Logger.hpp>
 #include <Misc/Util.hpp>
 #include <SharedDefines.hpp>
 
@@ -43,7 +44,7 @@ void CNetClient::Apply()
 
 void CNetClient::SetCustomHandlers()
 {
-    SetMessageHandlerEx(nullptr, 0, SMSG_UPDATE_CUSTOM_COMBAT_RATING, &Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING, 0);
+    SetMessageHandlerEx(nullptr, 0, SMSG_UPDATE_CUSTOM_COMBAT_RATING, &Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING, nullptr);
 }
 
 void CNetClient::InitializePlayerEx()
@@ -65,7 +66,7 @@ void __fastcall CNetClient::ProcessMessageEx(void* _this, uint32_t unused, uint3
     else
     {
         ++*reinterpret_cast<uint32_t*>(0xC5D638);
-        auto& packetData = DataContainer::GetInstance().GetPacketHandlerMap();
+        auto& packetData = sDC.GetPacketHandlerMap();
 
         for (auto& it : packetData)
         {
@@ -86,7 +87,7 @@ void __fastcall CNetClient::SetMessageHandlerEx(void* _this, uint32_t unused, ui
     if (opcode < NUM_ORIGINAL_MSG_TYPES)
         CNetClient::SetMessageHandler(_this, opcode, handler, param);
     else
-        DataContainer::GetInstance().AddPacketHandler(opcode, CNetClientCustomPacket(handler, param));
+        sDC.AddPacketHandler(opcode, CNetClientCustomPacket(handler, param));
 }
 
 void CNetClient::Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uint32_t opcode, uint32_t a2, CDataStore* a3)
@@ -99,8 +100,9 @@ void CNetClient::Packet_SMSG_UPDATE_CUSTOM_COMBAT_RATING(void* handlerParam, uin
     if (ratingID > -1 && ratingID < 7)
     {
         if (ratingAmount > -1)
-            DataContainer::GetInstance().SetCustomCombatRating(ratingID, ratingAmount);
+            sDC.SetCustomCombatRating(ratingID, ratingAmount);
         else
-            DataContainer::GetInstance().SetCustomCombatRating(ratingID, 0);
+            sDC.SetCustomCombatRating(ratingID, 0);
     }
 }
+
