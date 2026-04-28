@@ -17,13 +17,13 @@ void Main::OnAttach()
     CGTooltip::ApplyPatches();
     Spell::ApplyPatches();
     CMissile::ApplyPatches();
-    
-#if CUSTOM_DBC && ZONELIGHT_DBC
+
+#if CUSTOM_DBC
+#if ZONELIGHT_DBC
     ZoneLightData::ApplyZoneLightsExtensions();
 #endif
 
     // Custom dbc loader
-#if CUSTOM_DBC
     CDBCMgr::PatchAddress();
 #endif
 }

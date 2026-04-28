@@ -23,6 +23,23 @@ struct LFGRolesRow
     int32_t m_roles = - 1;
 };
 
+struct OcclusionVolumeRow
+{
+    int32_t m_ID = -1;
+    char* name = nullptr;
+    int32_t m_mapID = -1;
+    int32_t m_flags = -1;
+};
+
+struct OcclusionVolumePointRow
+{
+    int32_t m_ID = -1;
+    int32_t m_occlusionVolumeID = -1;
+    float m_positionX = 0.f;
+    float m_positionY = 0.f;
+    float m_positionZ = 0.f;
+};
+
 struct SpellAttributesExtendedRow
 {
     int32_t m_ID = -1;

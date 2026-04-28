@@ -4,6 +4,7 @@
 // custom DBC manager
 #cmakedefine01 CUSTOM_DBC
 #cmakedefine01 LFGROLES_DBC
+#cmakedefine01 OCCLUSIONVOLUME_DBC
 #cmakedefine01 SPELLATTRIBUTESEXTENDED_DBC
 #cmakedefine01 ZONELIGHT_DBC
 

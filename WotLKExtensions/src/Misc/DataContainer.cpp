@@ -4,8 +4,8 @@
 
 #include <ctime>
 
-DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_spellAttributesExtendedCDBC(SpellAttributesExtended::GetInstance()),
-    m_zoneLightCDBC(ZoneLight::GetInstance()), m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
+DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_occlusionVolumeCDBC(OcclusionVolume::GetInstance()), m_occlusionVolumePointCDBC(OcclusionVolumePoint::GetInstance()),
+    m_spellAttributesExtendedCDBC(SpellAttributesExtended::GetInstance()), m_zoneLightCDBC(ZoneLight::GetInstance()), m_zoneLightPointCDBC(ZoneLightPoint::GetInstance())
 {
     m_raceNameTable.resize(32, 0);
     m_memoryTable.resize(64, 0);
@@ -20,6 +20,12 @@ DataContainer& DataContainer::GetInstance()
     static DataContainer instance;
 
     return instance;
+}
+
+void DataContainer::ResetData()
+{
+    for (size_t i = 0; i < 7; i++)
+        m_playerFields.m_combatRating[i] = 0;
 }
 
 void DataContainer::AddLuaFunction(const char* name, void* ptr)
@@ -70,6 +76,45 @@ void DataContainer::LoadLFGRolesDB()
 void DataContainer::GetLFGRolesRow(LFGRolesRow& row, int32_t index)
 {
     m_lfgRolesCDBC.GetRow(row, index);
+}
+
+void DataContainer::LoadOcclusionVolumeDB()
+{
+    m_occlusionVolumeCDBC.LoadDB();
+}
+
+void DataContainer::GetOcclusionVolumeRow(OcclusionVolumeRow& row, int32_t index)
+{
+    m_occlusionVolumeCDBC.GetRow(row, index);
+}
+
+int32_t DataContainer::GetOcclusionVolumeRowMinIndex() const
+{
+    return m_occlusionVolumeCDBC.GetMinIndex();
+}
+int32_t DataContainer::GetOcclusionVolumeRowMaxIndex() const
+{
+    return m_occlusionVolumeCDBC.GetMaxIndex();
+}
+
+void DataContainer::LoadOcclusionVolumePointDB()
+{
+    m_occlusionVolumePointCDBC.LoadDB();
+}
+
+void DataContainer::GetOcclusionVolumePointRow(OcclusionVolumePointRow& row, int32_t index)
+{
+    m_occlusionVolumePointCDBC.GetRow(row, index);
+}
+
+int32_t DataContainer::GetOcclusionVolumePointRowMinIndex() const
+{
+    return m_occlusionVolumePointCDBC.GetMinIndex();
+}
+
+int32_t DataContainer::GetOcclusionVolumePointRowMaxIndex() const
+{
+    return m_occlusionVolumePointCDBC.GetMaxIndex();
 }
 
 void DataContainer::LoadSpellAttributesExtendedDB()
@@ -152,6 +197,21 @@ void DataContainer::SetYearOffsetMultiplier()
     tm* ltm = localtime(&now);
 
     m_yearOffsetMult = (ltm->tm_year - 100) / 32;
+}
+
+void DataContainer::AddOcclusionVolume(OcclusionVolumeData& occlusionData)
+{
+    m_occlusionVolumeData.push_back(occlusionData);
+}
+
+OcclusionVolumeData* DataContainer::GetOcclusionVolumeData()
+{
+    return m_occlusionVolumeData.data();
+}
+
+size_t DataContainer::GetOcclusionVolumeDataSize() const
+{
+    return m_occlusionVolumeData.size();
 }
 
 void DataContainer::AddZoneLight(ZoneLightData& lightData)

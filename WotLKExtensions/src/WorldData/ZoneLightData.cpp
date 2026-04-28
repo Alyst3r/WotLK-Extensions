@@ -18,12 +18,10 @@ void ZoneLightData::ApplyZoneLightsExtensions()
 
 void ZoneLightData::FillZoneLightData()
 {
-    uint32_t counter = 1;
-
     for (uint32_t i = sDC.GetZoneLightRowMinIndex(); i <= sDC.GetZoneLightRowMaxIndex(); i++)
     {
-        ZoneLightData data;
-        ZoneLightRow row;
+        ZoneLightData data{};
+        ZoneLightRow row{};
         std::vector<C2Vector> points;
 
         sDC.GetZoneLightRow(row, i);
@@ -34,7 +32,7 @@ void ZoneLightData::FillZoneLightData()
         data.m_mapID = row.m_mapID;
         data.m_lightID = row.m_lightID;
 
-        for (uint32_t j = counter; j <= sDC.GetZoneLightPointRowMaxIndex(); j++, counter++)
+        for (uint32_t j = 1; j <= sDC.GetZoneLightPointRowMaxIndex(); j++)
         {
             ZoneLightPointRow tempRow{};
             C2Vector tempVec{};
@@ -54,30 +52,30 @@ void ZoneLightData::FillZoneLightData()
 
             if (j == sDC.GetZoneLightPointRowMinIndex())
             {
-                data.m_minX, data.m_maxX = tempVec.m_x;
-                data.m_maxY, data.m_maxY = tempVec.m_y;
+                data.m_min = tempVec;
+                data.m_max = tempVec;
             }
 
-            if (data.m_minX > tempVec.m_x)
-                data.m_minX = tempVec.m_x;
+            if (data.m_min.m_x > tempVec.m_x)
+                data.m_min.m_x = tempVec.m_x;
 
-            if (data.m_minY > tempVec.m_y)
-                data.m_minY = tempVec.m_y;
+            if (data.m_min.m_y > tempVec.m_y)
+                data.m_min.m_y = tempVec.m_y;
 
-            if (data.m_maxX < tempVec.m_x)
-                data.m_maxX = tempVec.m_x;
+            if (data.m_max.m_x < tempVec.m_x)
+                data.m_max.m_x = tempVec.m_x;
 
-            if (data.m_maxY < tempVec.m_y)
-                data.m_maxY = tempVec.m_y;
+            if (data.m_max.m_y < tempVec.m_y)
+                data.m_max.m_y = tempVec.m_y;
 
             if (points.size())
                 data.m_pointData = points;
         }
 
-        data.m_minX -= 50.f;
-        data.m_minY -= 50.f;
-        data.m_maxX += 50.f;
-        data.m_maxY += 50.f;
+        data.m_min.m_x -= 50.f;
+        data.m_min.m_y -= 50.f;
+        data.m_max.m_x += 50.f;
+        data.m_max.m_y += 50.f;
 
         sDC.AddZoneLight(data);
     }
@@ -95,7 +93,7 @@ void ZoneLightData::FindAndAddZoneLightEx(C3Vector* vec)
 
     for (auto& it : zoneLightData)
     {
-        if (it.m_mapID == currentMap && it.m_minX <= vec2d.m_x && it.m_minY <= vec2d.m_y && it.m_maxX >= vec2d.m_x && it.m_maxY >= vec2d.m_y)
+        if (it.m_mapID == currentMap && it.m_min.m_x <= vec2d.m_x && it.m_min.m_y <= vec2d.m_y && it.m_max.m_x >= vec2d.m_x && it.m_max.m_y >= vec2d.m_y)
         {
             float temp = 0.f;
             bool isWithin = NTempest::DistanceSquaredFromEdge(it.m_pointData.size(), it.m_pointData.data(), &vec2d, &temp);

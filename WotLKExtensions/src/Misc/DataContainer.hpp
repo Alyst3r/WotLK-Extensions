@@ -1,12 +1,15 @@
 #pragma once
 
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
+#include <CDBCMgr/CDBCDefs/OcclusionVolume.hpp>
+#include <CDBCMgr/CDBCDefs/OcclusionVolumePoint.hpp>
 #include <CDBCMgr/CDBCDefs/SpellAttributesExtended.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
 #include <Client/CNetClient.hpp>
 #include <Data/Structs.hpp>
 #include <GameObjects/CGPlayer.hpp>
+#include <WorldData/OcclusionVolumeData.hpp>
 #include <WorldData/ZoneLightData.hpp>
 
 #include <cstdint>
@@ -19,6 +22,8 @@ class DataContainer
 {
 public:
     static DataContainer& GetInstance();
+
+    void ResetData();
 
     void AddLuaFunction(const char* name, void* ptr);
     std::unordered_map<const char*, void*>& GetLuaFunctionMap();
@@ -34,6 +39,16 @@ public:
 
     void LoadLFGRolesDB();
     void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
+
+    void LoadOcclusionVolumeDB();
+    void GetOcclusionVolumeRow(OcclusionVolumeRow& row, int32_t index);
+    int32_t GetOcclusionVolumeRowMinIndex() const;
+    int32_t GetOcclusionVolumeRowMaxIndex() const;
+
+    void LoadOcclusionVolumePointDB();
+    void GetOcclusionVolumePointRow(OcclusionVolumePointRow& row, int32_t index);
+    int32_t GetOcclusionVolumePointRowMinIndex() const;
+    int32_t GetOcclusionVolumePointRowMaxIndex() const;
 
     void LoadSpellAttributesExtendedDB();
     void GetSpellAttributesExtendedRow(SpellAttributesExtendedRow& row, int32_t index);
@@ -57,6 +72,10 @@ public:
     uint32_t GetYearOffsetMultiplier() const;
     void SetYearOffsetMultiplier();
 
+    void AddOcclusionVolume(OcclusionVolumeData& occlusionData);
+    OcclusionVolumeData* GetOcclusionVolumeData();
+    size_t GetOcclusionVolumeDataSize() const;
+
     void AddZoneLight(ZoneLightData& lightData);
     std::vector<ZoneLightData>& GetZoneLightData();
 
@@ -69,6 +88,8 @@ private:
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
 
     LFGRoles& m_lfgRolesCDBC;
+    OcclusionVolume& m_occlusionVolumeCDBC;
+    OcclusionVolumePoint& m_occlusionVolumePointCDBC;
     SpellAttributesExtended& m_spellAttributesExtendedCDBC;
     ZoneLight& m_zoneLightCDBC;
     ZoneLightPoint& m_zoneLightPointCDBC;
@@ -91,6 +112,7 @@ private:
 
     uint32_t m_yearOffsetMult = 0;
 
+    std::vector<OcclusionVolumeData> m_occlusionVolumeData;
     std::vector<ZoneLightData> m_zoneLightData;
 
     std::vector<CustomCVar> m_customGlueCVars;

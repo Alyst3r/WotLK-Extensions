@@ -17,9 +17,9 @@ public:
 
 protected:
     bool m_isLoaded = false;
-    int32_t m_numColumns;
+    int32_t m_numColumns = 0;
     int32_t m_numRows = 0;
-    int32_t m_rowSize;
+    int32_t m_rowSize = 0;
     int32_t m_maxIndex = 0xFFFFFFFF;
     int32_t m_minIndex = 0x7FFFFFFF;
     std::vector<char> m_stringTable;

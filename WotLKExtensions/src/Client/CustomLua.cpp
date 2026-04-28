@@ -320,11 +320,11 @@ int32_t CustomLua::ToggleTerrain(lua_State* L)
 int32_t CustomLua::ToggleTerrainCulling(lua_State* L)
 {
     char buffer[512] = { 0 };
-    bool isTerrainCullingOn = renderFlags1 & 0x32;
+    bool isTerrainCullingOn = renderFlags1 & 0x30;
 
     if (isTerrainCullingOn)
     {
-        renderFlags1 &= ~0x32;
+        renderFlags1 &= ~0x30;
 
         SStr::Printf(buffer, 512, "Terrain culling disabled.");
     }

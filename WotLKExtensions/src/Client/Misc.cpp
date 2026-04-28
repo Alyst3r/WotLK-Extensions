@@ -1,3 +1,4 @@
+#include <Client/ClientServices.hpp>
 #include <Client/Misc.hpp>
 #include <Misc/Util.hpp>
 
@@ -5,6 +6,11 @@
 
 void Misc::ApplyPatches()
 {
+    uint32_t addressArray[] = { 0x510440, 0x510460, 0x52B2BC, 0x6B204C, 0x6B21F9 };
+
+    for (size_t i = 0; i < sizeof(addressArray) / 4; i++)
+        Util::OverwriteUInt32AtAddress(addressArray[i] - 4, reinterpret_cast<uint32_t>(&ClientServices::CharacterLogoutEx) - addressArray[i]);
+
 #if NOAMMO_PATCH
     uint8_t byteArray[] = { 0xE9, 0xBA, 0x00, 0x00, 0x00 };
     Util::OverwriteBytesAtAddress(0x809540, byteArray, sizeof(byteArray));
@@ -40,5 +46,9 @@ void Misc::ApplyPatches()
 
     //for (uint32_t j = 37; j < sizeof(itemModTableVal) / 4; j++)
     //    itemModTableVal[j] = j + 12;
+#endif
+
+#if OCCLUSIONVOLUME_DBC
+    Util::OverwriteUInt32AtAddress(0x9E04CC, 0x5EEB70);
 #endif
 }

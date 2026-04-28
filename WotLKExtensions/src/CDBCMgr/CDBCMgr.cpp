@@ -4,6 +4,7 @@
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
+#include <WorldData/OcclusionVolumeData.hpp>
 
 #include <PatchConfig.hpp>
 
@@ -15,6 +16,13 @@ void CDBCMgr::Load()
 
 #if SPELLATTRIBUTESEXTENDED_DBC
     sDC.LoadSpellAttributesExtendedDB();
+#endif
+
+#if OCCLUSIONVOLUME_DBC
+    sDC.LoadOcclusionVolumeDB();
+    sDC.LoadOcclusionVolumePointDB();
+    OcclusionVolumeData::FillOcclusionVolumeData();
+    OcclusionVolumeData::ApplyOcclusionVolumeExtensions();
 #endif
 
 #if ZONELIGHT_DBC

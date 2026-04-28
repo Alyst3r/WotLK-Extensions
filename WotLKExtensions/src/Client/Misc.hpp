@@ -5,8 +5,6 @@ class Misc
 public:
     static void ApplyPatches();
 
-    static void SetYearOffsetMultiplier();
-
 private:
     Misc() = delete;
     ~Misc() = delete;
@@ -16,6 +14,4 @@ private:
     // so and so itemModTable is capped to 139 I think :P
     static inline uint32_t itemModTable[49] = { 0 };
     static inline uint32_t itemModTableVal[37] = { 0 };
-
-    static inline uint32_t yearOffsetMult = 0;
 };

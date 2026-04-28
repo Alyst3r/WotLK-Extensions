@@ -26,6 +26,7 @@ option(TOOLTIPID_PATCH "Enables ID display of various targeted elements, such as
 option(TOOLTIPDKRUNEEXT_PATCH "Enables possibility to display runic power cost next to rune cost. Requires some core edits. More info in 'CGTooltip::AppendRuneCostLine' function." OFF)
 option(SPELLATTRIBUTESEXTENDED_DBC "Enables additional (mostly client-side) spell attributes that could, for example, be used to modify behavior of various part of tooltip; requires custom DBC loader" OFF)
 option(GLUEMGREXTENSION "Extends GlueMgr, allowing to register new CVars and Lua functions (for login/character selection screens)" OFF)
+option(OCCLUSIONVOLUME_DBC "Enables OcclusionVolume.cdbc, dehardcoding occluders used in various places, for example between Stormwind and Elwynn; requires custom DBC loader" OFF)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchConfig.hpp.in"

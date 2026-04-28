@@ -44,6 +44,10 @@ args: unitToken; if extended attributes DBC is enabled and given spell has certa
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  
 ### LFGRoles.cdbc  
 Dehardcodes class roles from Wow.exe, moving the whole table to DBC file. Record contains 2 columns, ClassID and RoleMask.  
+### OcclusionVolume.cdbc and OcclusionVolumePoint.cdbc  
+Dehardcodes occlusion volume data from Wow.exe.
+OcclusionVolume: 4 colums, ID, Name (used only in dbc, so basically just a comment), MapID and Flags.  
+OcclusionVolumePoint: 5 columns, ID, OcclusionVolumeID (from OcclusionVolume.cdbc), PositionX (float), PositionY (float), PositionZ (float). PositionX, PositionY and PositionZ are server coordinates (would require more severe rewrites to use client coords I cba to do currently, maybe someday).  
 ### SpellAttributesExtended.cdbc  
 Extends spell attributes to implement more client-side attribute flags, such as `SPELL_ATTR0_CU_DO_NOT_DISPLAY_POWER_COST` which hides spell cost info from tooltip; refer to enums in `SpellAttrCu0`. Record containst 2 columns, SpellID and CustomAttribute0.  
 ### ZoneLight.cdbc and ZoneLightPoint.cdbc  
