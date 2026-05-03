@@ -69,6 +69,27 @@ struct ZoneLightPointRow
 };
 
 // dbc
+struct AreaTableRow
+{
+    int32_t m_ID;
+    int32_t m_continentID;
+    int32_t m_parentAreaID;
+    int32_t m_areaBit;
+    int32_t m_flags;
+    int32_t m_soundProviderPref;
+    int32_t m_soundProviderPrefUnderwater;
+    int32_t m_ambienceID;
+    int32_t m_zoneMusic;
+    int32_t m_introSound;
+    int32_t m_explorationLevel;
+    char* m_areaNameLang;
+    int32_t m_factionGroupMask;
+    int32_t m_liquidTypeID[4];
+    float m_minElevation;
+    float m_ambient_multiplier;
+    int32_t m_lightid;
+};
+
 struct ChrClassesRow
 {
     int32_t m_ID;
@@ -100,6 +121,31 @@ struct gtOCTClassCombatRatingScalarRow
 {
     uint32_t m_ID;
     float m_scalar;
+};
+
+struct ItemLimitCategoryRow
+{
+    int32_t m_ID;
+    char* m_name_lang;
+    int32_t m_quantity;
+    int32_t m_flags;
+};
+
+struct ItemRandomPropertiesRow
+{
+    int32_t m_ID;
+    char* m_name;
+    int32_t m_enchantment[5];
+    char* m_nameLang;
+};
+
+struct ItemRandomSuffixRow
+{
+    int32_t m_ID;
+    char* m_nameLang;
+    char* m_internalName;
+    int32_t m_enchantment[5];
+    int32_t m_allocationPct[5];
 };
 
 struct ItemSubClassRow

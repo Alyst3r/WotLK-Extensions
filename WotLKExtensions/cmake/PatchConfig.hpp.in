@@ -19,6 +19,7 @@
 #cmakedefine01 SPELLDESCRIPTIONEXT_PATCH
 #cmakedefine01 TOOLTIPID_PATCH
 #cmakedefine01 TOOLTIPDKRUNEEXT_PATCH
+#cmakedefine01 ITEMTOOLTIPMAPLINE_FIX
 
 // Lua functions
 #cmakedefine01 ACTIONBAR_LUA

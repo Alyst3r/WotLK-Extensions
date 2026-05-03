@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Data/DBItemCache.hpp>
 #include <Data/Structs.hpp>
+#include <GameObjects/CGItem.hpp>
 #include <GameObjects/CGPlayer.hpp>
 
 #include <cstdint>
@@ -10,7 +12,7 @@ class CGTooltip
 public:
     static void ApplyPatches();
 
-    static int32_t __fastcall SetItemEx(CGTooltip* thisTooltip, int32_t unused, int32_t itemID, int32_t* a4, int64_t* guid, int32_t a6, int32_t a7, int32_t a8, int32_t a9, uint64_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16, int32_t a17);
+    static int32_t __fastcall SetItemEx(CGTooltip* thisTooltip, int32_t unused, int32_t itemID, int64_t* a4, int64_t* guid, int32_t a6, int32_t a7, int32_t a8, int32_t a9, uint64_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16, int32_t a17);
     static int32_t __fastcall SetSpellEx(CGTooltip* thisTooltip, int32_t unused, int32_t spellId, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, uint32_t* a9, int32_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16);
 
     static void AddLine(CGTooltip* thisTooltip, char* str1, char* str2, uint32_t* color1, uint32_t* color2, int32_t a6);
@@ -20,6 +22,7 @@ public:
     static int32_t ClearTooltip(CGTooltip* thisTooltip);
     static int32_t GetDurationString(char* buffer, int32_t length, uint64_t cooldown, char* string, int32_t a5, int32_t a6, int32_t a7);
     static void CalculateSize(CGTooltip* thisTooltip);
+    static int32_t SetDummyItemTooltip(CGTooltip* thisTooltip);
     
     static int32_t sub_81A2C0(CGTooltip* thisTooltip, int32_t* a2, int32_t a3, int32_t a4);
 
@@ -46,9 +49,25 @@ public:
     static bool IsCreateItemSpell(SpellRow* spellRow);
     static bool IsTradespell(SpellRow* spellRow);
 
+    static void AddItemAreaAndMapLines(CGTooltip* thisTooltip, DBItemCache* itemCache);
+    static void AddItemBondingLine(CGTooltip* thisTooltip, CGItem* item, DBItemCache* itemCache, int64_t* a4);
+    static void AddItemConjuredLine(CGTooltip* thisTooltip, DBItemCache* itemCache);
+    static bool AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProperties, int32_t a2);
+    static void AddItemIDLine(CGTooltip* thisTooltip, int32_t itemID);
+    static void AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache);
+    static void AddItemNameAndQualityLines(CGTooltip* thisTooltip, int32_t itemID, int32_t a3, int32_t a4, int32_t a5, DBItemCache* itemCache, bool destroyed);
+    static int32_t AddItemPetitionLines(CGTooltip* thisTooltip, CGItem* item, DBItemCache* itemCache, int64_t* guid);
+    static void AddItemStartQuestLine(CGTooltip* thisTooltip, DBItemCache* itemCache);
+
+    static void AppendItemSuffix(CGTooltip* thisTooltip, CGItem* item, int32_t* a2);
+
 private:
     void* m_vTable;
-    int32_t padding[499];
+    int32_t padding[207];
+    WoWGUID guid1;
+    int32_t padding2[30];
+    WoWGUID guid2;
+    int32_t padding3[258];
 
     CGTooltip() = delete;
     ~CGTooltip() = delete;

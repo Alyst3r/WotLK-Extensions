@@ -2,13 +2,16 @@
 #include <Client/CGReputationInfo.hpp>
 #include <Client/CGTooltip.hpp>
 #include <Client/ClientServices.hpp>
+#include <Client/CVar.hpp>
 #include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
 #include <Client/Spell.hpp>
 #include <Client/SStr.hpp>
 #include <Data/DBCAddresses.hpp>
-#include <Data/DBItemCache.hpp>
+#include <Data/DBNameCache.hpp>
+#include <Data/DBPetitionCache.hpp>
 #include <Data/Enums.hpp>
+#include <Data/MiscAddresses.hpp>
 #include <GameObjects/CGBag.hpp>
 #include <GameObjects/CGPetInfo.hpp>
 #include <Misc/DataContainer.hpp>
@@ -59,9 +62,84 @@ void CGTooltip::ApplyPatches()
         Util::OverwriteUInt32AtAddress(setItemAddresses[j] - 4, reinterpret_cast<uint32_t>(&SetItemEx) - setItemAddresses[j]);
 }
 
-int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, int32_t itemID, int32_t* a4, int64_t* guid, int32_t a6, int32_t a7, int32_t a8, int32_t a9, uint64_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16, int32_t a17)
+int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, int32_t itemID, int64_t* a4, int64_t* guid, int32_t a6, int32_t a7, int32_t a8, int32_t a9, uint64_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16, int32_t a17)
 {
-    return reinterpret_cast<int32_t (__thiscall*)(CGTooltip*, int32_t, int32_t*, int64_t*, int32_t, int32_t, int32_t, int32_t, uint64_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t)>(0x6277F0)(thisTooltip, itemID, a4, guid, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
+    return reinterpret_cast<int32_t (__thiscall*)(CGTooltip*, int32_t, int64_t*, int64_t*, int32_t, int32_t, int32_t, int32_t, uint64_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t)>(0x6277F0)(thisTooltip, itemID, a4, guid, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
+
+    CGPlayer* player = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(ClientServices::GetActivePlayer(), TYPEMASK_PLAYER));
+    CGPlayer* player2 = nullptr;
+
+    if (!player)
+    {
+        CSimpleFrame::Hide(thisTooltip);
+
+        return 0;
+    }
+
+    if (a10)
+        player2 = reinterpret_cast<CGPlayer*>(ClientServices::GetObjectPtr(a10, TYPEMASK_PLAYER));
+
+    if (!a9)
+    {
+        ClearTooltip(thisTooltip);
+
+        thisTooltip->guid1 = *guid;
+        thisTooltip->padding2[6] = itemID;
+        thisTooltip->padding2[27] = a6;
+        thisTooltip->padding2[28] = a11;
+        thisTooltip->padding2[29] = a7;
+        thisTooltip->guid2 = a10;
+        thisTooltip->padding3[62] = a8;
+        thisTooltip->padding3[63] = a13;
+        thisTooltip->padding3[64] = a15;
+        thisTooltip->padding3[65] = a17;
+    }
+
+    DBItemCache* itemCache = DBItemCache::GetInfoBlockByID(g_itemDBCache, itemID, a4, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x626650), thisTooltip, 1);
+
+    if (!itemCache)
+        return SetDummyItemTooltip(thisTooltip);
+
+    bool isBag = itemCache->m_inventoryType == INVTYPE_BAG;
+    CGItem* item = reinterpret_cast<CGItem*>(ClientServices::GetObjectPtr(*guid, TYPEMASK_ITEM));
+    bool isWrapped = (item && (item->m_itemData->m_flags & ITEM_FIELD_FLAG_WRAPPED)) || (thisTooltip->padding3[62] && thisTooltip->padding3[55]);
+    a8 = 0;
+
+    if (!isWrapped)
+        AppendItemSuffix(thisTooltip, item, &a8);
+
+    bool destroyed = AddItemGemPropertyLine(thisTooltip, itemCache->m_gemProperties, a7);
+
+    AddItemNameAndQualityLines(thisTooltip, itemID, a8, a6, a9, itemCache, destroyed);
+    
+    if (!AddItemPetitionLines(thisTooltip, item, itemCache, guid))
+        return 0;
+
+    if (!a6 && !a11)
+    {
+        AddItemAreaAndMapLines(thisTooltip, itemCache);
+        AddItemConjuredLine(thisTooltip, itemCache);
+        AddItemBondingLine(thisTooltip, item, itemCache, a4);
+        AddItemLimitLines(thisTooltip, itemCache);
+        AddItemStartQuestLine(thisTooltip, itemCache);
+    }
+
+    if (!a16)
+    {
+
+    }
+
+    //
+#if TOOLTIPID_PATCH
+    AddItemIDLine(thisTooltip, itemID);
+#endif
+    if (thisTooltip->padding3[75])
+        sub_81A2C0(thisTooltip, &thisTooltip->padding3[75], 0, 0);
+
+    CSimpleFrame::Show(thisTooltip);
+    CalculateSize(thisTooltip);
+
+    return 1;
 }
 
 int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused, int32_t spellId, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, uint32_t* a9, int32_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16)
@@ -79,8 +157,8 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     {
         ClearTooltip(thisTooltip);
 
-        thisTooltip->padding[217] = spellId;
-        thisTooltip->padding[242] = 0;
+        thisTooltip->padding2[7] = spellId;
+        *thisTooltip->padding3 = 0;
     }
 
     if (!activePlayer)
@@ -162,8 +240,8 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     AddSpellIDLine(thisTooltip, &spellRow);
 #endif
 
-    if (thisTooltip->padding[319])
-        sub_81A2C0(thisTooltip, &thisTooltip->padding[319], 0, 0);
+    if (thisTooltip->padding3[77])
+        sub_81A2C0(thisTooltip, &thisTooltip->padding3[77], 0, 0);
 
     CSimpleFrame::Show(thisTooltip);
     CalculateSize(thisTooltip);
@@ -195,9 +273,9 @@ void CGTooltip::AddEmbeddedItemBlock(CGTooltip* thisTooltip, SpellRow* spellRow)
 
     if (itemID)
     {
-        reinterpret_cast<int(__thiscall*)(void*)>(0x50F590)(&thisTooltip->padding[250]);
+        reinterpret_cast<int (__thiscall*)(void*)>(0x50F590)(&thisTooltip->padding3[8]);
 
-        int32_t dummy = 0;
+        int64_t dummy = 0;
         int64_t guid = 0;
 
         SetItemEx(thisTooltip, 0, itemID, &dummy, &guid, 0, 0, 0, 1, 0i64, 0, 0, 0, 0, 0, 0, 1);
@@ -227,6 +305,11 @@ int32_t CGTooltip::GetDurationString(char* buffer, int32_t length, uint64_t cool
 void CGTooltip::CalculateSize(CGTooltip* thisTooltip)
 {
     reinterpret_cast<void (__thiscall*)(CGTooltip*)>(0x61CAF0)(thisTooltip);
+}
+
+int32_t CGTooltip::SetDummyItemTooltip(CGTooltip* thisTooltip)
+{
+    return reinterpret_cast<int32_t (__thiscall*)(CGTooltip*)>(0x623760)(thisTooltip);
 }
 
 int32_t CGTooltip::sub_81A2C0(CGTooltip* thisTooltip, int32_t* a2, int32_t a3, int32_t a4)
@@ -467,11 +550,11 @@ void CGTooltip::AddReagentsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellR
                 continue;
 
             int64_t guid = spellRow->m_ID & 0x1FE0000000000000;
-            DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(reinterpret_cast<DBItemCache*>(0xC5D828), reagentID, &guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
+            DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(g_itemDBCache, reagentID, &guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
 
             if (!infoBlock)
             {
-                thisTooltip->padding[242]++;
+                (*thisTooltip->padding3)++;
 
                 continue;
             }
@@ -766,11 +849,11 @@ void CGTooltip::AddTotemsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow
             continue;
 
         int64_t guid = spellRow->m_ID & 0x1FE0000000000000;
-        DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(reinterpret_cast<DBItemCache*>(0xC5D828), totemID, &guid, reinterpret_cast<void(__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
+        DBItemCache* infoBlock = DBItemCache::GetInfoBlockByID(g_itemDBCache, totemID, &guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x61DD60), thisTooltip, 1);
 
         if (!infoBlock)
         {
-            thisTooltip->padding[242]++;
+            (*thisTooltip->padding3)++;
 
             continue;
         }
@@ -1017,6 +1100,296 @@ bool CGTooltip::IsTradespell(SpellRow* spellRow)
         result = true;
 
     return result;
+}
+
+void CGTooltip::AddItemAreaAndMapLines(CGTooltip* thisTooltip, DBItemCache* itemCache)
+{
+    int32_t area = itemCache->m_area;
+    int16_t map = static_cast<int16_t>(itemCache->m_map);
+
+    if (area)
+    {
+        AreaTableRow* row = reinterpret_cast<AreaTableRow*>(DBClient::GetRow(&g_areaTableDB->m_vtable2, area));
+
+        if (row)
+            AddLine(thisTooltip, row->m_areaNameLang, nullptr, &sTextWhite, &sTextWhite, 0);
+    }
+
+#if ITEMTOOLTIPMAPLINE_FIX
+    if (map > -1)
+#else
+    if (map)
+#endif
+    {
+        MapRow* row = reinterpret_cast<MapRow*>(DBClient::GetRow(&g_mapDB->m_vtable2, map));
+
+        if (row)
+            AddLine(thisTooltip, row->m_mapName_lang, nullptr, &sTextWhite, &sTextWhite, 0);
+    }
+}
+
+void CGTooltip::AddItemBondingLine(CGTooltip* thisTooltip, CGItem* item, DBItemCache* itemCache, int64_t* a4)
+{
+    bool isAccountBound = (itemCache->m_flagsAndFactions[0] & 0x8000000) != 0;
+    bool skip = false;
+    char buffer[4096] = { 0 };
+    int32_t bonding = itemCache->m_bonding;
+
+    if (item && CGItem::sub_708520(item))
+    {
+        if (bonding == 4)
+        {
+            skip = true;
+
+            SStr::Copy(buffer, FrameScript::GetText("ITEM_BIND_QUEST", -1, 0), 4096);
+        }
+        else if (itemCache->m_class != ITEM_CLASS_MONEY)
+        {
+            skip = true;
+
+            SStr::Copy(buffer, isAccountBound ? FrameScript::GetText("ITEM_ACCOUNTBOUND", -1, 0) : FrameScript::GetText("ITEM_SOULBOUND", -1, 0), 4096);
+        }
+    }
+
+    if (!bonding)
+    {
+        if (!*buffer)
+            return;
+
+        skip = true;
+    }
+
+    if (!skip && ((itemCache->m_class != ITEM_CLASS_MONEY) || (*a4 == *reinterpret_cast<int64_t*>(0xBFA8D8))))
+    {
+        if (isAccountBound)
+            SStr::Copy(buffer, FrameScript::GetText("ITEM_ACCOUNTBOUND", -1, 0), 4096);
+        else
+        {
+            switch (bonding)
+            {
+                case 1:
+                    SStr::Copy(buffer, FrameScript::GetText("ITEM_BIND_ON_PICKUP", -1, 0), 4096);
+                    break;
+                case 2:
+                    SStr::Copy(buffer, FrameScript::GetText("ITEM_BIND_ON_EQUIP", -1, 0), 4096);
+                    break;
+                case 3:
+                    SStr::Copy(buffer, FrameScript::GetText("ITEM_BIND_ON_USE", -1, 0), 4096);
+                    break;
+                case 4:
+                    SStr::Copy(buffer, FrameScript::GetText("ITEM_BIND_QUEST", -1, 0), 4096);
+                    break;
+                default:
+                    return;
+            }
+        }
+    }
+
+    if (*buffer)
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+}
+
+void CGTooltip::AddItemConjuredLine(CGTooltip* thisTooltip, DBItemCache* itemCache)
+{
+    if (!(itemCache->m_flagsAndFactions[0] & 2))
+        return;
+
+    AddLine(thisTooltip, FrameScript::GetText("ITEM_CONJURED", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+}
+
+bool CGTooltip::AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProperties, int32_t a3)
+{
+    bool result = false;
+
+    if (a3)
+    {
+        if (gemProperties)
+        {
+            AddLine(thisTooltip, FrameScript::GetText("DESTROY_GEM", -1, 0), nullptr, &sTextRed, &sTextRed, 0);
+
+            result = true;
+        }
+        else
+            AddLine(thisTooltip, FrameScript::GetText("CURRENTLY_EQUIPPED", -1, 0), nullptr, &sTextGrey, &sTextGrey, 0);
+    }
+
+    return result;
+}
+
+void CGTooltip::AddItemIDLine(CGTooltip* thisTooltip, int32_t itemID)
+{
+    char buffer[32] = { 0 };
+
+    SStr::Printf(buffer, 32, "%d", itemID);
+    AddLine(thisTooltip, "Item ID:", buffer, &sTextGrey, &sTextGrey, 0);
+}
+
+void CGTooltip::AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache)
+{
+    if (itemCache->m_class == ITEM_CLASS_MONEY)
+        return;
+
+    if (itemCache->m_flagsAndFactions[0] & 0x80000)
+        AddLine(thisTooltip, FrameScript::GetText("ITEM_UNIQUE_EQUIPPABLE", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+    else
+    {
+        char buffer[4096] = { 0 };
+        char format[4096] = { 0 };
+        int32_t itemLimitCategory = itemCache->m_itemLimitCategory;
+        int32_t maxCount = itemCache->m_maxCount;
+        ItemLimitCategoryRow* row = reinterpret_cast<ItemLimitCategoryRow*>(DBClient::GetRow(&g_itemLimitCategoryDB->m_vtable2, itemLimitCategory));
+
+        if (maxCount <= 0)
+            if (row)
+                SStr::Printf(buffer, 4096, (row->m_flags & 1) ? FrameScript::GetText("ITEM_LIMIT_CATEGORY_MULTIPLE", -1, 0) : FrameScript::GetText("ITEM_LIMIT_CATEGORY", -1, 0), row->m_name_lang, row->m_quantity);
+        else
+        {
+            if (maxCount == 1)
+                SStr::Printf(buffer, 4096, FrameScript::GetText("ITEM_UNIQUE", -1, 0));
+            else
+                SStr::Printf(buffer, 4096, FrameScript::GetText("ITEM_UNIQUE_MULTIPLE", -1, 0), maxCount);
+        }
+
+        if (*buffer)
+            AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+    }
+}
+
+void CGTooltip::AddItemNameAndQualityLines(CGTooltip* thisTooltip, int32_t itemID, int32_t a3, int32_t a4, int32_t a5, DBItemCache* itemCache, bool destroyed)
+{
+    char buffer[1024] = { 0 };
+    char format[1024] = { 0 };
+
+    CGItem::BuildItemName(buffer, 1024, itemID, a3);
+
+    if (a5)
+    {
+        SStr::Copy(format, buffer, 1024);
+        SStr::Printf(buffer, 1024, "/n%s", format);
+    }
+
+    if (a4)
+    {
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+
+        return;
+    }
+
+    CVar* colorblindMode = CVar::Lookup("colorblindMode");
+    uint32_t* color = destroyed ? &sTextGrey : sItemQualityColors[itemCache->m_quality];
+
+    AddLine(thisTooltip, buffer, nullptr, color, color, 0);
+
+    if (colorblindMode && colorblindMode->m_padding[12])
+    {
+        if (itemCache->m_flagsAndFactions[0] & 8)
+        {
+            AddLine(thisTooltip, FrameScript::GetText("ITEM_HEROIC_EPIC", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+
+            return;
+        }
+        else
+        {
+            uint32_t quality = destroyed ? 0 : itemCache->m_quality;
+
+            SStr::Printf(format, 1024, "ITEM_QUALITY%d_DESC", quality);
+            AddLine(thisTooltip, FrameScript::GetText(format, -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+        }
+    }
+    else if (itemCache->m_flagsAndFactions[0] & 8)
+        AddLine(thisTooltip, FrameScript::GetText("ITEM_HEROIC", -1, 0), nullptr, &sTextGreen, &sTextGreen, 0);
+}
+
+int32_t CGTooltip::AddItemPetitionLines(CGTooltip* thisTooltip, CGItem* item, DBItemCache* itemCache, int64_t* guid)
+{
+    if (!item)
+        return 1;
+
+    bool result = (CGItem::sub_707390(&item->m_vTable, 0) & 0x2000) != 0;
+
+    if (!result)
+        return 1;
+
+    int32_t enchantID = item->m_itemData->m_enchantment[0].m_ID;
+
+    DBPetitionCache* petitionCache = DBPetitionCache::GetInfoBlockByID(g_petitionDBCache, enchantID, guid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x626650), thisTooltip, 1);
+
+    if (!petitionCache)
+        return 0;
+
+    bool meetsRequirements = petitionCache->m_padding0x10[1259] != 0;
+    char buffer[4096] = { 0 };
+
+    SStr::Printf(buffer, 4096, meetsRequirements ? FrameScript::GetText("PETITION_TITLE", -1, 0) : FrameScript::GetText("GUILD_CHARTER_TITLE", -1, 0), petitionCache->m_padding0x10);
+    AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 1);
+
+    DBNameCache* nameCache = DBNameCache::GetRecord(g_nameDBCache, petitionCache->m_creatorGuid, petitionCache->m_creatorGuid, reinterpret_cast<void (__cdecl*)(CGTooltip*, bool)>(0x626650), thisTooltip, 1);
+
+    if (nameCache)
+    {
+        SStr::Printf(buffer, 4096, meetsRequirements ? FrameScript::GetText("PETITION_CREATOR", -1, 0) : FrameScript::GetText("GUILD_CHARTER_CREATOR", -1, 0), nameCache->m_name);
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+    }
+
+    int32_t count = CGItem::sub_61DC90(&item->m_vTable);
+
+    if (count)
+    {
+        SStr::Printf(buffer, 4096, FrameScript::GetText("PETITION_NUM_SIGNATURES", count, 0), count);
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+    }
+
+    if (itemCache->m_flagsAndFactions[0] & 0x2000)
+        AddLine(thisTooltip, FrameScript::GetText("ITEM_SIGNABLE", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+
+    return 1;
+}
+
+void CGTooltip::AddItemStartQuestLine(CGTooltip* thisTooltip, DBItemCache* itemCache)
+{
+    if (!itemCache->m_startQuestID)
+        return;
+
+    AddLine(thisTooltip, FrameScript::GetText("ITEM_STARTS_QUEST", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
+}
+
+void CGTooltip::AppendItemSuffix(CGTooltip* thisTooltip, CGItem* item, int32_t* a3)
+{
+    int32_t property = thisTooltip->padding3[53];
+
+    if (thisTooltip->padding3[62] && property)
+    {
+        *a3 = property;
+
+        if (property <= 0)
+        {
+            ItemRandomSuffixRow* randomSuffixRow = reinterpret_cast<ItemRandomSuffixRow*>(DBClient::GetRow(&g_itemRandomSuffixDB->m_vtable2, -property));
+
+            if (randomSuffixRow)
+            {
+                thisTooltip->padding3[16] = randomSuffixRow->m_enchantment[0] > 0 ? randomSuffixRow->m_enchantment[0] : 0;
+                thisTooltip->padding3[17] = randomSuffixRow->m_enchantment[1] > 0 ? randomSuffixRow->m_enchantment[1] : 0;
+                thisTooltip->padding3[18] = randomSuffixRow->m_enchantment[2] > 0 ? randomSuffixRow->m_enchantment[2] : 0;
+                thisTooltip->padding3[19] = randomSuffixRow->m_enchantment[3] > 0 ? randomSuffixRow->m_enchantment[3] : 0;
+                thisTooltip->padding3[20] = randomSuffixRow->m_enchantment[4] > 0 ? randomSuffixRow->m_enchantment[4] : 0;
+            }
+        }
+        else
+        {
+            ItemRandomPropertiesRow* randomPropertiesRow = reinterpret_cast<ItemRandomPropertiesRow*>(DBClient::GetRow(&g_itemRandomPropertiesDB->m_vtable2, property));
+
+            if (randomPropertiesRow)
+            {
+                thisTooltip->padding3[16] = randomPropertiesRow->m_enchantment[0] > 0 ? randomPropertiesRow->m_enchantment[0] : 0;
+                thisTooltip->padding3[17] = randomPropertiesRow->m_enchantment[1] > 0 ? randomPropertiesRow->m_enchantment[1] : 0;
+                thisTooltip->padding3[18] = randomPropertiesRow->m_enchantment[2] > 0 ? randomPropertiesRow->m_enchantment[2] : 0;
+                thisTooltip->padding3[19] = randomPropertiesRow->m_enchantment[3] > 0 ? randomPropertiesRow->m_enchantment[3] : 0;
+                thisTooltip->padding3[20] = randomPropertiesRow->m_enchantment[4] > 0 ? randomPropertiesRow->m_enchantment[4] : 0;
+            }
+        }
+    }
+    else if (item)
+        *a3 = item->m_itemData->m_randomPropertySeed;
 }
 
 int32_t CSimpleFrame::Hide(void* thisFrame)

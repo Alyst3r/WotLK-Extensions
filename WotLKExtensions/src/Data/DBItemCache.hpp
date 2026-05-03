@@ -1,12 +1,107 @@
 #pragma once
 
-#include <Client/CGTooltip.hpp>
-
 #include <cstdint>
+
+class CGTooltip;
 
 struct DBItemCache
 {
-    int32_t padding[125];
+    int32_t m_ID;
+    int32_t m_class;
+    int32_t m_subclass;
+    int32_t m_unknown;
+    int32_t m_displayID;
+    int32_t m_quality;
+    int32_t m_flagsAndFactions[2];
+    int32_t m_buyPrice;
+    int32_t m_sellPrice;
+    int32_t m_inventoryType;
+    int32_t m_allowedClass;
+    int32_t m_allowedRace;
+    int32_t m_itemLevel;
+    int32_t m_requiredLevel;
+    int32_t m_requiredSkill;
+    int32_t m_requiredSkillLevel;
+    int32_t m_requiredSpell;
+    int32_t m_requiredHonor;
+    int32_t m_requiredCityRank;
+    int32_t m_requiredReputationFaction;
+    int32_t m_requiredReputationRank;
+    int32_t m_maxCount;
+    int32_t m_stackable;
+    int32_t m_containerSlots;
+    int32_t m_statCount;
+    int32_t m_statIndex0;
+    int32_t m_statAmount0;
+    int32_t m_statIndex1;
+    int32_t m_statAmount1;
+    int32_t m_statIndex2;
+    int32_t m_statAmount2;
+    int32_t m_statIndex3;
+    int32_t m_statAmount3;
+    int32_t m_statIndex4;
+    int32_t m_statAmount4;
+    int32_t m_statIndex5;
+    int32_t m_statAmount5;
+    int32_t m_statIndex6;
+    int32_t m_statAmount6;
+    int32_t m_statIndex7;
+    int32_t m_statAmount7;
+    int32_t m_statIndex8;
+    int32_t m_statAmount8;
+    int32_t m_statIndex9;
+    int32_t m_statAmount9;
+    int32_t m_scalingStatDistribution;
+    int32_t m_scalingStatValue;
+    float m_scalingStatDistributionDamageMin0;
+    float m_scalingStatDistributionDamageMax0;
+    float m_scalingStatDistributionDamageMin1;
+    float m_scalingStatDistributionDamageMax1;
+    int32_t m_scalingStatDistributionDamageType0;
+    int32_t m_scalingStatDistributionDamageType1;
+    int32_t m_resistancePhysical;
+    int32_t m_resistanceHoly;
+    int32_t m_resistanceFire;
+    int32_t m_resistanceNature;
+    int32_t m_resistanceFrost;
+    int32_t m_resistanceShadow;
+    int32_t m_resistanceArcane;
+    int32_t m_delay;
+    int32_t m_ammoType;
+    int32_t m_rangedModRange;
+    int32_t m_spellID[5];
+    int32_t m_spellTrigger[5];
+    int32_t m_spellCharges[5];
+    int32_t m_spellCooldown[5];
+    int32_t m_spellCategory[5];
+    int32_t m_spellCategoryCooldown[5];
+    int32_t m_bonding;
+    char* m_description;
+    int32_t m_pageTextID;
+    int32_t m_languageID;
+    int32_t m_pageMaterial;
+    int32_t m_startQuestID;
+    int32_t m_lockID;
+    int32_t m_material;
+    int32_t m_sheath;
+    int32_t m_randomProperty;
+    int32_t m_randomSuffix;
+    int32_t m_block;
+    int32_t m_setID;
+    int32_t m_maxDurability;
+    int32_t m_area;
+    int32_t m_map;
+    int32_t m_bagFamily;
+    int32_t m_totemCategory;
+    int32_t m_socketColor[3];
+    int32_t m_socketItem[3];
+    int32_t m_socketBonus;
+    int32_t m_gemProperties;
+    int32_t m_requiredDisenchantSkill;
+    float m_armorDamageMod;
+    int32_t m_duration;
+    int32_t m_itemLimitCategory;
+    int32_t m_holiday;
     char* m_name;
 
     static DBItemCache* GetInfoBlockByID(DBItemCache* thisCache, int32_t itemID, int64_t* guid, void* a4, CGTooltip* tooltip, int32_t a6);
