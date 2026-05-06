@@ -2,7 +2,6 @@
 
 #include <GameObjects/CGBag.hpp>
 #include <GameObjects/CGUnit.hpp>
-#include <SharedDefines.hpp>
 
 // TODO when needed
 struct PlayerBytes0

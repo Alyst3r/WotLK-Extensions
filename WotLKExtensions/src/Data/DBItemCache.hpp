@@ -105,4 +105,5 @@ struct DBItemCache
     char* m_name;
 
     static DBItemCache* GetInfoBlockByID(DBItemCache* thisCache, int32_t itemID, int64_t* guid, void* a4, CGTooltip* tooltip, int32_t a6);
+    static char* GetItemNameByIndex(DBItemCache* thisItem, int32_t index);
 };

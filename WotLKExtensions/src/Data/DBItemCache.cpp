@@ -4,3 +4,8 @@ DBItemCache* DBItemCache::GetInfoBlockByID(DBItemCache* thisCache, int32_t itemI
 {
     return reinterpret_cast<DBItemCache* (__thiscall*)(DBItemCache*, int32_t, int64_t*, void*, CGTooltip*, int32_t)>(0x67CA30)(thisCache, itemID, guid, a4, tooltip, a6);
 }
+
+char* DBItemCache::GetItemNameByIndex(DBItemCache* thisItem, int32_t index)
+{
+    return reinterpret_cast<char* (__thiscall*)(DBItemCache*, int32_t)>(0x4FD200)(thisItem, index);
+}

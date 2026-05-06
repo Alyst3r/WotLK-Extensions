@@ -2,7 +2,6 @@
 #include <Client/CGReputationInfo.hpp>
 #include <Client/CGTooltip.hpp>
 #include <Client/ClientServices.hpp>
-#include <Client/CVar.hpp>
 #include <Client/DBClient.hpp>
 #include <Client/FrameScript.hpp>
 #include <Client/Spell.hpp>
@@ -103,14 +102,15 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
     bool isBag = itemCache->m_inventoryType == INVTYPE_BAG;
     CGItem* item = reinterpret_cast<CGItem*>(ClientServices::GetObjectPtr(*guid, TYPEMASK_ITEM));
     bool isWrapped = (item && (item->m_itemData->m_flags & ITEM_FIELD_FLAG_WRAPPED)) || (thisTooltip->padding3[62] && thisTooltip->padding3[55]);
-    a8 = 0;
+    int32_t result = 0;
+    int32_t v8 = 0;
 
     if (!isWrapped)
-        AppendItemSuffix(thisTooltip, item, &a8);
+        AppendItemSuffix(thisTooltip, item, &v8);
 
     bool destroyed = AddItemGemPropertyLine(thisTooltip, itemCache->m_gemProperties, a7);
 
-    AddItemNameAndQualityLines(thisTooltip, itemID, a8, a6, a9, itemCache, destroyed);
+    AddItemNameAndQualityLines(thisTooltip, itemID, v8, a6, a9, itemCache, destroyed);
     
     if (!AddItemPetitionLines(thisTooltip, item, itemCache, guid))
         return 0;
@@ -125,9 +125,7 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
     }
 
     if (!a16)
-    {
-
-    }
+        result = AddItemLockedLines(thisTooltip, itemCache, item);
 
     //
 #if TOOLTIPID_PATCH
@@ -139,7 +137,7 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
     CSimpleFrame::Show(thisTooltip);
     CalculateSize(thisTooltip);
 
-    return 1;
+    return result;
 }
 
 int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused, int32_t spellId, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, uint32_t* a9, int32_t a10, int32_t a11, int32_t a12, int32_t a13, int32_t a14, int32_t a15, int32_t a16)
@@ -188,7 +186,7 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
     else if (IsTradespell(&spellRow))
         AddTradeSkillLine(thisTooltip, activePlayer, &spellRow, spellId);
     else
-        AddLine(thisTooltip, spellRow.m_name_lang, (a3 || a6) ? spellRow.m_nameSubtext_lang : nullptr, &sTextWhite, &sTextGrey, 0);
+        AddLine(thisTooltip, spellRow.m_nameLang, (a3 || a6) ? spellRow.m_nameSubtextLang : nullptr, &sTextWhite, &sTextGrey, 0);
 
     if (a9 && !a11)
     {
@@ -612,7 +610,7 @@ void CGTooltip::AddRequiredFactionLine(CGTooltip* thisTooltip, CGPlayer* player,
                 factionRow = reinterpret_cast<FactionRow*>(DBClient::GetRow(&g_factionDB->m_vtable2, spellRow->m_minFactionID));
 
             SStr::Printf(format, 128, "FACTION_STANDING_LABEL%d", spellRow->m_minReputation + 1);
-            SStr::Printf(buffer, 128, FrameScript::GetText("ITEM_REQ_REPUTATION", -1, 0), factionRow ? factionRow->m_name_lang : "UNKNOWN", CGUnit::GetFrameScriptText(player, format, -1));
+            SStr::Printf(buffer, 128, FrameScript::GetText("ITEM_REQ_REPUTATION", -1, 0), factionRow ? factionRow->m_nameLang : "UNKNOWN", CGUnit::GetFrameScriptText(player, format, -1));
             AddLine(thisTooltip, buffer, nullptr, meetsRequirement ? &sTextWhite : &sTextRed, meetsRequirement ? &sTextWhite : &sTextRed, 0);
         }
     }
@@ -636,7 +634,7 @@ void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, Sp
 
         if (itemSubClassMaskRow && spellRow->m_equippedItemClass == itemSubClassMaskRow->m_classID && spellRow->m_equippedItemSubclass == itemSubClassMaskRow->m_mask)
         {
-            SStr::Copy(format, itemSubClassMaskRow->m_name_lang, 512);
+            SStr::Copy(format, itemSubClassMaskRow->m_nameLang, 512);
 
             useItemClassMask = true;
 
@@ -665,7 +663,7 @@ void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, Sp
                 else
                     SStr::Append(format, ", ", 512);
 
-                SStr::Append(format, (itemSubClassRow->m_verboseName_lang && *itemSubClassRow->m_verboseName_lang) ? itemSubClassRow->m_verboseName_lang : itemSubClassRow->m_displayName_lang, 512);
+                SStr::Append(format, (itemSubClassRow->m_verboseNameLang && *itemSubClassRow->m_verboseNameLang) ? itemSubClassRow->m_verboseNameLang : itemSubClassRow->m_displayNameLang, 512);
             }
         }
     }
@@ -717,19 +715,19 @@ void CGTooltip::AddRequiredShapeshiftFormLine(CGTooltip* thisTooltip, CGUnit* un
             {
                 SpellShapeshiftFormRow* shapeshiftRow = reinterpret_cast<SpellShapeshiftFormRow*>(DBClient::GetRow(&g_spellShapeshiftFormDB->m_vtable2, i + 1));
 
-                if (!shapeshiftRow || !shapeshiftRow->m_name_lang || !*shapeshiftRow->m_name_lang)
+                if (!shapeshiftRow || !shapeshiftRow->m_nameLang || !*shapeshiftRow->m_nameLang)
                     continue;
 
                 if (isFirst)
                 {
-                    SStr::Copy(format, shapeshiftRow->m_name_lang, 512);
+                    SStr::Copy(format, shapeshiftRow->m_nameLang, 512);
 
                     isFirst = false;
                 }
                 else
                 {
                     SStr::Append(format, ", ", 512);
-                    SStr::Append(format, shapeshiftRow->m_name_lang, 512);
+                    SStr::Append(format, shapeshiftRow->m_nameLang, 512);
                 }
             }
         }
@@ -795,7 +793,7 @@ int32_t CGTooltip::AddSpecialActionLine(CGTooltip* thisTooltip, CGPlayer* player
 
 void CGTooltip::AddSpellDescriptionLine(CGTooltip* thisTooltip, SpellRow* spellRow, int32_t a3, int32_t a4)
 {
-    if (spellRow->m_description_lang && *spellRow->m_description_lang)
+    if (spellRow->m_descriptionLang && *spellRow->m_descriptionLang)
     {
         char spellDescription[2048] = { 0 };
 
@@ -938,7 +936,7 @@ void CGTooltip::AddTradeSkillLine(CGTooltip* thisTooltip, CGPlayer* activePlayer
             {
                 char buffer[128] = { 0 };
 
-                SStr::Printf(buffer, 128, "%s: %s", skillLineRow->m_displayName_lang, spellRow->m_name_lang);
+                SStr::Printf(buffer, 128, "%s: %s", skillLineRow->m_displayNameLang, spellRow->m_nameLang);
                 CGTooltip::AddLine(thisTooltip, buffer, nullptr, &sTextYellow, &sTextYellow, 0);
             }
         }
@@ -1124,7 +1122,7 @@ void CGTooltip::AddItemAreaAndMapLines(CGTooltip* thisTooltip, DBItemCache* item
         MapRow* row = reinterpret_cast<MapRow*>(DBClient::GetRow(&g_mapDB->m_vtable2, map));
 
         if (row)
-            AddLine(thisTooltip, row->m_mapName_lang, nullptr, &sTextWhite, &sTextWhite, 0);
+            AddLine(thisTooltip, row->m_mapNameLang, nullptr, &sTextWhite, &sTextWhite, 0);
     }
 }
 
@@ -1234,14 +1232,19 @@ void CGTooltip::AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache
     else
     {
         char buffer[4096] = { 0 };
-        char format[4096] = { 0 };
         int32_t itemLimitCategory = itemCache->m_itemLimitCategory;
         int32_t maxCount = itemCache->m_maxCount;
-        ItemLimitCategoryRow* row = reinterpret_cast<ItemLimitCategoryRow*>(DBClient::GetRow(&g_itemLimitCategoryDB->m_vtable2, itemLimitCategory));
 
         if (maxCount <= 0)
-            if (row)
-                SStr::Printf(buffer, 4096, (row->m_flags & 1) ? FrameScript::GetText("ITEM_LIMIT_CATEGORY_MULTIPLE", -1, 0) : FrameScript::GetText("ITEM_LIMIT_CATEGORY", -1, 0), row->m_name_lang, row->m_quantity);
+        {
+            if (itemLimitCategory)
+            {
+                ItemLimitCategoryRow* row = reinterpret_cast<ItemLimitCategoryRow*>(DBClient::GetRow(&g_itemLimitCategoryDB->m_vtable2, itemLimitCategory));
+
+                if (row)
+                    SStr::Printf(buffer, 4096, (row->m_flags & 1) ? FrameScript::GetText("ITEM_LIMIT_CATEGORY_MULTIPLE", -1, 0) : FrameScript::GetText("ITEM_LIMIT_CATEGORY", -1, 0), row->m_nameLang, row->m_quantity);
+            }
+        }
         else
         {
             if (maxCount == 1)
@@ -1253,6 +1256,153 @@ void CGTooltip::AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache
         if (*buffer)
             AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
     }
+}
+
+int32_t CGTooltip::AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemCache, CGItem* item)
+{
+    int32_t result = 0;
+    LockRow* lockRow = reinterpret_cast<LockRow*>(DBClient::GetRow(&g_lockDB->m_vtable2, itemCache->m_lockID));
+
+    if (!lockRow)
+    {
+        if (!thisTooltip->padding3[62] || !thisTooltip->padding3[56])
+            return result;
+
+        lockRow = reinterpret_cast<LockRow*>(DBClient::GetRow(&g_lockDB->m_vtable2, thisTooltip->padding3[56]));
+
+        if (!lockRow)
+            return result;
+    }
+
+    if (item && (item->m_itemData->m_flags & 4))
+        return result;
+
+    bool skip = false;
+    char buffer[4096] = { 0 };
+    char* colorblindStr = "";
+    CVar* colorblindMode = CVar::Lookup("colorblindMode");
+    int32_t a16 = 0;
+    int32_t currentSkill = 0;
+    int32_t itemLvl = itemCache->m_itemLevel;
+    int32_t requiredSkill = 0;
+    int32_t smth = 0;
+    uint32_t* color = nullptr;
+
+    reinterpret_cast<int32_t (__cdecl*)(LockRow*, int32_t, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*)>(0x7086B0)(lockRow, itemLvl, &smth, &currentSkill, &requiredSkill, &a16, 0, 0);
+
+    if (smth)
+        GetSkillDifficultyColor(currentSkill, requiredSkill, &color, &colorblindStr, colorblindMode);
+    else
+    {
+        color = &sTextGreen2;
+
+        if (colorblindMode && colorblindMode->m_padding[12])
+            colorblindStr = sDifficultyIndicators[1];
+    }
+
+    if (a16)
+    {
+        if (a16 != 20)
+        {
+            SStr::Printf(buffer, 4096, "%s%s", colorblindStr, FrameScript::GetText("LOCKED", -1, 0));
+            AddLine(thisTooltip, buffer, nullptr, color, color, 0);
+
+            skip = true;
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < 8; i++)
+        {
+            if (lockRow->m_index[i] == 20)
+                break;
+            else
+            {
+                a16++;
+
+                if (a16 >= 8)
+                {
+                    SStr::Printf(buffer, 4096, "%s%s", colorblindStr, FrameScript::GetText("LOCKED", -1, 0));
+                    AddLine(thisTooltip, buffer, 0, color, color, 0);
+
+                    skip = true;
+                }
+            }
+        }
+    }
+
+    if (!skip)
+    {
+        SStr::Printf(buffer, 4096, "%s%s", colorblindStr, FrameScript::GetText("ENCRYPTED", -1, 0));
+        AddLine(thisTooltip, buffer, 0, color, color, 0);
+    }
+
+    size_t idx = 0;
+
+    for (size_t j = 0; j < 8; j++)
+    {
+        int32_t type = lockRow->m_type[j];
+
+        if (type == 1)
+        {
+            int64_t iGuid = 0;
+
+            if (item)
+                iGuid = item->m_objectData->m_guid;
+
+            DBItemCache* keyItem = DBItemCache::GetInfoBlockByID(g_itemDBCache, lockRow->m_index[j], &iGuid, reinterpret_cast<void(__cdecl*)(CGTooltip*, bool)>(0x626650), thisTooltip, 1);
+
+            if (keyItem)
+            {
+                SStr::Printf(buffer, 4096, FrameScript::GetText("LOCKED_WITH_ITEM", -1, 0), DBItemCache::GetItemNameByIndex(keyItem, 0));
+                AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+            }
+
+            result = 1;
+
+            return result;
+        }
+        else if (type == 2)
+            break;
+        else if (type == 3)
+        {
+            SpellRow spellRow{};
+
+            if (DBClient::GetLocalizedRow(g_spellDB, lockRow->m_type[j], &spellRow))
+                AddLockedWithSpellLine(thisTooltip, &spellRow, "LOCKED_WITH_SPELL", reinterpret_cast<void(__cdecl*)(CGTooltip*, bool)>(0x626650));
+
+            result = 1;
+
+            return result;
+        }
+
+        idx++;
+    }
+
+    if (idx >= 8)
+    {
+        result = 1;
+
+        return result;
+    }
+
+    if (smth)
+    {
+        char format[128] = { 0 };
+        char* skillLevel = "UNKNOWN";
+        LockTypeRow* lockTypeRow = reinterpret_cast<LockTypeRow*>(DBClient::GetRow(&g_lockTypeDB->m_vtable2, lockRow->m_index[idx]));
+
+        if (lockTypeRow)
+            skillLevel = lockTypeRow->m_nameLang;
+
+        GetSkillDifficultyColor(currentSkill, requiredSkill, &color, &colorblindStr, colorblindMode);
+        SStr::Printf(buffer, 4096, FrameScript::GetText("ITEM_MIN_SKILL", -1, 0), skillLevel, lockRow->m_skill[idx]);
+        AddLine(thisTooltip, buffer, nullptr, color, color, 0);
+
+        result = 1;
+    }
+
+    return result;
 }
 
 void CGTooltip::AddItemNameAndQualityLines(CGTooltip* thisTooltip, int32_t itemID, int32_t a3, int32_t a4, int32_t a5, DBItemCache* itemCache, bool destroyed)
@@ -1390,6 +1540,31 @@ void CGTooltip::AppendItemSuffix(CGTooltip* thisTooltip, CGItem* item, int32_t* 
     }
     else if (item)
         *a3 = item->m_itemData->m_randomPropertySeed;
+}
+
+void CGTooltip::AddLockedWithSpellLine(CGTooltip* thisTooltip, SpellRow* spell, const char* lockedString, void* cacheCallback)
+{
+    reinterpret_cast<void (__thiscall*)(CGTooltip*, SpellRow*, const char*, void*)>(0x623590)(thisTooltip, spell, lockedString, cacheCallback);
+}
+
+void CGTooltip::GetSkillDifficultyColor(int32_t currentSkill, int32_t requiredSkill, uint32_t** color, char** colorblindStr, CVar* colorblindMode)
+{
+    int32_t skill = requiredSkill - currentSkill;
+    size_t i = 4;
+
+    if (skill >= 100)
+        i = 0;
+    else if (skill >= 50)
+        i = 1;
+    else if (skill >= 25)
+        i = 2;
+    else if (skill >= 0)
+        i = 3;
+
+    if (colorblindMode && colorblindMode->m_padding[12])
+        *colorblindStr = sDifficultyIndicators[i];
+
+    *color = sDifficultyColors[i];
 }
 
 int32_t CSimpleFrame::Hide(void* thisFrame)

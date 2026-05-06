@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Client/CVar.hpp>
 #include <Data/DBItemCache.hpp>
 #include <Data/Structs.hpp>
 #include <GameObjects/CGItem.hpp>
@@ -19,9 +20,9 @@ public:
     static void AddEmbeddedItemBlock(CGTooltip* thisTooltip, SpellRow* spellRow);
     static void AddTalentLearnText(CGTooltip* thisTooltip, uint32_t* a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, int32_t a9, int32_t a10);
     static int32_t AddTalentPrereqs(CGTooltip* thisTooltip, uint32_t* a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6);
+    static void CalculateSize(CGTooltip* thisTooltip);
     static int32_t ClearTooltip(CGTooltip* thisTooltip);
     static int32_t GetDurationString(char* buffer, int32_t length, uint64_t cooldown, char* string, int32_t a5, int32_t a6, int32_t a7);
-    static void CalculateSize(CGTooltip* thisTooltip);
     static int32_t SetDummyItemTooltip(CGTooltip* thisTooltip);
     
     static int32_t sub_81A2C0(CGTooltip* thisTooltip, int32_t* a2, int32_t a3, int32_t a4);
@@ -55,11 +56,16 @@ public:
     static bool AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProperties, int32_t a2);
     static void AddItemIDLine(CGTooltip* thisTooltip, int32_t itemID);
     static void AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache);
+    static int32_t AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemCache, CGItem* item);
     static void AddItemNameAndQualityLines(CGTooltip* thisTooltip, int32_t itemID, int32_t a3, int32_t a4, int32_t a5, DBItemCache* itemCache, bool destroyed);
     static int32_t AddItemPetitionLines(CGTooltip* thisTooltip, CGItem* item, DBItemCache* itemCache, int64_t* guid);
     static void AddItemStartQuestLine(CGTooltip* thisTooltip, DBItemCache* itemCache);
 
     static void AppendItemSuffix(CGTooltip* thisTooltip, CGItem* item, int32_t* a2);
+
+    static void AddLockedWithSpellLine(CGTooltip* thisTooltip, SpellRow* spell, const char* lockedString, void* cacheCallback);
+
+    static void GetSkillDifficultyColor(int32_t currentSkill, int32_t requiredSkill, uint32_t** color, char** colorblindStr, CVar* colorblindMode);
 
 private:
     void* m_vTable;

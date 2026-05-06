@@ -87,8 +87,8 @@ int32_t CustomLua::GetSpellNameById(lua_State* L)
 
         if (DBClient::GetLocalizedRow(g_spellDB, spellId, &row))
         {
-            FrameScript::PushString(L, row.m_name_lang);
-            FrameScript::PushString(L, row.m_nameSubtext_lang);
+            FrameScript::PushString(L, row.m_nameLang);
+            FrameScript::PushString(L, row.m_nameSubtextLang);
 
             return 2;
         }
