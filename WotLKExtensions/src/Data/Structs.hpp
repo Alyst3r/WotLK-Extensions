@@ -150,6 +150,7 @@ struct ItemRandomSuffixRow
 
 struct ItemSubClassRow
 {
+    //int32_t m_ID;
     int32_t m_classID;
     int32_t m_subClassID;
     int32_t m_prerequisiteProficiency;
@@ -162,6 +163,7 @@ struct ItemSubClassRow
     int32_t m_weaponSwingSize;
     char* m_displayNameLang;
     char* m_verboseNameLang;
+    int32_t m_padding;
 };
 
 struct ItemSubClassMaskRow

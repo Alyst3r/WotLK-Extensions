@@ -127,6 +127,8 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
     if (!a16)
         result = AddItemLockedLines(thisTooltip, itemCache, item);
 
+    bool shouldSkip = AddItemContainerSlotLine(thisTooltip, itemCache, isBag);
+
     //
 #if TOOLTIPID_PATCH
     AddItemIDLine(thisTooltip, itemID);
@@ -630,7 +632,7 @@ void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, Sp
 
     for (int32_t i = 0; i < g_itemSubClassMaskDB->m_numRows; i++)
     {
-        ItemSubClassMaskRow* itemSubClassMaskRow = reinterpret_cast<ItemSubClassMaskRow*>(DBClient::GetRow(g_itemSubClassMaskDB, i));
+        ItemSubClassMaskRow* itemSubClassMaskRow = reinterpret_cast<ItemSubClassMaskRow*>(DBClient::GetRow(g_itemSubClassMaskDB, i, sizeof(ItemSubClassMaskRow)));
 
         if (itemSubClassMaskRow && spellRow->m_equippedItemClass == itemSubClassMaskRow->m_classID && spellRow->m_equippedItemSubclass == itemSubClassMaskRow->m_mask)
         {
@@ -652,7 +654,7 @@ void CGTooltip::AddRequiredItemLine(CGTooltip* thisTooltip, CGPlayer* player, Sp
 
     for (int32_t j = 0; j < g_itemSubClassDB->m_numRows; j++)
     {
-        ItemSubClassRow* itemSubClassRow = reinterpret_cast<ItemSubClassRow*>(DBClient::GetRow(g_itemSubClassDB, j));
+        ItemSubClassRow* itemSubClassRow = reinterpret_cast<ItemSubClassRow*>(DBClient::GetRow(g_itemSubClassDB, j, sizeof(ItemSubClassRow)));
 
         if (itemSubClassRow)
         {
@@ -1195,6 +1197,37 @@ void CGTooltip::AddItemConjuredLine(CGTooltip* thisTooltip, DBItemCache* itemCac
     AddLine(thisTooltip, FrameScript::GetText("ITEM_CONJURED", -1, 0), nullptr, &sTextWhite, &sTextWhite, 0);
 }
 
+bool CGTooltip::AddItemContainerSlotLine(CGTooltip* thisTooltip, DBItemCache* itemCache, bool isBag)
+{
+    bool result = false;
+    char buffer[1024] = { 0 };
+    ItemSubClassRow* row = nullptr;
+
+    if (!isBag || !itemCache || !g_itemSubClassDB->m_numRows)
+        return result;
+
+    for (size_t i = 0; i < g_itemSubClassDB->m_numRows; i++)
+    {
+        row = reinterpret_cast<ItemSubClassRow*>(DBClient::GetRow(g_itemSubClassDB, i, sizeof(ItemSubClassRow)));
+
+        if (!row)
+            continue;
+
+        if (row->m_classID == itemCache->m_class && row->m_subClassID == itemCache->m_subclass)
+            break;
+    }
+
+    if (row && row->m_displayNameLang && *row->m_displayNameLang)
+    {
+        SStr::Printf(buffer, 1024, FrameScript::GetText("CONTAINER_SLOTS", -1, 0), itemCache->m_containerSlots, row->m_displayNameLang);
+        AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
+
+        result = true;
+    }
+
+    return result;
+}
+
 bool CGTooltip::AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProperties, int32_t a3)
 {
     bool result = false;
@@ -1281,14 +1314,14 @@ int32_t CGTooltip::AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemC
     char buffer[4096] = { 0 };
     char* colorblindStr = "";
     CVar* colorblindMode = CVar::Lookup("colorblindMode");
-    int32_t a16 = 0;
+    int32_t v16 = 0;
     int32_t currentSkill = 0;
     int32_t itemLvl = itemCache->m_itemLevel;
     int32_t requiredSkill = 0;
     int32_t smth = 0;
     uint32_t* color = nullptr;
 
-    reinterpret_cast<int32_t (__cdecl*)(LockRow*, int32_t, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*)>(0x7086B0)(lockRow, itemLvl, &smth, &currentSkill, &requiredSkill, &a16, 0, 0);
+    reinterpret_cast<int32_t (__cdecl*)(LockRow*, int32_t, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*, int32_t*)>(0x7086B0)(lockRow, itemLvl, &smth, &currentSkill, &requiredSkill, &v16, 0, 0);
 
     if (smth)
         GetSkillDifficultyColor(currentSkill, requiredSkill, &color, &colorblindStr, colorblindMode);
@@ -1300,9 +1333,9 @@ int32_t CGTooltip::AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemC
             colorblindStr = sDifficultyIndicators[1];
     }
 
-    if (a16)
+    if (v16)
     {
-        if (a16 != 20)
+        if (v16 != 20)
         {
             SStr::Printf(buffer, 4096, "%s%s", colorblindStr, FrameScript::GetText("LOCKED", -1, 0));
             AddLine(thisTooltip, buffer, nullptr, color, color, 0);
@@ -1318,9 +1351,9 @@ int32_t CGTooltip::AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemC
                 break;
             else
             {
-                a16++;
+                v16++;
 
-                if (a16 >= 8)
+                if (v16 >= 8)
                 {
                     SStr::Printf(buffer, 4096, "%s%s", colorblindStr, FrameScript::GetText("LOCKED", -1, 0));
                     AddLine(thisTooltip, buffer, 0, color, color, 0);

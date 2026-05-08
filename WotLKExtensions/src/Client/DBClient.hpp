@@ -18,7 +18,6 @@ struct DBClient
     static double GetGameTableValue(uint32_t tableID, uint32_t classID, uint32_t combatRating);
     static int32_t GetLocalizedRow(void* thisDBC, uint32_t rowIndex, void* row);
     static void* GetRow(void* vtable2, uint32_t rowIndex);
-    static void* GetRow(DBClient* thisRow, uint32_t index);
+    static void* GetRow(DBClient* thisRow, uint32_t index, size_t rowSize);
     static bool IsValidIndex(DBClient* dbc, uint32_t rowIndex);
 };
-
