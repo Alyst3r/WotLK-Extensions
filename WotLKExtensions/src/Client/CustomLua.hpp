@@ -30,6 +30,7 @@ private:
     static int32_t ToggleGroundEffects(lua_State* L);
     static int32_t ToggleLiquids(lua_State* L);
     static int32_t ToggleM2(lua_State* L);
+    static int32_t ToggleOccluders(lua_State* L);
     static int32_t ToggleTerrain(lua_State* L);
     static int32_t ToggleTerrainCulling(lua_State* L);
     static int32_t ToggleWireframeMode(lua_State* L);

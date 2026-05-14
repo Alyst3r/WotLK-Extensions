@@ -111,6 +111,14 @@ struct FactionRow
     char* m_descriptionLang;
 };
 
+struct GlyphPropertiesRow
+{
+    int32_t m_ID;
+    int32_t m_spellID;
+    int32_t m_glyphSlotFlags;
+    int32_t m_spellIconID;
+};
+
 struct gtCombatRatingsRow
 {
     uint32_t m_ID;

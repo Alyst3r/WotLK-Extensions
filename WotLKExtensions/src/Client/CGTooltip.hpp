@@ -55,6 +55,7 @@ public:
     static void AddItemConjuredLine(CGTooltip* thisTooltip, DBItemCache* itemCache);
     static bool AddItemContainerSlotLine(CGTooltip* thisTooltip, DBItemCache* itemCache, bool isBag);
     static bool AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProperties, int32_t a2);
+    static bool AddItemGlyphLine(CGTooltip* thisTooltip, DBItemCache* itemCache, bool shouldSkip);
     static void AddItemIDLine(CGTooltip* thisTooltip, int32_t itemID);
     static void AddItemLimitLines(CGTooltip* thisTooltip, DBItemCache* itemCache);
     static int32_t AddItemLockedLines(CGTooltip* thisTooltip, DBItemCache* itemCache, CGItem* item);

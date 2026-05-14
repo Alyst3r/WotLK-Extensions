@@ -294,6 +294,29 @@ int32_t CustomLua::ToggleM2(lua_State* L)
     return 0;
 }
 
+int32_t CustomLua::ToggleOccluders(lua_State* L)
+{
+    char buffer[512] = { 0 };
+    bool areM2Displayed = renderFlags2 & 0x20;
+
+    if (areM2Displayed)
+    {
+        renderFlags2 &= ~0x20;
+
+        SStr::Printf(buffer, 512, "Occluders hidden.");
+    }
+    else
+    {
+        renderFlags2 |= 0x20;
+
+        SStr::Printf(buffer, 512, "Occluders shown.");
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    return 0;
+}
+
 int32_t CustomLua::ToggleTerrain(lua_State* L)
 {
     char buffer[512] = { 0 };
@@ -695,8 +718,9 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("ReloadMap", &ReloadMap);
     AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
     AddToFunctionMap("ToggleGroundEffects", &ToggleGroundEffects);
-    AddToFunctionMap("ToggleM2", &ToggleM2);
     AddToFunctionMap("ToggleLiquids", &ToggleLiquids);
+    AddToFunctionMap("ToggleM2", &ToggleM2);
+    AddToFunctionMap("ToggleOccluders", &ToggleOccluders);
     AddToFunctionMap("ToggleTerrain", &ToggleTerrain);
     AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
     AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
