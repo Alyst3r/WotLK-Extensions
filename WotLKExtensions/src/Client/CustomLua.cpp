@@ -19,6 +19,7 @@
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 #include <WorldData/CWorld.hpp>
+#include <Data/DBCReloader.hpp>
 
 #include <PatchConfig.hpp>
 
@@ -386,6 +387,30 @@ int32_t CustomLua::ToggleWMO(lua_State* L)
     return 0;
 }
 
+int32_t CustomLua::HotReloadDBC(lua_State* L) {
+
+    int result = -1;
+
+    if (FrameScript::GetTop(L, 1) >= 1 && FrameScript::IsString(L, 1)) {
+        const char* name = FrameScript::GetString(L, 1, 0);
+        result = DBCReloader::ReloadDBCByName(name);
+        if (result == 0)
+            CGChat::AddChatMessage("DBC reloaded successfully.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        else
+            CGChat::AddChatMessage("DBC reload failed: name not found or error.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    else {
+        result = DBCReloader::LoadAllDBCs();
+        if (result == 0)
+            CGChat::AddChatMessage("All DBCs reloaded successfully.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        else
+            CGChat::AddChatMessage("Reloading all DBCs failed.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    FrameScript::PushBoolean(L, result == 0);
+    return 1;
+}
+
 int32_t CustomLua::FlashGameWindow(lua_State* L)
 {
     HWND activeWindow = *g_window;
@@ -701,6 +726,7 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
     AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
     AddToFunctionMap("ToggleWMO", &ToggleWMO);
+    AddToFunctionMap("HotReloadDBC", &HotReloadDBC);
 #endif
 
 #if CUSTOMPACKETS_PATCH

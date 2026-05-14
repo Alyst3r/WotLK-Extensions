@@ -34,6 +34,7 @@ private:
     static int32_t ToggleTerrainCulling(lua_State* L);
     static int32_t ToggleWireframeMode(lua_State* L);
     static int32_t ToggleWMO(lua_State* L);
+    static int32_t HotReloadDBC(lua_State* L);
 
     static int32_t GetShapeshiftFormID(lua_State* L);
     static int32_t GetSpellDescription(lua_State* L);
