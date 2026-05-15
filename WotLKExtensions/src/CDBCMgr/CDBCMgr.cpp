@@ -2,9 +2,11 @@
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLight.hpp>
 #include <CDBCMgr/CDBCDefs/ZoneLightPoint.hpp>
+#include <Client/DBClient.hpp>
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 #include <WorldData/OcclusionVolumeData.hpp>
+#include <WorldData/ZoneLightData.hpp>
 
 #include <PatchConfig.hpp>
 
@@ -28,22 +30,43 @@ void CDBCMgr::Load()
 #if ZONELIGHT_DBC
     sDC.LoadZoneLightDB();
     sDC.LoadZoneLightPointDB();
+
+    if (sDC.GetShouldFillZoneLightData())
+        ZoneLightData::FillZoneLightData();
 #endif
 }
 
-static void __declspec(naked) RegisterDBCEx()
+void CDBCMgr::Unload()
 {
-    CDBCMgr::Load();
+#if LFGROLES_DBC
+    sDC.UnloadLFGRolesDB();
+#endif
 
-    __asm
-    {
-        mov ecx, 0x6337D0;
-        call ecx;
-        ret;
-    }
+#if SPELLATTRIBUTESEXTENDED_DBC
+    sDC.UnloadSpellAttributesExtendedDB();
+#endif
+
+#if OCCLUSIONVOLUME_DBC
+    sDC.ClearOcclusionVolume();
+    sDC.UnloadOcclusionVolumePointDB();
+    sDC.UnloadOcclusionVolumeDB();
+#endif
+
+#if ZONELIGHT_DBC
+    sDC.SetShouldFillZoneLightData(true);
+    sDC.ClearZoneLight();
+    sDC.UnloadZoneLightPointDB();
+    sDC.UnloadZoneLightDB();
+#endif
+}
+
+void CDBCMgr::Register()
+{
+    DBClient::RegisterBaseEx();
+    Load();
 }
 
 void CDBCMgr::PatchAddress()
 {
-    Util::OverwriteUInt32AtAddress(0x634E30, reinterpret_cast<uint32_t>(&RegisterDBCEx) - 0x634E34);
+    Util::OverwriteUInt32AtAddress(0x634E30, reinterpret_cast<uint32_t>(&Register) - 0x634E34);
 }

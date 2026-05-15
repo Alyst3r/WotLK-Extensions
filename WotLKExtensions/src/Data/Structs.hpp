@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+
+struct DBClient;
 
 // custom data
 struct CustomCVar
@@ -14,6 +17,17 @@ struct CustomCVar
     int32_t n_a8;
     bool m_a7;
     bool m_a9;
+};
+
+struct DBClientEntry
+{
+    const char* m_name;
+    DBClient* m_dbc;
+    int32_t m_exitCode;
+
+    DBClientEntry(const char* name, DBClient* ptr, int32_t exitCode) : m_name(name), m_dbc(ptr), m_exitCode(exitCode)
+    {
+    }
 };
 
 // cdbc

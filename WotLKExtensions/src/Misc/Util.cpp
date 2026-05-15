@@ -1,5 +1,8 @@
 #include <Misc/Util.hpp>
 
+#include <algorithm>
+#include <cctype>
+
 void Util::SetByteAtAddress(void* address, uint8_t byte)
 {
     DWORD flOldProtect = 0;
@@ -41,4 +44,9 @@ void Util::PercToScreenPos(float x, float y, float* resX, float* resY)
 
     *resX = (x * (g_UITexCoordAlphaMultiplier3 * 1024.f)) / g_UITexCoordAlphaMultiplier1;
     *resY = (y * (g_UITexCoordAlphaMultiplier3 * 1024.f)) / g_UITexCoordAlphaMultiplier1;
+}
+
+void Util::StringToLower(std::string& string)
+{
+    std::transform(string.begin(), string.end(), string.begin(), [](unsigned char c) { return std::tolower(c); });
 }

@@ -27,6 +27,8 @@ no args, nil return; turns on/off ground effects like grass or small rocks
 no args, nil return; turns on/off liquid surfaces and particles  
 ### ToggleM2  
 no args, nil return; turns on/off client-side m2 objects  
+### ToggleOccluders  
+no args, nil return; turns on/off world occluder shapes  
 ### ToggleTerrain  
 no args, nil return; turns on/off terrain  
 ### ToggleTerrainCulling  
@@ -39,6 +41,8 @@ no args, nil return; turns on/off WMO
 args: x, y, z, returns x, y, (z); converts given world coordinates to current screen position; credits to Tester for original implementation in Duskhaven branch of TSWoW  
 ### UnitCustomCastingData  
 args: unitToken; if extended attributes DBC is enabled and given spell has certain attribute flags, returns currentCastID/currentChannelID, shouldHideCastbar, shouldInvertCastbar, otherwise nil; requires UI edits to be effective (CastingBarFrame.lua)  
+### ReloadCDBC and ReloadDBC  
+args: DBC/CDBC name (case insensitive) or none; if no arguments given reloads all DBCs/CDBCs  
   
 ## Custom DBCs  
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  

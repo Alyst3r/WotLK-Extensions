@@ -1,3 +1,4 @@
+#include <CDBCMgr/CDBCMgr.hpp>
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CDataStore.hpp>
 #include <Client/CGChat.hpp>
@@ -168,6 +169,56 @@ int32_t CustomLua::SetSpellInActionBarSlot(lua_State* L)
 
         CNetClient::Packet_MSG_SET_ACTION_BUTTON(slotID, true, false);
     }
+
+    return 0;
+}
+
+int32_t CustomLua::ReloadCDBC(lua_State* L)
+{
+    char buffer[256] = { 0 };
+
+    if (FrameScript::GetTop(L, 1) && FrameScript::IsString(L, 1))
+    {
+        std::string name(FrameScript::GetString(L, 1, 0));
+
+        if (sDC.ReloadCDBCByName(name))
+            SStr::Printf(buffer, 256, "CDBC \"%s\" reloaded successfully.", name.c_str());
+        else
+            SStr::Printf(buffer, 256, "CDBC reload failed: \"%s\" not found.", name.c_str());
+    }
+    else
+    {
+        SStr::Printf(buffer, 256, "All CDBCs reloaded successfully.");
+
+        CDBCMgr::Unload();
+        CDBCMgr::Load();
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    return 0;
+}
+
+int32_t CustomLua::ReloadDBC(lua_State* L)
+{
+    char buffer[256] = { 0 };
+
+    if (FrameScript::GetTop(L, 1) && FrameScript::IsString(L, 1))
+    {
+        std::string name(FrameScript::GetString(L, 1, 0));
+
+        if (DBClient::ReloadByName(name))
+            SStr::Printf(buffer, 256, "DBC \"%s\" reloaded successfully.", name.c_str());
+        else
+            SStr::Printf(buffer, 256, "DBC reload failed: \"%s\" not found.", name.c_str());
+    }
+    else
+    {
+        SStr::Printf(buffer, 256, "All DBCs reloaded successfully.");
+        DBClient::ReloadAll();
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     return 0;
 }
@@ -715,6 +766,8 @@ void CustomLua::RegisterFunctions()
 #endif
     
 #if DEVHELPER_LUA
+    AddToFunctionMap("ReloadCDBC", &ReloadCDBC);
+    AddToFunctionMap("ReloadDBC", &ReloadDBC);
     AddToFunctionMap("ReloadMap", &ReloadMap);
     AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
     AddToFunctionMap("ToggleGroundEffects", &ToggleGroundEffects);
