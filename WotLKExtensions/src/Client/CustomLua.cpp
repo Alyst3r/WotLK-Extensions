@@ -1,3 +1,4 @@
+#include <CDBCMgr/CDBCMgr.hpp>
 #include <CDBCMgr/CDBCDefs/LFGRoles.hpp>
 #include <Client/CDataStore.hpp>
 #include <Client/CGChat.hpp>
@@ -19,7 +20,6 @@
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 #include <WorldData/CWorld.hpp>
-#include <Data/DBCReloader.hpp>
 
 #include <PatchConfig.hpp>
 
@@ -169,6 +169,56 @@ int32_t CustomLua::SetSpellInActionBarSlot(lua_State* L)
 
         CNetClient::Packet_MSG_SET_ACTION_BUTTON(slotID, true, false);
     }
+
+    return 0;
+}
+
+int32_t CustomLua::ReloadCDBC(lua_State* L)
+{
+    char buffer[256] = { 0 };
+
+    if (FrameScript::GetTop(L, 1) && FrameScript::IsString(L, 1))
+    {
+        std::string name(FrameScript::GetString(L, 1, 0));
+
+        if (sDC.ReloadCDBCByName(name))
+            SStr::Printf(buffer, 256, "CDBC \"%s\" reloaded successfully.", name.c_str());
+        else
+            SStr::Printf(buffer, 256, "CDBC reload failed: \"%s\" not found.", name.c_str());
+    }
+    else
+    {
+        SStr::Printf(buffer, 256, "All CDBCs reloaded successfully.");
+
+        CDBCMgr::Unload();
+        CDBCMgr::Load();
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    return 0;
+}
+
+int32_t CustomLua::ReloadDBC(lua_State* L)
+{
+    char buffer[256] = { 0 };
+
+    if (FrameScript::GetTop(L, 1) && FrameScript::IsString(L, 1))
+    {
+        std::string name(FrameScript::GetString(L, 1, 0));
+
+        if (DBClient::ReloadByName(name))
+            SStr::Printf(buffer, 256, "DBC \"%s\" reloaded successfully.", name.c_str());
+        else
+            SStr::Printf(buffer, 256, "DBC reload failed: \"%s\" not found.", name.c_str());
+    }
+    else
+    {
+        SStr::Printf(buffer, 256, "All DBCs reloaded successfully.");
+        DBClient::ReloadAll();
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     return 0;
 }
@@ -385,30 +435,6 @@ int32_t CustomLua::ToggleWMO(lua_State* L)
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     return 0;
-}
-
-int32_t CustomLua::HotReloadDBC(lua_State* L) {
-
-    int result = -1;
-
-    if (FrameScript::GetTop(L, 1) >= 1 && FrameScript::IsString(L, 1)) {
-        const char* name = FrameScript::GetString(L, 1, 0);
-        result = DBCReloader::ReloadDBCByName(name);
-        if (result == 0)
-            CGChat::AddChatMessage("DBC reloaded successfully.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        else
-            CGChat::AddChatMessage("DBC reload failed: name not found or error.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-    else {
-        result = DBCReloader::LoadAllDBCs();
-        if (result == 0)
-            CGChat::AddChatMessage("All DBCs reloaded successfully.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        else
-            CGChat::AddChatMessage("Reloading all DBCs failed.", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-
-    FrameScript::PushBoolean(L, result == 0);
-    return 1;
 }
 
 int32_t CustomLua::FlashGameWindow(lua_State* L)
@@ -717,6 +743,8 @@ void CustomLua::RegisterFunctions()
 #endif
     
 #if DEVHELPER_LUA
+    AddToFunctionMap("ReloadCDBC", &ReloadCDBC);
+    AddToFunctionMap("ReloadDBC", &ReloadDBC);
     AddToFunctionMap("ReloadMap", &ReloadMap);
     AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
     AddToFunctionMap("ToggleGroundEffects", &ToggleGroundEffects);
@@ -726,7 +754,6 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
     AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);
     AddToFunctionMap("ToggleWMO", &ToggleWMO);
-    AddToFunctionMap("HotReloadDBC", &HotReloadDBC);
 #endif
 
 #if CUSTOMPACKETS_PATCH

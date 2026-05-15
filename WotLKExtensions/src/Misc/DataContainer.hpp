@@ -38,27 +38,33 @@ public:
     std::vector<CustomCVar>& GetGlueCVarVector();
 
     void LoadLFGRolesDB();
+    void UnloadLFGRolesDB();
     void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
 
     void LoadOcclusionVolumeDB();
+    void UnloadOcclusionVolumeDB();
     void GetOcclusionVolumeRow(OcclusionVolumeRow& row, int32_t index);
     int32_t GetOcclusionVolumeRowMinIndex() const;
     int32_t GetOcclusionVolumeRowMaxIndex() const;
 
     void LoadOcclusionVolumePointDB();
+    void UnloadOcclusionVolumePointDB();
     void GetOcclusionVolumePointRow(OcclusionVolumePointRow& row, int32_t index);
     int32_t GetOcclusionVolumePointRowMinIndex() const;
     int32_t GetOcclusionVolumePointRowMaxIndex() const;
 
     void LoadSpellAttributesExtendedDB();
+    void UnloadSpellAttributesExtendedDB();
     void GetSpellAttributesExtendedRow(SpellAttributesExtendedRow& row, int32_t index);
 
     void LoadZoneLightDB();
+    void UnloadZoneLightDB();
     void GetZoneLightRow(ZoneLightRow& row, int32_t index);
     int32_t GetZoneLightRowMinIndex() const;
     int32_t GetZoneLightRowMaxIndex() const;
 
     void LoadZoneLightPointDB();
+    void UnloadZoneLightPointDB();
     void GetZoneLightPointRow(ZoneLightPointRow& row, int32_t index);
     int32_t GetZoneLightPointRowMinIndex() const;
     int32_t GetZoneLightPointRowMaxIndex() const;
@@ -73,19 +79,30 @@ public:
     void SetYearOffsetMultiplier();
 
     void AddOcclusionVolume(OcclusionVolumeData& occlusionData);
+    void ClearOcclusionVolume();
     OcclusionVolumeData* GetOcclusionVolumeData();
     size_t GetOcclusionVolumeDataSize() const;
 
     void AddZoneLight(ZoneLightData& lightData);
+    void ClearZoneLight();
     std::vector<ZoneLightData>& GetZoneLightData();
+    bool GetShouldFillZoneLightData() const;
+    void SetShouldFillZoneLightData(bool result = true);
 
     int32_t GetCustomCombatRating(int8_t index) const;
     void SetCustomCombatRating(int8_t index, int32_t value);
+
+    std::vector<DBClientEntry>& GetDBCDataVector();
+    void SetupDBCDataVector();
+
+    bool ReloadCDBCByName(std::string& name);
 
 private:
     std::unordered_map<const char*, void*> m_luaFunctions;
     std::unordered_map<const char*, void*> m_glueLuaFunctions;
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
+
+    std::vector<DBClientEntry> m_dbcData;
 
     LFGRoles& m_lfgRolesCDBC;
     OcclusionVolume& m_occlusionVolumeCDBC;
@@ -118,6 +135,8 @@ private:
     std::vector<CustomCVar> m_customGlueCVars;
 
     CGPlayerCustomFields m_playerFields;
+
+    bool m_shouldFillZoneLightData = false;
 
     DataContainer();
     DataContainer(const DataContainer&) = delete;

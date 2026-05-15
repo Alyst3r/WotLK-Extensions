@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include <functional>
+#include <string>
 
 class Util
 {
@@ -14,4 +15,9 @@ public:
     static void OverwriteUInt32AtAddress(uint32_t address, uint32_t newVal);
 
     static void PercToScreenPos(float x, float y, float* resX, float* resY);
+    static void StringToLower(std::string& string);
+
+private:
+    Util() = delete;
+    ~Util() = delete;
 };

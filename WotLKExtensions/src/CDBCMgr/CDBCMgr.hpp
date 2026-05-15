@@ -9,7 +9,9 @@
 class CDBCMgr
 {
 public:
+    static void Register();
     static void Load();
+    static void Unload();
     static void PatchAddress();
 
 private:
