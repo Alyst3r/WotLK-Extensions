@@ -19,3 +19,17 @@ bool CGItem::sub_708520(CGItem* thisItem)
 {
     return reinterpret_cast<bool (__thiscall*)(CGItem*)>(0x708520)(thisItem);
 }
+
+// ------------------------------------------------------------------
+// ------------------------ Getter Functions ------------------------
+// ------------------------------------------------------------------
+
+int32_t CGItem::GetDisplayID(CGItem* thisItem)
+{
+    return reinterpret_cast<int32_t(__thiscall*)(CGItem*)>(0x707300)(thisItem);
+}
+
+int32_t CGItem::GetClassID(CGItem* thisItem)
+{
+    return reinterpret_cast<int32_t(__thiscall*)(CGItem*)>(0x707220)(thisItem);
+}

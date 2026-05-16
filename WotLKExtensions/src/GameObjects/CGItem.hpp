@@ -45,4 +45,10 @@ struct CGItem : CGObject
     static int32_t sub_61DC90(void* thisObject);
     static int32_t sub_707390(void* thisObject, int32_t a2);
     static bool sub_708520(CGItem* thisItem);
+
+    // ------------------------------------------------------------------
+    // ------------------------ Getter Functions ------------------------
+    // ------------------------------------------------------------------
+    static int32_t GetDisplayID(CGItem* thisItem);
+    static int32_t GetClassID(CGItem* thisItem);
 };
