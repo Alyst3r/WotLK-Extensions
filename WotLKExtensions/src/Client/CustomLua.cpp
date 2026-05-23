@@ -22,6 +22,7 @@
 #include <WorldData/CWorld.hpp>
 
 #include <PatchConfig.hpp>
+#include "CustomFileIO.hpp"
 
 void CustomLua::Apply()
 {
@@ -338,6 +339,29 @@ int32_t CustomLua::ToggleM2(lua_State* L)
         renderFlags1 |= 0x01;
 
         SStr::Printf(buffer, 512, "Client-side M2s shown.");
+    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    return 0;
+}
+
+int32_t CustomLua::ToggleOccluders(lua_State* L)
+{
+    char buffer[512] = { 0 };
+    bool areM2Displayed = renderFlags2 & 0x20;
+
+    if (areM2Displayed)
+    {
+        renderFlags2 &= ~0x20;
+
+        SStr::Printf(buffer, 512, "Occluders hidden.");
+    }
+    else
+    {
+        renderFlags2 |= 0x20;
+
+        SStr::Printf(buffer, 512, "Occluders shown.");
     }
 
     CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -720,6 +744,132 @@ int32_t CustomLua::GetCombatRatingScalar(lua_State* L)
     return 1;
 }
 
+int32_t CustomLua::WriteCustomFile(lua_State* L)
+{
+    if (!FrameScript::IsString(L, 1) || !FrameScript::IsString(L, 2))
+    {
+        FrameScript::DisplayError(L, "Usage: WriteCustomFile(filename, content, [mode])");
+        return 0;
+    }
+
+    std::string filename(FrameScript::GetString(L, 1, 0));
+    std::string content(FrameScript::GetString(L, 2, 0));
+    std::string mode(FrameScript::GetString(L, 3, 0));
+
+    if (mode.empty())
+        mode = 'w';
+
+    FileIOResult result = WriteFileToDirectory(GetCustomDataDir().c_str(), false, filename.c_str(), mode[0], content.c_str());
+
+    switch (result)
+    {
+    case FileIOResult::Success:
+    {
+        char buffer[512] = { 0 };
+        SStr::Printf(buffer, 512, "File written: %s", filename.c_str());
+        CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        break;
+    }
+    case FileIOResult::InvalidMode:
+        FrameScript::DisplayError(L, "WriteCustomFile: invalid mode '%s' - use 'w', 'a', or 'b'", mode.c_str());
+        break;
+    case FileIOResult::InvalidPath:
+        FrameScript::DisplayError(L, "WriteCustomFile: invalid filename '%s'", filename.c_str());
+        break;
+    case FileIOResult::DirectoryCreateFailed:
+        FrameScript::DisplayError(L, "WriteCustomFile: failed to create CustomData directory");
+        break;
+    case FileIOResult::TempFileOpenFailed:
+    case FileIOResult::FileOpenFailed:
+        FrameScript::DisplayError(L, "WriteCustomFile: failed to open file '%s' for writing", filename.c_str());
+        break;
+    case FileIOResult::TempFileWriteFailed:
+    case FileIOResult::FileWriteFailed:
+        FrameScript::DisplayError(L, "WriteCustomFile: failed to write to file '%s'", filename.c_str());
+        break;
+    case FileIOResult::TempFileRenameFailed:
+        FrameScript::DisplayError(L, "WriteCustomFile: write failed during final save of '%s'", filename.c_str());
+        break;
+    default:
+        FrameScript::DisplayError(L, "WriteCustomFile: unknown error");
+        break;
+    }
+
+    return 0;
+}
+
+int32_t CustomLua::ReadCustomFile(lua_State* L)
+{
+    if (!FrameScript::IsString(L, 1))
+    {
+        FrameScript::DisplayError(L, "Usage: ReadCustomFile(filename)");
+        return 0;
+    }
+
+    std::string filename(FrameScript::GetString(L, 1, 0));
+    std::string content;
+
+    FileReadResult* result = ReadFileFromDirectory(GetCustomDataDir().c_str(), false, filename.c_str(), true, content);
+
+    switch (result->Result)
+    {
+    case FileIOResult::Success:
+        FrameScript::PushString(L, content.c_str());
+        return 1;
+    case FileIOResult::FileNotFound:
+        FrameScript::PushNil(L);
+        return 1;
+    case FileIOResult::InvalidPath:
+        FrameScript::DisplayError(L, "ReadCustomFile: invalid filename '%s'", filename.c_str());
+        break;
+    case FileIOResult::FileOpenFailed:
+        FrameScript::DisplayError(L, "ReadCustomFile: failed to open '%s'", filename.c_str());
+        break;
+    default:
+        FrameScript::DisplayError(L, "ReadCustomFile: unknown error");
+        break;
+    }
+
+	FrameScript::PushString(L, result->Content.c_str());
+
+    return 1;
+}
+
+int32_t CustomLua::CustomFileExists(lua_State* L) {
+    if (!FrameScript::IsString(L, 1)) {
+        FrameScript::DisplayError(L, "Usage: CustomFileExists(filename)");
+        return 0;
+    }
+
+    const auto* filename = FrameScript::GetString(L, 1, 0);
+    if (!ValidateLuaFilename(filename)) {
+        FrameScript::DisplayError(L, "Invalid or empty filename (must not contain: < > : \" / \\ | ?*)");
+        return 0;
+    }
+
+    std::string fullPath;
+    if (!ResolveValidatedPath("CustomData", filename, false, fullPath)) {
+        FrameScript::DisplayError(L, "Invalid filename/path (must remain inside CustomData).");
+        return 0;
+    }
+
+    const std::wstring widePath = Utf8ToWide(fullPath);
+    const DWORD attributes = GetFileAttributesW(widePath.c_str());
+    if (attributes == INVALID_FILE_ATTRIBUTES) {
+        const DWORD errorCode = GetLastError();
+        if (errorCode == ERROR_FILE_NOT_FOUND || errorCode == ERROR_PATH_NOT_FOUND) {
+            FrameScript::PushBoolean(L, 0);
+            return 1;
+        }
+        FrameScript::DisplayError(L, "CustomFileExists: failed to check file");
+        return 0;
+    }
+
+    FrameScript::PushBoolean(L, (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0);
+    return 1;
+}
+
+
 void CustomLua::AddToFunctionMap(const char* name, void* ptr)
 {
     sDC.AddLuaFunction(name, ptr);
@@ -734,6 +884,9 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("GetSpellNameById", &GetSpellNameById);
     AddToFunctionMap("ConvertCoordsToScreenSpace", &ConvertCoordsToScreenSpace);
     AddToFunctionMap("GetCombatRatingScalar", &GetCombatRatingScalar);
+    AddToFunctionMap("WriteCustomFile", &WriteCustomFile);
+    AddToFunctionMap("ReadCustomFile", &ReadCustomFile);
+    AddToFunctionMap("CustomFileExists", &CustomFileExists);
 #endif
 
 #if ACTIONBAR_LUA
@@ -748,8 +901,9 @@ void CustomLua::RegisterFunctions()
     AddToFunctionMap("ReloadMap", &ReloadMap);
     AddToFunctionMap("ToggleDisplayNormals", &ToggleDisplayNormals);
     AddToFunctionMap("ToggleGroundEffects", &ToggleGroundEffects);
-    AddToFunctionMap("ToggleM2", &ToggleM2);
     AddToFunctionMap("ToggleLiquids", &ToggleLiquids);
+    AddToFunctionMap("ToggleM2", &ToggleM2);
+    AddToFunctionMap("ToggleOccluders", &ToggleOccluders);
     AddToFunctionMap("ToggleTerrain", &ToggleTerrain);
     AddToFunctionMap("ToggleTerrainCulling", &ToggleTerrainCulling);
     AddToFunctionMap("ToggleWireframeMode", &ToggleWireframeMode);

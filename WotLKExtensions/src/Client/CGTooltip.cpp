@@ -128,6 +128,7 @@ int32_t __fastcall CGTooltip::SetItemEx(CGTooltip* thisTooltip, int32_t unused, 
         result = AddItemLockedLines(thisTooltip, itemCache, item);
 
     bool shouldSkip = AddItemContainerSlotLine(thisTooltip, itemCache, isBag);
+    shouldSkip = AddItemGlyphLine(thisTooltip, itemCache, shouldSkip);
 
     //
 #if TOOLTIPID_PATCH
@@ -1246,6 +1247,47 @@ bool CGTooltip::AddItemGemPropertyLine(CGTooltip* thisTooltip, int32_t gemProper
 
     return result;
 }
+
+bool CGTooltip::AddItemGlyphLine(CGTooltip* thisTooltip, DBItemCache* itemCache, bool shouldSkip)
+{
+    bool result = false;
+    SpellRow spellRow{};
+
+    if (shouldSkip || itemCache->m_class != ITEM_CLASS_GLYPH)
+        return result;
+
+    for (size_t i = 0; i < 5; i++)
+    {
+        if (!DBClient::IsValidIndex(g_spellDB, itemCache->m_spellID[i]))
+            continue;
+
+        DBClient::GetLocalizedRow(g_spellDB, itemCache->m_spellID[i], &spellRow);
+
+        if (!spellRow.m_ID)
+            continue;
+
+        for (size_t j = 0; j < 3; j++)
+        {
+            if (spellRow.m_effect[j] != SPELL_EFFECT_APPLY_GLYPH || !DBClient::IsValidIndex(g_glyphPropertiesDB, spellRow.m_effectMiscValue[j]))
+                continue;
+
+            GlyphPropertiesRow* propertiesRow = reinterpret_cast<GlyphPropertiesRow*>(DBClient::GetRow(&g_glyphPropertiesDB->m_vtable2, spellRow.m_effectMiscValue[j]));
+
+            if (propertiesRow)
+            {
+                AddLine(thisTooltip, propertiesRow->m_glyphSlotFlags ? FrameScript::GetText("MINOR_GLYPH", -1, 0) : FrameScript::GetText("MAJOR_GLYPH", -1, 0), nullptr, &sTextLightBlue2, &sTextLightBlue2, 0);
+
+                result = true;
+            }
+        }
+
+        if (result)
+            break;
+    }
+
+    return result;
+}
+
 
 void CGTooltip::AddItemIDLine(CGTooltip* thisTooltip, int32_t itemID)
 {
