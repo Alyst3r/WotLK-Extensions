@@ -1,4 +1,6 @@
 #include <Main.hpp>
+#include <fstream>
+
 
 void Main::OnAttach()
 {
@@ -17,6 +19,9 @@ void Main::OnAttach()
     CGTooltip::ApplyPatches();
     Spell::ApplyPatches();
     CMissile::ApplyPatches();
+
+    // Lua unlocker patches.
+	LuaUnlock::ApplyPatches();
 
 #if CUSTOM_DBC
 #if ZONELIGHT_DBC
