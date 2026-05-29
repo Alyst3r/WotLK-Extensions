@@ -226,7 +226,9 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
 
     if (!a3)
     {
-        result = !result ? AddSpecialActionLine(thisTooltip, activePlayer, &spellRow, unc) : 1;
+        int32_t temp = AddSpecialActionLine(thisTooltip, activePlayer, &spellRow, unc);
+
+        result = !result ? temp : 1;
 
         AddDrainAllPowerLine(thisTooltip, &spellRow);
         AddSpellDescriptionLine(thisTooltip, &spellRow, a5, a7);
@@ -904,7 +906,7 @@ void CGTooltip::AddTotemsLine(CGTooltip* thisTooltip, CGPlayer* player, SpellRow
         else
             SStr::Append(buffer, ", ", 4096);
 
-        bool result = CGBag::FindTotemOfCategory(totemCategory, 0);
+        bool result = CGBag::FindTotemOfCategory(reinterpret_cast<CGBag*>(&player->m_padding0x100C[569]), totemCategory, 0);
 
         if (!result)
         {

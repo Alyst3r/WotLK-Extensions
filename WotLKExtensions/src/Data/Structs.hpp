@@ -194,6 +194,7 @@ struct ItemSubClassMaskRow
     int32_t m_classID;
     int32_t m_mask;
     char* m_nameLang;
+    int32_t m_padding;
 };
 
 struct LockRow
