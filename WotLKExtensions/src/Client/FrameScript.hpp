@@ -9,6 +9,8 @@ struct lua_State;
 class FrameScript
 {
 public:
+    static void ApplyPatches();
+
     static void DisplayError(lua_State* L, char* fmt, ...);
     static bool GetBoolean(lua_State* L, int32_t index);
     static bool GetGUIDFromToken(const char* token, WoWGUID* guid, bool a3);
@@ -24,6 +26,8 @@ public:
     static int32_t PushNil(lua_State* L);
     static int32_t PushNumber(lua_State* L, double value);
     static int32_t PushString(lua_State* L, const char* str);
+    static void __cdecl RegisterEvent(const char** list, size_t count);
+    static void __cdecl RegisterEventEx(const char** list, size_t count);
     static int32_t RegisterFunction(const char* name, void* ptr);
     static int32_t SetTop(lua_State* L, int32_t p);
     static int32_t SignalEvent(uint32_t event, char* fmt, ...);

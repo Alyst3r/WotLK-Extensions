@@ -16,10 +16,13 @@ enum CVarFlags : uint32_t
 enum FrameXMLEvents
 {
     EVENT_LFG_ROLE_UPDATE = 506,
+    FRAMEXML_EVENT_COUNT = 722
 };
 
 enum FrameXMLEventsCustom
 {
+    EVENT_TEST = FRAMEXML_EVENT_COUNT,
+    EVENT_CUSTOM_COUNT
 };
 
 enum InventoryType

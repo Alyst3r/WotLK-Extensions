@@ -5,7 +5,7 @@
 class CMap
 {
 public:
-    static void Apply();
+    static void ApplyPatches();
 
     static bool __cdecl SafeOpenEx(const char* filename, HANDLE* a2);
 

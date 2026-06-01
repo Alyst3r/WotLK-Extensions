@@ -1,4 +1,5 @@
 #include <Data/DBCAddresses.hpp>
+#include <Data/Enums.hpp>
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 
@@ -71,6 +72,29 @@ void DataContainer::AddGlueCVar(const CustomCVar& entry)
 std::vector<CustomCVar>& DataContainer::GetGlueCVarVector()
 {
     return m_customGlueCVars;
+}
+
+void DataContainer::SetupFrameEventVector(const char** list, size_t count)
+{
+    size_t newSize = count + EVENT_CUSTOM_COUNT - FRAMEXML_EVENT_COUNT;
+
+    m_frameEvent.resize(newSize);
+
+    for (size_t i = 0; i < count; i++)
+        m_frameEvent[i] = list[i];
+
+    for (size_t j = count; j < newSize; j++)
+        m_frameEvent[j] = m_customFrameEventData[j - count];
+}
+
+void DataContainer::RegisterCustomEvent(const char* entry)
+{
+    m_customFrameEventData.push_back(entry);
+}
+
+std::vector<const char*>& DataContainer::GetFrameEventVector()
+{
+    return m_frameEvent;
 }
 
 void DataContainer::LoadLFGRolesDB()

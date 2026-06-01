@@ -28,7 +28,7 @@ void __cdecl CNetClient::PacketGroupSpellLaunch(void* handlerParam, uint32_t opc
     reinterpret_cast<void (__cdecl*)(void*, uint32_t, uint32_t, CDataStore*)>(0x80FEE0)(handlerParam, opcode, a2, a3);
 }
 
-void CNetClient::Apply()
+void CNetClient::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x6E8EE2, reinterpret_cast<uint32_t>(&InitializePlayerEx) - 0x6E8EE6);
     //

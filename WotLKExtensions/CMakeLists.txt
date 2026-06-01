@@ -28,6 +28,7 @@ option(SPELLATTRIBUTESEXTENDED_DBC "Enables additional (mostly client-side) spel
 option(GLUEMGREXTENSION "Extends GlueMgr, allowing to register new CVars and Lua functions (for login/character selection screens)" OFF)
 option(OCCLUSIONVOLUME_DBC "Enables OcclusionVolume.cdbc, dehardcoding occluders used in various places, for example between Stormwind and Elwynn; requires custom DBC loader" OFF)
 option(ITEMTOOLTIPMAPLINE_FIX "Fixes item tooltip, allowing to display required map if it's set to Eastern Kingdoms. Requires changes from: https://github.com/Aleist3r-s-Org/tc-fork/compare/3.3.5...Aleist3r-s-Org:tc-fork:item_template-fix" OFF)
+option(FRAMEEVENTEXTENSION "Extends FrameXML event list, allowing to register new events." OFF)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchConfig.hpp.in"

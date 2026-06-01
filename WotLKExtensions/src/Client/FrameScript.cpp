@@ -1,7 +1,14 @@
 #include <Client/FrameScript.hpp>
+#include <Misc/DataContainer.hpp>
+#include <Misc/Util.hpp>
 
 #include <cstdarg>
 #include <cstdio>
+
+void FrameScript::ApplyPatches()
+{
+    Util::OverwriteUInt32AtAddress(0x52AB26, reinterpret_cast<uint32_t>(&RegisterEventEx) - 0x52AB2A);
+}
 
 void FrameScript::DisplayError(lua_State* L, char* fmt, ...)
 {
@@ -84,6 +91,18 @@ int32_t FrameScript::PushNumber(lua_State* L, double value)
 int32_t FrameScript::PushString(lua_State* L, const char* str)
 {
     return reinterpret_cast<int32_t (__cdecl*)(lua_State*, const char*)>(0x84E350)(L, str);
+}
+
+void __cdecl FrameScript::RegisterEvent(const char** list, size_t count)
+{
+    reinterpret_cast<void (__cdecl*)(const char**, size_t)>(0x81B5F0)(list, count);
+}
+
+void __cdecl FrameScript::RegisterEventEx(const char** list, size_t count)
+{
+    sDC.SetupFrameEventVector(list, count);
+
+    RegisterEvent(sDC.GetFrameEventVector().data(), sDC.GetFrameEventVector().size());
 }
 
 int32_t FrameScript::RegisterFunction(const char* name, void* ptr)

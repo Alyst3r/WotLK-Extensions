@@ -37,6 +37,10 @@ public:
     void AddGlueCVar(const CustomCVar& entry);
     std::vector<CustomCVar>& GetGlueCVarVector();
 
+    void SetupFrameEventVector(const char** list, size_t count);
+    void RegisterCustomEvent(const char* entry);
+    std::vector<const char*>& GetFrameEventVector();
+
     void LoadLFGRolesDB();
     void UnloadLFGRolesDB();
     void GetLFGRolesRow(LFGRolesRow& row, int32_t index);
@@ -103,6 +107,7 @@ private:
     std::unordered_map <uint32_t, CNetClientCustomPacket> m_packetData;
 
     std::vector<DBClientEntry> m_dbcData;
+    std::vector<const char*> m_customFrameEventData;
 
     LFGRoles& m_lfgRolesCDBC;
     OcclusionVolume& m_occlusionVolumeCDBC;
@@ -133,6 +138,7 @@ private:
     std::vector<ZoneLightData> m_zoneLightData;
 
     std::vector<CustomCVar> m_customGlueCVars;
+    std::vector<const char*> m_frameEvent;
 
     CGPlayerCustomFields m_playerFields;
 

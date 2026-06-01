@@ -17,7 +17,7 @@ struct CNetClientCustomPacket
 class CNetClient
 {
 public:
-    static void Apply();
+    static void ApplyPatches();
 
     // original packet wrappers
     static void Packet_MSG_SET_ACTION_BUTTON(uint32_t slotID, bool p1, bool p2);

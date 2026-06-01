@@ -23,7 +23,7 @@
 
 #include <PatchConfig.hpp>
 
-void CustomLua::Apply()
+void CustomLua::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x52AB17, reinterpret_cast<uint32_t>(&LoadScriptFunctionsCustom) - 0x52AB1B);
 

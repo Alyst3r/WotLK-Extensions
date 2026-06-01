@@ -13,7 +13,8 @@ struct WoWTime
     int32_t m_year;
     int32_t m_flags;
 
-    static void ApplyWoWTimePatches();
+    static void ApplyPatches();
+
     static char* GetTimeString(WoWTime* thisTime, char* a2, uint32_t a3);
     static void PackTimeDataToDword(uint32_t* packedTime, int32_t minute, int32_t hour, int32_t weekDay, int32_t monthDay, int32_t month, int32_t year, int32_t flags);
     static void PackWoWTimeToDword(uint32_t* dword, WoWTime* time);

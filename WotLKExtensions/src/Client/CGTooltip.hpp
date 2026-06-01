@@ -27,7 +27,7 @@ public:
     
     static int32_t sub_81A2C0(CGTooltip* thisTooltip, int32_t* a2, int32_t a3, int32_t a4);
 
-    static void AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUnit* unit, int32_t a4, int32_t a5, int32_t a6);
+    static void AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUnit* unit, int32_t a4, int32_t a5);
     static int32_t AddCooldownLine(CGTooltip* thisTooltip, int32_t cooldown);
     static void AddDrainAllPowerLine(CGTooltip* thisTooltip, SpellRow* spellRow);
     static void AddPowerAndRangeLines(CGTooltip* thisTooltip, char* powerLine, CGUnit* unit, SpellRow* spellRow, bool displayRange);

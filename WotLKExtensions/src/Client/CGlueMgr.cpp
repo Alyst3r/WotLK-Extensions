@@ -4,7 +4,7 @@
 #include <Misc/DataContainer.hpp>
 #include <Misc/Util.hpp>
 
-void CGlueMgr::Apply()
+void CGlueMgr::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x4DA71D, reinterpret_cast<uint32_t>(&LoadScriptFunctionsCustom) - 0x4DA721);
 

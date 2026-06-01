@@ -7,7 +7,7 @@ class CVar
 public:
     int32_t m_padding[13];
 
-    static void Apply();
+    static void ApplyPatches();
 
     static int32_t RegisterGlueCVarsCustom();
 

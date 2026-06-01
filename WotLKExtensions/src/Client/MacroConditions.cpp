@@ -7,7 +7,7 @@
 
 #include <Windows.h>
 
-void MacroConditions::Apply()
+void MacroConditions::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x5F0F9D, reinterpret_cast<uint32_t>(&Evaluate) - 0x5F0FA1);
 }

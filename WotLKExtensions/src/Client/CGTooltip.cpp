@@ -207,12 +207,12 @@ int32_t __fastcall CGTooltip::SetSpellEx(CGTooltip* thisTooltip, int32_t unused,
 
     AddPowerAndRangeLines(thisTooltip, powerCostLine, unit, &spellRow, displayRange);
 
-    if (!a4 || !IsTradespell(&spellRow))
+    if (!a3 || !IsTradespell(&spellRow))
     {
         if (spellRow.m_effect[0] == SPELL_EFFECT_TRADE_SKILL || (spellRow.m_attributes & SPELL_ATTR0_PASSIVE))
             unc = true;
         else if (spellRow.m_effect[0] != SPELL_EFFECT_ATTACK)
-            AddCastTimeLine(thisTooltip, &spellRow, unit, a3, a5, a7);
+            AddCastTimeLine(thisTooltip, &spellRow, unit, a5, a7);
     }
 
     AddTotemsLine(thisTooltip, activePlayer, &spellRow, a3, a5);
@@ -320,7 +320,7 @@ int32_t CGTooltip::sub_81A2C0(CGTooltip* thisTooltip, int32_t* a2, int32_t a3, i
     return reinterpret_cast<int(__thiscall*)(CGTooltip*, int32_t*, int32_t, int32_t)>(0x81A2C0)(thisTooltip, a2, a3, a4);
 }
 
-void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUnit* unit, int32_t a4, int32_t a5, int32_t a6)
+void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUnit* unit, int32_t a4, int32_t a5)
 {
     bool skip = false;
     char bufferLeft[128] = { 0 };
@@ -334,7 +334,7 @@ void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUn
     if (recoveryTime <= categoryRecoveryTime)
         recoveryTime = categoryRecoveryTime;
 
-    int32_t castTime = Spell::GetCastTime(spellRow, a5, a6, 1);
+    int32_t castTime = Spell::GetCastTime(spellRow, a4, a5, 1);
 
 #if SPELLATTRIBUTESEXTENDED_DBC
     SpellAttributesExtendedRow spellAttributesExtendedRow{};
@@ -361,7 +361,7 @@ void CGTooltip::AddCastTimeLine(CGTooltip* thisTooltip, SpellRow* spellRow, CGUn
         skip = true;
     }
 
-    if (castTime <= 0 && !skip)
+    if (castTime < 0 && !skip)
     {
         SStr::Printf(bufferLeft, 128, FrameScript::GetText("SPELL_CAST_TIME_INSTANT", -1, 0));
 
@@ -395,9 +395,9 @@ int32_t CGTooltip::AddCooldownLine(CGTooltip* thisTooltip, int32_t cooldown)
 
     if (cooldown)
     {
-        char buffer[128] = { 0 };
+        char buffer[256] = { 0 };
 
-        GetDurationString(buffer, 128, cooldown, "ITEM_COOLDOWN_TIME", 0, 1, 0);
+        GetDurationString(buffer, 256, static_cast<uint64_t>(cooldown), "ITEM_COOLDOWN_TIME", 0, 1, 0);
         AddLine(thisTooltip, buffer, nullptr, &sTextWhite, &sTextWhite, 0);
 
         result = 1;

@@ -5,7 +5,7 @@
 
 #include <PatchConfig.hpp>
 
-void CVar::Apply()
+void CVar::ApplyPatches()
 {
 #if GLUEMGREXTENSION
     Util::OverwriteUInt32AtAddress(0x404147, reinterpret_cast<uint32_t>(&RegisterGlueCVarsCustom) - 0x40414B);

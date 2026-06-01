@@ -5,7 +5,7 @@
 class MacroConditions
 {
 public:
-    static void Apply();
+    static void ApplyPatches();
 
     static int32_t __fastcall Evaluate(MacroConditions* thisConditions, int32_t unused, uint32_t* a2);
 

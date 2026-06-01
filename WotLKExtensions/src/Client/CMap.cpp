@@ -2,7 +2,7 @@
 #include <Client/SFile.hpp>
 #include <Misc/Util.hpp>
 
-void CMap::Apply()
+void CMap::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x7D7162, reinterpret_cast<uint32_t>(&SafeOpenEx) - 0x7D7166);
     Util::OverwriteUInt32AtAddress(0x7D80E9, reinterpret_cast<uint32_t>(&SafeOpenEx) - 0x7D80ED);

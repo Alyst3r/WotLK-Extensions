@@ -5,7 +5,7 @@
 class CGlueMgr
 {
 public:
-    static void Apply();
+    static void ApplyPatches();
 
     static int32_t LoadScriptFunctionsCustom();
 
