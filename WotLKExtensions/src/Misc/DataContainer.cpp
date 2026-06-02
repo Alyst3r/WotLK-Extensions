@@ -76,7 +76,7 @@ std::vector<CustomCVar>& DataContainer::GetGlueCVarVector()
 
 void DataContainer::SetupFrameEventVector(const char** list, size_t count)
 {
-    size_t newSize = count + EVENT_CUSTOM_COUNT - FRAMEXML_EVENT_COUNT;
+    size_t newSize = count + FRAMEXML_CUSTOM_COUNT - FRAMEXML_EVENT_COUNT;
 
     m_frameEvent.resize(newSize);
 
@@ -87,7 +87,7 @@ void DataContainer::SetupFrameEventVector(const char** list, size_t count)
         m_frameEvent[j] = m_customFrameEventData[j - count];
 }
 
-void DataContainer::RegisterCustomEvent(const char* entry)
+void DataContainer::RegisterCustomFrameEvent(const char* entry)
 {
     m_customFrameEventData.push_back(entry);
 }
@@ -95,6 +95,29 @@ void DataContainer::RegisterCustomEvent(const char* entry)
 std::vector<const char*>& DataContainer::GetFrameEventVector()
 {
     return m_frameEvent;
+}
+
+void DataContainer::SetupGlueEventVector(const char** list, size_t count)
+{
+    size_t newSize = count + GLUEXML_CUSTOM_COUNT - GLUEXML_EVENT_COUNT;
+
+    m_glueEvent.resize(newSize);
+
+    for (size_t i = 0; i < count; i++)
+        m_glueEvent[i] = list[i];
+
+    for (size_t j = count; j < newSize; j++)
+        m_glueEvent[j] = m_customGlueEventData[j - count];
+}
+
+void DataContainer::RegisterCustomGlueEvent(const char* entry)
+{
+    m_customGlueEventData.push_back(entry);
+}
+
+std::vector<const char*>& DataContainer::GetGlueEventVector()
+{
+    return m_glueEvent;
 }
 
 void DataContainer::LoadLFGRolesDB()
