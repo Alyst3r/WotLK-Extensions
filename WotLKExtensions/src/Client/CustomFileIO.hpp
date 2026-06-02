@@ -41,8 +41,8 @@ public:
 
     static std::string GetCustomDataDir();
 
-    static FileIOResult WriteFileToDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, char mode, const char* content);
-    static void ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, bool returnNilIfMissing, FileReadResult& file);
+    static FileIOResult WriteFileToDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, char* mode, const char* content);
+    static void ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, FileReadResult& file);
 
     static std::wstring Utf8ToWide(const std::string& utf8);
     static std::string WideToUtf8(const std::wstring& wide);

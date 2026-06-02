@@ -758,15 +758,12 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
     char buffer[512] = { 0 };
     std::string filename(FrameScript::GetString(L, 1, 0));
     std::string content(FrameScript::GetString(L, 2, 0));
-    char* third = FrameScript::GetString(L, 3, 0);
-    std::string mode;
+    char* mode = FrameScript::GetString(L, 3, 0);
 
-    if (!third || !*third)
-        mode = 'w';
-    else
-        mode = third;
+    if (!mode || !*mode)
+        mode = "w";
 
-    FileIOResult result = CustomFileIO::WriteFileToDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), mode[0], content.c_str());
+    FileIOResult result = CustomFileIO::WriteFileToDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), mode, content.c_str());
 
     switch (result)
     {
@@ -781,7 +778,7 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
         }
         case FileIOResult::InvalidMode:
         {
-            SStr::Printf(buffer, 512, "WriteCustomFile: invalid mode '%s' - use 'w', 'a', or 'b'", mode.c_str());
+            SStr::Printf(buffer, 512, "WriteCustomFile: invalid mode '%s' - use 'w', 'a', or 'b'", mode);
             LOG_ERROR << buffer;
 
             break;
@@ -851,7 +848,7 @@ int32_t CustomLua::ReadCustomFile(lua_State* L)
     std::string filename(FrameScript::GetString(L, 1, 0));
     FileReadResult file{};
 
-    CustomFileIO::ReadFileFromDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), true, file);
+    CustomFileIO::ReadFileFromDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), file);
 
     switch (file.m_result)
     {

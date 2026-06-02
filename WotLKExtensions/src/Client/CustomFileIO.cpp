@@ -137,7 +137,7 @@ std::string CustomFileIO::GetCustomDataDir()
     return dir;
 }
 
-FileIOResult CustomFileIO::WriteFileToDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, char mode, const char* content)
+FileIOResult CustomFileIO::WriteFileToDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, char* mode, const char* content)
 {
     if (!EnsureDirectoryExists(baseDir))
         return FileIOResult::DirectoryCreateFailed;
@@ -148,16 +148,18 @@ FileIOResult CustomFileIO::WriteFileToDirectory(const char* baseDir, bool forceT
         return FileIOResult::InvalidPath;
 
     std::ios::openmode openMode = std::ios::out;
-    if (mode == 'w')
+    if (mode == "w")
         openMode |= std::ios::trunc;
-    else if (mode == 'a')
+    else if (mode == "a")
         openMode |= std::ios::app;
-    else if (mode == 'b')
-        openMode |= std::ios::binary;
+    else if (mode == "b")
+        openMode |= std::ios::trunc | std::ios::binary;
+    else if (mode == "ab")
+        openMode |= std::ios::app | std::ios::binary;
     else
         return FileIOResult::InvalidMode;
 
-    if (mode == 'w' || mode == 'b')
+    if (mode == "w" || mode == "b")
     {
         const std::wstring wideFull = Utf8ToWide(fullPath);
         const std::wstring wideTemp = wideFull + L".tmp";
@@ -202,7 +204,7 @@ FileIOResult CustomFileIO::WriteFileToDirectory(const char* baseDir, bool forceT
 }
 
 
-void CustomFileIO::ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, bool returnNilIfMissing, FileReadResult& file)
+void CustomFileIO::ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, FileReadResult& file)
 {
     std::string fullPath;
 
@@ -220,7 +222,7 @@ void CustomFileIO::ReadFileFromDirectory(const char* baseDir, bool forceTxtExten
     {
         const DWORD err = GetLastError();
 
-        if (returnNilIfMissing && (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND))
+        if (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND)
         {
             file.m_result = FileIOResult::FileNotFound;
 

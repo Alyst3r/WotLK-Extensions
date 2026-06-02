@@ -1,8 +1,8 @@
 ## Custom Lua functions  
 ### GetCombatRatingMultiplier  
-args: combatRatingIndex (1..32), returns combet rating multiplier value (from gtCombatRatings.dbc) for currently logged character  
+args: combatRatingIndex (1..32), returns combat rating multiplier value (from gtCombatRatings.dbc) for currently logged character  
 ### GetCombatRatingScalar  
-args: combatRatingIndex (1..32), returns combet rating scalar value (from gtOCTClassCombatRatingScalar.dbc) for currently logged character  
+args: combatRatingIndex (1..32), returns combat rating scalar value (from gtOCTClassCombatRatingScalar.dbc) for currently logged character  
 ### GetShapeshiftFormId  
 originally added in 4.0.1, no args, returns ID of currently active shapeshift form  
 ### GetSpellDescription  
@@ -43,6 +43,12 @@ args: x, y, z, returns x, y, (z); converts given world coordinates to current sc
 args: unitToken; if extended attributes DBC is enabled and given spell has certain attribute flags, returns currentCastID/currentChannelID, shouldHideCastbar, shouldInvertCastbar, otherwise nil; requires UI edits to be effective (CastingBarFrame.lua)  
 ### ReloadCDBC and ReloadDBC  
 args: DBC/CDBC name (case insensitive) or none; if no arguments given reloads all DBCs/CDBCs  
+### WriteCustomFile  
+args: filename, content, (write mode), nil return; writes `content` to file named `filename` in `CustomData` directory; if `write mode` argument is not specified, it defaults to write(truncate); valid modes are `w` (write/truncate), `a` (append), `b` (write/truncate binary), `ab` (append binary)  
+### ReadCustomFile  
+args: filename; returns content of file named `filename` if exists, nil otherwise  
+### CustomFileExists  
+args: filename, bool return; checks if file in `CustomData` directory exists
   
 ## Custom DBCs  
 `.cdbc` file extension is purely cosmetic, just to make it easier to distinguish between stock client dbcs and custom ones. Default files will be provided in `Custom DBCs` directory.  
