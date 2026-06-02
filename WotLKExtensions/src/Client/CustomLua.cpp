@@ -4,6 +4,7 @@
 #include <Client/CGChat.hpp>
 #include <Client/ClientServices.hpp>
 #include <Client/CNetClient.hpp>
+#include <Client/CustomFileIO.hpp>
 #include <Client/CustomLua.hpp>
 #include <Client/CVar.hpp>
 #include <Client/DBClient.hpp>
@@ -18,11 +19,11 @@
 #include <GameObjects/CGUnit.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>
+#include <Misc/Logger.hpp>
 #include <Misc/Util.hpp>
 #include <WorldData/CWorld.hpp>
 
 #include <PatchConfig.hpp>
-#include "CustomFileIO.hpp"
 
 void CustomLua::Apply()
 {
@@ -749,51 +750,86 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
     if (!FrameScript::IsString(L, 1) || !FrameScript::IsString(L, 2))
     {
         FrameScript::DisplayError(L, "Usage: WriteCustomFile(filename, content, [mode])");
+
         return 0;
     }
 
+    char buffer[512] = { 0 };
     std::string filename(FrameScript::GetString(L, 1, 0));
     std::string content(FrameScript::GetString(L, 2, 0));
-    std::string mode(FrameScript::GetString(L, 3, 0));
+    char* third = FrameScript::GetString(L, 3, 0);
+    std::string mode;
 
-    if (mode.empty())
+    if (!third || !*third)
         mode = 'w';
+    else
+        mode = third;
 
-    FileIOResult result = WriteFileToDirectory(GetCustomDataDir().c_str(), false, filename.c_str(), mode[0], content.c_str());
+    FileIOResult result = CustomFileIO::WriteFileToDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), mode[0], content.c_str());
 
     switch (result)
     {
-    case FileIOResult::Success:
-    {
-        char buffer[512] = { 0 };
-        SStr::Printf(buffer, 512, "File written: %s", filename.c_str());
-        CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        break;
+        case FileIOResult::Success:
+        {
+            SStr::Printf(buffer, 512, "File written: %s", filename.c_str());
+            LOG_INFO << buffer;
+
+            break;
+        }
+        case FileIOResult::InvalidMode:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: invalid mode '%s' - use 'w', 'a', or 'b'", mode.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::InvalidPath:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: invalid filename '%s'", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::DirectoryCreateFailed:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: failed to create CustomData directory");
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::TempFileOpenFailed:
+        case FileIOResult::FileOpenFailed:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: failed to open file '%s' for writing", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::TempFileWriteFailed:
+        case FileIOResult::FileWriteFailed:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: failed to write to file '%s'", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::TempFileRenameFailed:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: write failed during final save of '%s'", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        default:
+        {
+            SStr::Printf(buffer, 512, "WriteCustomFile: unknown error");
+            LOG_ERROR << buffer;
+
+            break;
+        }
     }
-    case FileIOResult::InvalidMode:
-        FrameScript::DisplayError(L, "WriteCustomFile: invalid mode '%s' - use 'w', 'a', or 'b'", mode.c_str());
-        break;
-    case FileIOResult::InvalidPath:
-        FrameScript::DisplayError(L, "WriteCustomFile: invalid filename '%s'", filename.c_str());
-        break;
-    case FileIOResult::DirectoryCreateFailed:
-        FrameScript::DisplayError(L, "WriteCustomFile: failed to create CustomData directory");
-        break;
-    case FileIOResult::TempFileOpenFailed:
-    case FileIOResult::FileOpenFailed:
-        FrameScript::DisplayError(L, "WriteCustomFile: failed to open file '%s' for writing", filename.c_str());
-        break;
-    case FileIOResult::TempFileWriteFailed:
-    case FileIOResult::FileWriteFailed:
-        FrameScript::DisplayError(L, "WriteCustomFile: failed to write to file '%s'", filename.c_str());
-        break;
-    case FileIOResult::TempFileRenameFailed:
-        FrameScript::DisplayError(L, "WriteCustomFile: write failed during final save of '%s'", filename.c_str());
-        break;
-    default:
-        FrameScript::DisplayError(L, "WriteCustomFile: unknown error");
-        break;
-    }
+
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     return 0;
 }
@@ -803,69 +839,108 @@ int32_t CustomLua::ReadCustomFile(lua_State* L)
     if (!FrameScript::IsString(L, 1))
     {
         FrameScript::DisplayError(L, "Usage: ReadCustomFile(filename)");
+
         return 0;
     }
 
+    char buffer[512] = { 0 };
     std::string filename(FrameScript::GetString(L, 1, 0));
-    std::string content;
+    FileReadResult file{};
 
-    FileReadResult* result = ReadFileFromDirectory(GetCustomDataDir().c_str(), false, filename.c_str(), true, content);
+    CustomFileIO::ReadFileFromDirectory(CustomFileIO::GetCustomDataDir().c_str(), false, filename.c_str(), true, file);
 
-    switch (result->Result)
+    switch (file.m_result)
     {
-    case FileIOResult::Success:
-        FrameScript::PushString(L, content.c_str());
-        return 1;
-    case FileIOResult::FileNotFound:
-        FrameScript::PushNil(L);
-        return 1;
-    case FileIOResult::InvalidPath:
-        FrameScript::DisplayError(L, "ReadCustomFile: invalid filename '%s'", filename.c_str());
-        break;
-    case FileIOResult::FileOpenFailed:
-        FrameScript::DisplayError(L, "ReadCustomFile: failed to open '%s'", filename.c_str());
-        break;
-    default:
-        FrameScript::DisplayError(L, "ReadCustomFile: unknown error");
-        break;
+        case FileIOResult::Success:
+        {
+            FrameScript::PushString(L, file.m_content.c_str());
+
+            return 1;
+        }
+        case FileIOResult::FileNotFound:
+        {
+            SStr::Printf(buffer, 512, "ReadCustomFile: file '%s' not found", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::InvalidPath:
+        {
+            SStr::Printf(buffer, 512, "ReadCustomFile: invalid filename '%s'", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        case FileIOResult::FileOpenFailed:
+        {
+            SStr::Printf(buffer, 512, "ReadCustomFile: failed to open '%s'", filename.c_str());
+            LOG_ERROR << buffer;
+
+            break;
+        }
+        default:
+        {
+            SStr::Printf(buffer, 512, "ReadCustomFile: unknown error");
+            LOG_ERROR << buffer;
+
+            break;
+        }
     }
 
-	FrameScript::PushString(L, result->Content.c_str());
+    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FrameScript::PushNil(L);
 
     return 1;
 }
 
-int32_t CustomLua::CustomFileExists(lua_State* L) {
-    if (!FrameScript::IsString(L, 1)) {
+int32_t CustomLua::CustomFileExists(lua_State* L)
+{
+    if (!FrameScript::IsString(L, 1))
+    {
         FrameScript::DisplayError(L, "Usage: CustomFileExists(filename)");
+
         return 0;
     }
 
     const auto* filename = FrameScript::GetString(L, 1, 0);
-    if (!ValidateLuaFilename(filename)) {
+
+    if (!CustomFileIO::ValidateLuaFilename(filename))
+    {
         FrameScript::DisplayError(L, "Invalid or empty filename (must not contain: < > : \" / \\ | ?*)");
+
         return 0;
     }
 
     std::string fullPath;
-    if (!ResolveValidatedPath("CustomData", filename, false, fullPath)) {
+
+    if (!CustomFileIO::ResolveValidatedPath("CustomData", filename, false, fullPath))
+    {
         FrameScript::DisplayError(L, "Invalid filename/path (must remain inside CustomData).");
+
         return 0;
     }
 
-    const std::wstring widePath = Utf8ToWide(fullPath);
+    const std::wstring widePath = CustomFileIO::Utf8ToWide(fullPath);
     const DWORD attributes = GetFileAttributesW(widePath.c_str());
-    if (attributes == INVALID_FILE_ATTRIBUTES) {
+
+    if (attributes == INVALID_FILE_ATTRIBUTES)
+    {
         const DWORD errorCode = GetLastError();
-        if (errorCode == ERROR_FILE_NOT_FOUND || errorCode == ERROR_PATH_NOT_FOUND) {
+
+        if (errorCode == ERROR_FILE_NOT_FOUND || errorCode == ERROR_PATH_NOT_FOUND)
+        {
             FrameScript::PushBoolean(L, 0);
+
             return 1;
         }
+
         FrameScript::DisplayError(L, "CustomFileExists: failed to check file");
+
         return 0;
     }
 
     FrameScript::PushBoolean(L, (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0);
+
     return 1;
 }
 

@@ -3,11 +3,12 @@
 // BSD 2-Clause License
 
 #pragma once
-#include <windows.h>
-#include <string>
+#include <Windows.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 enum class FileIOResult : uint32_t
 {
@@ -27,23 +28,31 @@ enum class FileIOResult : uint32_t
 
 struct FileReadResult
 {
-    FileIOResult Result;
-    std::string Content;
+    FileIOResult m_result;
+    std::string m_content;
 };
 
-bool IsValidFilename(const char* name);
-bool ValidateLuaFilename(const char* filename);
-std::string GetCustomDataDir();
-FileIOResult WriteFileToDirectory(const char* baseDir, bool forceTxtExtension,
-    const char* filename, char mode, const char* content);
+class CustomFileIO
+{
+public:
+    static bool IsValidFilename(const char* name);
+    static bool ValidateLuaFilename(const char* filename);
+    static bool ResolveValidatedPath(const char* baseDir, const char* filename, bool forceTxtExtension, std::string& outPath);
 
-FileReadResult* ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension,
-    const char* filename, bool returnNilIfMissing, std::string& outContent);
+    static std::string GetCustomDataDir();
 
-std::wstring Utf8ToWide(const std::string& utf8);
+    static FileIOResult WriteFileToDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, char mode, const char* content);
+    static void ReadFileFromDirectory(const char* baseDir, bool forceTxtExtension, const char* filename, bool returnNilIfMissing, FileReadResult& file);
 
-std::string WideToUtf8(const std::wstring& wide);
+    static std::wstring Utf8ToWide(const std::string& utf8);
+    static std::string WideToUtf8(const std::wstring& wide);
 
+private:
+    CustomFileIO() = delete;
+    ~CustomFileIO() = delete;
 
-bool ResolveValidatedPath(const char* baseDir, const char* filename, bool forceTxtExtension,
-    std::string& outPath);
+    static bool EnsureDirectoryExists(const char* baseDir);
+    static std::string BuildPath(const char* baseDir, const char* filename, bool forceTxtExtension);
+    static bool TryGetFullPath(const std::string& inputPath, std::string& outFullPath);
+};
+
