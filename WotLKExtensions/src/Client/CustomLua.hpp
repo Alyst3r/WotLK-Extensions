@@ -53,4 +53,8 @@ private:
     static int32_t PortGraveyard(lua_State* L);
 
     static int32_t UnitCustomCastingData(lua_State* L);
+
+    static int32_t WriteCustomFile(lua_State* L);
+    static int32_t ReadCustomFile(lua_State* L);
+    static int32_t CustomFileExists(lua_State* L);
 };
