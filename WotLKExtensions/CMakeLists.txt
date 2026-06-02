@@ -30,6 +30,7 @@ option(GLUEMGREXTENSION "Extends GlueMgr, allowing to register new CVars and Lua
 option(OCCLUSIONVOLUME_DBC "Enables OcclusionVolume.cdbc, dehardcoding occluders used in various places, for example between Stormwind and Elwynn; requires custom DBC loader" OFF)
 option(ITEMTOOLTIPMAPLINE_FIX "Fixes item tooltip, allowing to display required map if it's set to Eastern Kingdoms. Requires changes from: https://github.com/Aleist3r-s-Org/tc-fork/compare/3.3.5...Aleist3r-s-Org:tc-fork:item_template-fix" OFF)
 option(FRAMEEVENTEXTENSION "Extends FrameXML event list, allowing to register new events." OFF)
+option(GLUEXMLUNLOCK_PATCH "Allows Editing GlueXML frames. Previously patched in Wow.exe by default via Patcher.exe" ON)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchConfig.hpp.in"
@@ -65,6 +66,7 @@ target_include_directories(WotLKExtensions PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/src/
 )
+
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "DLL" FILES
     ${WotlkExt_sources}
     ${WotlkExt_includes}

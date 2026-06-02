@@ -22,6 +22,7 @@
 #cmakedefine01 TOOLTIPDKRUNEEXT_PATCH
 #cmakedefine01 ITEMTOOLTIPMAPLINE_FIX
 #cmakedefine01 FRAMEEVENTEXTENSION
+#cmakedefine01 GLUEXMLUNLOCK_PATCH
 
 // Lua functions
 #cmakedefine01 ACTIONBAR_LUA

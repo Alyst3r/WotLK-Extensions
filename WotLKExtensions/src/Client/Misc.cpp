@@ -11,6 +11,17 @@ void Misc::ApplyPatches()
     for (size_t i = 0; i < sizeof(addressArray) / 4; i++)
         Util::OverwriteUInt32AtAddress(addressArray[i] - 4, reinterpret_cast<uint32_t>(&ClientServices::CharacterLogoutEx) - addressArray[i]);
 
+#if GLUEXMLUNLOCK_PATCH
+    uint8_t gluePatchByteArray[] = { 0xB8, 0x03, 0x00, 0x00, 0x00, 0xEB, 0xED };
+
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x5F4DBF), 0xEB);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x816625), 0xEB);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x81663F), 0x03);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x816695), 0x03);
+    Util::SetByteAtAddress(reinterpret_cast<void*>(0x816746), 0xEB);
+    Util::OverwriteBytesAtAddress(0x81675F, gluePatchByteArray, sizeof(gluePatchByteArray));
+#endif
+
 #if NOAMMO_PATCH
     uint8_t byteArray[] = { 0xE9, 0xBA, 0x00, 0x00, 0x00 };
     Util::OverwriteBytesAtAddress(0x809540, byteArray, sizeof(byteArray));
