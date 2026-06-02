@@ -754,6 +754,7 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
         return 0;
     }
 
+    bool success = false;
     char buffer[512] = { 0 };
     std::string filename(FrameScript::GetString(L, 1, 0));
     std::string content(FrameScript::GetString(L, 2, 0));
@@ -773,6 +774,8 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
         {
             SStr::Printf(buffer, 512, "File written: %s", filename.c_str());
             LOG_INFO << buffer;
+
+            success = true;
 
             break;
         }
@@ -829,7 +832,8 @@ int32_t CustomLua::WriteCustomFile(lua_State* L)
         }
     }
 
-    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    if (!success)
+        FrameScript::DisplayError(L, buffer);
 
     return 0;
 }
@@ -887,7 +891,7 @@ int32_t CustomLua::ReadCustomFile(lua_State* L)
         }
     }
 
-    CGChat::AddChatMessage(buffer, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FrameScript::DisplayError(L, buffer);
     FrameScript::PushNil(L);
 
     return 1;
