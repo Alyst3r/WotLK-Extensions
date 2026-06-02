@@ -38,8 +38,12 @@ public:
     std::vector<CustomCVar>& GetGlueCVarVector();
 
     void SetupFrameEventVector(const char** list, size_t count);
-    void RegisterCustomEvent(const char* entry);
+    void RegisterCustomFrameEvent(const char* entry);
     std::vector<const char*>& GetFrameEventVector();
+
+    void SetupGlueEventVector(const char** list, size_t count);
+    void RegisterCustomGlueEvent(const char* entry);
+    std::vector<const char*>& GetGlueEventVector();
 
     void LoadLFGRolesDB();
     void UnloadLFGRolesDB();
@@ -108,6 +112,7 @@ private:
 
     std::vector<DBClientEntry> m_dbcData;
     std::vector<const char*> m_customFrameEventData;
+    std::vector<const char*> m_customGlueEventData;
 
     LFGRoles& m_lfgRolesCDBC;
     OcclusionVolume& m_occlusionVolumeCDBC;
@@ -139,6 +144,7 @@ private:
 
     std::vector<CustomCVar> m_customGlueCVars;
     std::vector<const char*> m_frameEvent;
+    std::vector<const char*> m_glueEvent;
 
     CGPlayerCustomFields m_playerFields;
 

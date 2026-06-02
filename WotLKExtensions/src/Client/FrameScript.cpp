@@ -8,6 +8,8 @@
 void FrameScript::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x52AB26, reinterpret_cast<uint32_t>(&RegisterEventEx) - 0x52AB2A);
+
+    InitializeEvents();
 }
 
 void FrameScript::DisplayError(lua_State* L, char* fmt, ...)
@@ -61,6 +63,11 @@ int32_t FrameScript::GetTop(lua_State* L, int32_t p)
 int32_t FrameScript::IsNumber(lua_State* L, int32_t index)
 {
     return reinterpret_cast<int32_t (__cdecl*)(lua_State*, int32_t)>(0x84DF20)(L, index);
+}
+
+void FrameScript::InitializeEvents()
+{
+    sDC.RegisterCustomFrameEvent("FRAME_TEST");
 }
 
 char* FrameScript::IsString(lua_State* L, int32_t index)

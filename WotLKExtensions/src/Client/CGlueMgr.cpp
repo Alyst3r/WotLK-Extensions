@@ -7,7 +7,9 @@
 void CGlueMgr::ApplyPatches()
 {
     Util::OverwriteUInt32AtAddress(0x4DA71D, reinterpret_cast<uint32_t>(&LoadScriptFunctionsCustom) - 0x4DA721);
+    Util::OverwriteUInt32AtAddress(0x4DA758, reinterpret_cast<uint32_t>(&RegisterEventEx) - 0x4DA75C);
 
+    InitializeEvents();
     RegisterFunctions();
 }
 
@@ -26,9 +28,21 @@ void CGlueMgr::AddToFunctionMap(const char* name, void* ptr)
     sDC.AddGlueLuaFunction(name, ptr);
 }
 
+void CGlueMgr::InitializeEvents()
+{
+    sDC.RegisterCustomGlueEvent("GLUE_TEST");
+}
+
 void CGlueMgr::RegisterFunctions()
 {
     AddToFunctionMap("FlashGameWindow", &CustomLua::FlashGameWindow);
+}
+
+void __cdecl CGlueMgr::RegisterEventEx(const char** list, size_t count)
+{
+    sDC.SetupGlueEventVector(list, count);
+
+    FrameScript::RegisterEvent(sDC.GetGlueEventVector().data(), sDC.GetGlueEventVector().size());
 }
 
 int32_t CGlueMgr::LoadFunctions()
