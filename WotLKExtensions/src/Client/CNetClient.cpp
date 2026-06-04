@@ -40,6 +40,8 @@ void CNetClient::ApplyPatches()
     //
     Util::OverwriteUInt32AtAddress(0x8100E5, reinterpret_cast<uint32_t>(&PacketGroupSpellLaunch));
     Util::OverwriteUInt32AtAddress(0x8100F5, reinterpret_cast<uint32_t>(&PacketGroupSpellLaunch));
+
+    SetCustomHandlers();
 }
 
 void CNetClient::SetCustomHandlers()
@@ -50,7 +52,6 @@ void CNetClient::SetCustomHandlers()
 void CNetClient::InitializePlayerEx()
 {
     ClientServices::InitializePlayer();
-    SetCustomHandlers();
 }
 
 void __fastcall CNetClient::ProcessMessageEx(void* _this, uint32_t unused, uint32_t a2, CDataStore* a3, uint32_t a4)

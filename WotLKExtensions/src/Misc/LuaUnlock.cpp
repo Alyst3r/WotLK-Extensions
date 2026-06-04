@@ -16,6 +16,6 @@ void LuaUnlock::ApplyPatches()
     // jz -> jmp for CGGameUI::Target;
     Util::SetByteAtAddress(reinterpret_cast<void*>(0x524C76), 0xEB);
     
-    // CGGameUI::CheckPermissions() always returns 0
+    // CGGameUI::CheckPermissions() always returns 1
     Util::OverwriteBytesAtAddress(0x5191C0, functionPatch, sizeof(functionPatch));
 }
