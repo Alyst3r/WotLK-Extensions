@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum CustomOpcodes
 {
     NUM_ORIGINAL_MSG_TYPES = 1311,

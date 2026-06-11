@@ -10,7 +10,3 @@ void CWorld::UnloadMap()
     reinterpret_cast<void (__cdecl*)()>(0x783180)();
 }
 
-int32_t CWorld::Pos3Dto2D(CGWorldFrame* thisWorld, C3Vector* pos3d, C3Vector* pos2d, uint32_t* flags)
-{
-    return reinterpret_cast<int32_t (__thiscall*)(CGWorldFrame*, C3Vector*, C3Vector*, uint32_t*)>(0x4F6D20)(thisWorld, pos3d, pos2d, flags);
-}

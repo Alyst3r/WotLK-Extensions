@@ -18,5 +18,7 @@ struct CGObject
     void* m_vtable;
     int32_t m_padding0x04;
     ObjectFields* m_objectData;
-    int32_t m_padding0x0C[49];
+    int32_t m_padding0x0C[2];
+    int32_t m_typeID;
+    int32_t m_padding0x18[46];
 };

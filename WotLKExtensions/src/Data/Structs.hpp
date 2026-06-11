@@ -83,6 +83,47 @@ struct ZoneLightPointRow
 };
 
 // data
+struct C44Matrix
+{
+    float a0 = 1.f;
+    float a1 = 0.f;
+    float a2 = 0.f;
+    float a3 = 0.f;
+    float b0 = 0.f;
+    float b1 = 1.f;
+    float b2 = 0.f;
+    float b3 = 0.f;
+    float c0 = 0.f;
+    float c1 = 0.f;
+    float c2 = 1.f;
+    float c3 = 0.f;
+    float d0 = 0.f;
+    float d1 = 0.f;
+    float d2 = 0.f;
+    float d3 = 1.f;
+};
+
+struct CRect
+{
+    float minY = 0.f;
+    float minX = 0.f;
+    float maxY = 0.f;
+    float maxX = 0.f;
+};
+
+struct C2Vector
+{
+    float m_x = 0.f;
+    float m_y = 0.f;
+};
+
+struct C3Vector
+{
+    float m_x = 0.f;
+    float m_y = 0.f;
+    float m_z = 0.f;
+};
+
 struct HitTestResult
 {
     uint32_t m_guidLow;
@@ -97,6 +138,14 @@ struct HitTestResult
     float m_rayEndX;
     float m_rayEndY;
     float m_rayEndZ;
+};
+
+struct Quat
+{
+    float m_w = 0.f;
+    float m_x = 0.f;
+    float m_y = 0.f;
+    float m_z = 0.f;
 };
 
 // dbc

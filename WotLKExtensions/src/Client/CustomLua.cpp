@@ -590,7 +590,7 @@ int32_t CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     float x = 0.f;
     float y = 0.f;
 
-    CWorld::Pos3Dto2D(CGWorldFrame::GetInstance(), &pos3d, &pos2d, &flags);
+    CGWorldFrame::Pos3Dto2D(CGWorldFrame::GetInstance(), &pos3d, &pos2d, &flags);
     Util::PercToScreenPos(pos2d.m_x, pos2d.m_y, &x, &y);
     FrameScript::PushNumber(L, x);
     FrameScript::PushNumber(L, y);

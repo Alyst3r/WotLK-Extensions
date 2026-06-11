@@ -17,8 +17,8 @@
 #include <Client/WoWTime.hpp>
 #include <GameObjects/CGPlayer.hpp>
 #include <Misc/DataContainer.hpp>
-#include <WorldData/ZoneLightData.hpp>
 #include <Misc/LuaUnlock.hpp>
+#include <WorldData/ZoneLightData.hpp>
 
 #include <PatchConfig.hpp>
 
