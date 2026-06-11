@@ -17,10 +17,6 @@ DataContainer::DataContainer() : m_lfgRolesCDBC(LFGRoles::GetInstance()), m_occl
     SetupDBCDataVector();
 }
 
-DataContainer::~DataContainer()
-{
-}
-
 DataContainer& DataContainer::GetInstance()
 {
     static DataContainer instance;

@@ -152,9 +152,11 @@ private:
 
     DataContainer();
     DataContainer(const DataContainer&) = delete;
-    ~DataContainer();
+    DataContainer(DataContainer&&) = delete;
+    ~DataContainer() = default;
 
     DataContainer& operator=(const DataContainer&) = delete;
+    DataContainer& operator=(DataContainer&&) = delete;
 };
 
 #define sDC DataContainer::GetInstance()

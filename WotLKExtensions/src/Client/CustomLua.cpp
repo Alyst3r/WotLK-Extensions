@@ -584,14 +584,13 @@ int32_t CustomLua::ConvertCoordsToScreenSpace(lua_State* L)
     float ox = static_cast<float>(FrameScript::GetNumber(L, 1));
     float oy = static_cast<float>(FrameScript::GetNumber(L, 2));
     float oz = static_cast<float>(FrameScript::GetNumber(L, 3));
-    void* worldFrame = *reinterpret_cast<void**>(0xB7436C);
     C3Vector pos3d = { ox, oy, oz };
     C3Vector pos2d = {};
     uint32_t flags = 0;
     float x = 0.f;
     float y = 0.f;
 
-    CWorld::Pos3Dto2D(worldFrame, &pos3d, &pos2d, &flags);
+    CWorld::Pos3Dto2D(CGWorldFrame::GetInstance(), &pos3d, &pos2d, &flags);
     Util::PercToScreenPos(pos2d.m_x, pos2d.m_y, &x, &y);
     FrameScript::PushNumber(L, x);
     FrameScript::PushNumber(L, y);
