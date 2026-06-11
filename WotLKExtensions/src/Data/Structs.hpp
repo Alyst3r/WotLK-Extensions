@@ -82,6 +82,23 @@ struct ZoneLightPointRow
     int32_t m_pointOrder = -1;
 };
 
+// data
+struct HitTestResult
+{
+    uint32_t m_guidLow;
+    uint32_t m_guidHigh;
+    float m_x;
+    float m_y;
+    float m_z;
+    float m_dist;
+    float m_rayStartX;
+    float m_rayStartY;
+    float m_rayStartZ;
+    float m_rayEndX;
+    float m_rayEndY;
+    float m_rayEndZ;
+};
+
 // dbc
 struct AreaTableRow
 {

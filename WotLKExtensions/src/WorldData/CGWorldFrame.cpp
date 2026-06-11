@@ -1,4 +1,4 @@
-#include <Client/Editor/EditorObject.hpp>
+// #include <Client/Editor/EditorObject.hpp>
 #include <Misc/Util.hpp>
 #include <WorldData/CGWorldFrame.hpp>
 
