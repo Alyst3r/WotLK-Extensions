@@ -83,6 +83,14 @@ struct ZoneLightPointRow
 };
 
 // data
+struct AnimationSequenceState
+{
+    int32_t m_animationId;
+    float m_sequenceTime;
+    int32_t m_frame;
+    float m_speed;
+};
+
 struct C44Matrix
 {
     float a0 = 1.f;
@@ -149,6 +157,18 @@ struct Quat
 };
 
 // dbc
+struct AnimationDataRow
+{
+    uint32_t m_ID;
+    const char* m_name;
+    uint32_t m_weaponFlags;
+    uint32_t m_bodyFlags;
+    uint32_t m_flags;
+    uint32_t m_fallback;
+    uint32_t m_behaviorId;
+    uint32_t m_behaviorTier;
+};
+
 struct AreaTableRow
 {
     int32_t m_ID;

@@ -14,7 +14,8 @@ struct UnitBytes0
 
 struct UnitFields
 {
-    uint32_t m_padding0x00[17];
+    uint32_t m_padding0x00[16];
+    uint32_t m_channelSpell;
     UnitBytes0 m_bytes0;
     uint32_t m_currHealth;
     uint32_t m_currPowers[7];
@@ -34,7 +35,9 @@ struct CGUnit : CGObject
     uint32_t m_currentCastId;
     uint32_t m_padding0x0A70[4];
     uint32_t m_currentChannelId;
-    uint32_t m_padding0x0A84[353];
+    uint32_t m_padding0x0A84[64];
+    int32_t m_specialBoneSequenceSlot;
+    uint32_t m_padding0x0B88[288];
 
     static int32_t EquippedItemMeetsSpellRequirements(CGUnit* thisUnit, SpellRow* spellRow, int32_t requirementFlags);
     static char* GetFrameScriptText(CGUnit* thisUnit, const char* format, int32_t a3);

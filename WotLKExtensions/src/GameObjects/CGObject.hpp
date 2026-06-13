@@ -20,5 +20,7 @@ struct CGObject
     ObjectFields* m_objectData;
     int32_t m_padding0x0C[2];
     int32_t m_typeID;
-    int32_t m_padding0x18[46];
+    int32_t m_padding0x18[39];
+    void* m_model;
+    int32_t m_padding0xB8[6];
 };
