@@ -105,7 +105,7 @@ void CFormula::FillSpellVariableData()
         "bpct", "dpct", "ppct", "petsp"
     };
 
-    size_t newSize = sizeof(uint32_t) * (SPELLVARIABLE_END - 21);
+    size_t newSize = sizeof(uint32_t) * (SPELLVARIABLE_TOTAL - 22);
     std::vector<const char*>& data = sDC.GetSpellVariableData();
 
     data.resize(newSize);
