@@ -1,3 +1,6 @@
+# NO LONGER REQUIRED, FULL 3.3.5a DECOMP AVAILABLE AT:  
+https://github.com/SatyPardus/wowdecomp
+
 # WotLK-Extensions  
 Client extension project, independent from TSWoW.  
   
